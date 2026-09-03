@@ -1,0 +1,44 @@
+{
+  "name": "good-station-board",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "한국석유관리원 착한주유소 현황판",
+  "scripts": {
+    "normalize": "tsx scripts/normalize-stations.ts",
+    "collect": "tsx scripts/collect.ts",
+    "match": "tsx scripts/match-stations.ts",
+    "aggregate": "tsx scripts/aggregate.ts",
+    "geo": "tsx scripts/build-geo.ts",
+    "coords": "tsx scripts/fetch-coords.ts",
+    "coords:osm": "tsx scripts/fetch-coords-osm.ts",
+    "reindex": "tsx scripts/reindex.ts",
+    "pipeline": "npm run collect && npm run match && npm run aggregate",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "iconv-lite": "^0.6.3",
+    "proj4": "^2.12.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "topojson-client": "^3.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/node": "^20.19.27",
+    "@types/proj4": "^2.5.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@types/topojson-client": "^3.1.5",
+    "@vitejs/plugin-react": "^4.7.0",
+    "playwright": "^1.58.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

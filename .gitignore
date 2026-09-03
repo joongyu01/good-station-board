@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.tmp/
+*.log
+
+# 수집 원본 (전국 약 1.1만건/일) — 파생 결과만 커밋한다
+data/raw/
+
+# 행정구역 경계 원본 (26MB). build-geo가 없으면 내려받는다.
+# 단순화된 결과물 client/public/data/geo-*.json 만 커밋한다.
+data/geo/*-raw.json

@@ -1,0 +1,89 @@
+name: 유가 수집 및 배포
+
+on:
+  schedule:
+    # 매일 10:20 KST (01:20 UTC). 오피넷 과거 판매가격은 전일분이 오전에 올라온다.
+    - cron: "20 1 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "수집할 기준일 (YYYYMMDD, 비우면 어제)"
+        required: false
+        type: string
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Playwright 크로미움 설치
+        run: npx playwright install --with-deps chromium
+
+      # 오피넷 다운로드 페이지는 NetFunnel 대기열을 통과해야 한다. 간헐적 실패가
+      # 정상 범주라서 실패해도 워크플로를 죽이지 않고, 직전 커밋된 데이터를 유지한다.
+      - name: 전국 주유소 가격 수집
+        id: collect
+        continue-on-error: true
+        run: npm run collect ${{ inputs.date }}
+
+      - name: 착한주유소 코드 매칭
+        if: steps.collect.outcome == 'success'
+        run: npm run match
+
+      - name: 집계 및 신호등 판정
+        if: steps.collect.outcome == 'success'
+        run: npm run aggregate
+
+      - name: 결과 커밋
+        if: steps.collect.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add client/public/data data/station-index.json data/station-mapping.json data/match-report.md
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "chore: 유가 데이터 갱신 ($(date -u -d '+9 hours' '+%Y-%m-%d'))"
+            git push
+          fi
+
+      - name: 수집 실패 알림
+        if: steps.collect.outcome != 'success'
+        run: |
+          echo "::warning::오피넷 수집에 실패했습니다. 직전 데이터로 현황판이 유지됩니다."
+
+      - name: 정적 사이트 빌드
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: collect
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
