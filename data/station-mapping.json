@@ -1,2232 +1,2232 @@
 {
   "1": {
     "stationId": "A0004302",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "2": {
     "stationId": "A0010871",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "3": {
     "stationId": "A0011351",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "4": {
     "stationId": "A0011705",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "5": {
     "stationId": "A0011618",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "6": {
     "stationId": "A0006625",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "7": {
     "stationId": "A0007581",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "8": {
     "stationId": "A0033799",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "9": {
     "stationId": "A0006996",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "10": {
     "stationId": "A0006505",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "11": {
     "stationId": "A0007548",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "12": {
     "stationId": "A0008147",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "13": {
     "stationId": "A0006308",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "14": {
     "stationId": "A0033685",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "15": {
     "stationId": "A0030232",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "16": {
     "stationId": "A0027923",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "17": {
     "stationId": "A0028300",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "18": {
     "stationId": "A0028338",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "19": {
     "stationId": "A0024502",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "20": {
     "stationId": "A0026259",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "21": {
     "stationId": "A0025986",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "22": {
     "stationId": "A0025416",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "23": {
     "stationId": "A0026308",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "25": {
     "stationId": "A0019951",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "26": {
     "stationId": "A0020477",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "27": {
     "stationId": "A0020705",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "28": {
     "stationId": "A0020238",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "29": {
     "stationId": "A0023245",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "30": {
     "stationId": "A0023001",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "31": {
     "stationId": "A0022762",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "32": {
     "stationId": "A0023236",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "33": {
     "stationId": "A0022980",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "34": {
     "stationId": "A0017444",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "35": {
     "stationId": "A0013609",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "36": {
     "stationId": "A0017446",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "37": {
     "stationId": "A0016791",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "38": {
     "stationId": "A0016874",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "39": {
     "stationId": "A0027641",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "40": {
     "stationId": "A0027480",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "41": {
     "stationId": "A0032126",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "42": {
     "stationId": "A0010124",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "43": {
     "stationId": "A0005900",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "44": {
     "stationId": "A0000849",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "45": {
     "stationId": "A0001155",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "46": {
     "stationId": "A0000491",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "47": {
     "stationId": "A0032674",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "48": {
     "stationId": "A0000146",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "49": {
     "stationId": "A0000480",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "50": {
     "stationId": "A0000074",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "51": {
     "stationId": "A0009490",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "52": {
     "stationId": "A0000421",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "53": {
     "stationId": "A0033459",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "54": {
     "stationId": "A0014391",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "55": {
     "stationId": "A0033469",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "56": {
     "stationId": "A0033332",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "57": {
     "stationId": "A0033200",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "58": {
     "stationId": "A0012069",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "59": {
     "stationId": "A0031650",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "60": {
     "stationId": "A0031489",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "61": {
     "stationId": "A0031636",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "62": {
     "stationId": "A0031655",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "63": {
     "stationId": "A0031633",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "64": {
     "stationId": "A0001442",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "65": {
     "stationId": "A0007649",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "66": {
     "stationId": "A0006295",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "67": {
     "stationId": "A0032936",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "68": {
     "stationId": "A0022111",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "69": {
     "stationId": "A0022481",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "70": {
     "stationId": "A0019958",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "71": {
     "stationId": "A0021966",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "72": {
     "stationId": "A0033145",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "73": {
     "stationId": "A0018496",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "74": {
     "stationId": "A0017497",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "75": {
     "stationId": "A0017519",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "76": {
     "stationId": "A0017509",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "77": {
     "stationId": "A0017627",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "78": {
     "stationId": "A0018737",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "79": {
     "stationId": "A0022488",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "80": {
     "stationId": "A0031123",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "81": {
     "stationId": "A0030868",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "82": {
     "stationId": "A0031125",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "83": {
     "stationId": "A0031107",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "84": {
     "stationId": "A0031011",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "85": {
     "stationId": "A0030821",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "86": {
     "stationId": "A0030982",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "87": {
     "stationId": "A0014667",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "88": {
     "stationId": "A0015959",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "89": {
     "stationId": "A0014318",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "90": {
     "stationId": "A0001186",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "91": {
     "stationId": "A0016217",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "92": {
     "stationId": "A0016454",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "93": {
     "stationId": "A0023201",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "94": {
     "stationId": "A0017260",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "95": {
     "stationId": "A0013440",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "96": {
     "stationId": "A0010404",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "97": {
     "stationId": "A0005090",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "98": {
     "stationId": "A0007367",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "99": {
     "stationId": "A0003754",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "100": {
     "stationId": "A0003386",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "101": {
     "stationId": "A0001977",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "102": {
     "stationId": "A0004251",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "103": {
     "stationId": "A0002242",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "104": {
     "stationId": "A0029651",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "105": {
     "stationId": "A0029592",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "106": {
     "stationId": "A0029745",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "107": {
     "stationId": "A0029290",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "108": {
     "stationId": "A0024666",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "109": {
     "stationId": "A0025824",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "110": {
     "stationId": "A0024643",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "111": {
     "stationId": "A0020427",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "112": {
     "stationId": "A0020262",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "113": {
     "stationId": "A0020130",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "114": {
     "stationId": "A0024943",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "115": {
     "stationId": "A0025227",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "116": {
     "stationId": "A0000249",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "117": {
     "stationId": "A0016699",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "118": {
     "stationId": "A0027766",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "119": {
     "stationId": "A0027672",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "120": {
     "stationId": "A0027607",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "121": {
     "stationId": "A0027039",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "122": {
     "stationId": "A0000482",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "123": {
     "stationId": "A0010207",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "124": {
     "stationId": "A0009240",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "125": {
     "stationId": "A0011828",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "126": {
     "stationId": "A0010154",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "127": {
     "stationId": "A0000855",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "128": {
     "stationId": "A0009916",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "129": {
     "stationId": "A0010138",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "130": {
     "stationId": "A0009828",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "131": {
     "stationId": "A0014466",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "132": {
     "stationId": "A0012125",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "133": {
     "stationId": "A0014194",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "134": {
     "stationId": "A0033210",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "135": {
     "stationId": "A0031640",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "136": {
     "stationId": "A0028953",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "137": {
     "stationId": "A0031652",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "138": {
     "stationId": "A0031526",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "139": {
     "stationId": "A0033346",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "140": {
     "stationId": "A0001299",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "141": {
     "stationId": "A0004684",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "142": {
     "stationId": "A0006273",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "143": {
     "stationId": "A0021472",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "144": {
     "stationId": "A0019638",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "146": {
     "stationId": "A0019823",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "147": {
     "stationId": "A0021486",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "148": {
     "stationId": "A0018385",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "149": {
     "stationId": "A0018455",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "150": {
     "stationId": "A0018761",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "151": {
     "stationId": "A0018979",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "152": {
     "stationId": "A0031101",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "153": {
     "stationId": "A0031040",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "154": {
     "stationId": "A0031018",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "155": {
     "stationId": "A0033363",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "156": {
     "stationId": "A0031088",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "157": {
     "stationId": "A0016365",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "158": {
     "stationId": "A0012506",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "159": {
     "stationId": "A0015037",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "160": {
     "stationId": "A0012494",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "161": {
     "stationId": "A0017182",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "162": {
     "stationId": "A0033772",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "163": {
     "stationId": "A0004212",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "164": {
     "stationId": "A0011302",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "165": {
     "stationId": "A0011073",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "166": {
     "stationId": "A0033436",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "167": {
     "stationId": "A0009736",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "168": {
     "stationId": "A0003624",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "169": {
     "stationId": "A0003845",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "170": {
     "stationId": "A0003302",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "171": {
     "stationId": "A0008422",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "172": {
     "stationId": "A0003443",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "173": {
     "stationId": "A0003303",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "174": {
     "stationId": "A0030585",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "175": {
     "stationId": "A0029282",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "176": {
     "stationId": "A0027439",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "177": {
     "stationId": "A0030154",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "178": {
     "stationId": "A0029556",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "179": {
     "stationId": "A0024117",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "180": {
     "stationId": "A0026275",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "181": {
     "stationId": "A0025239",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "182": {
     "stationId": "A0026930",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "183": {
     "stationId": "A0020205",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "184": {
     "stationId": "A0020473",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "185": {
     "stationId": "A0020612",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "186": {
     "stationId": "A0019802",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "187": {
     "stationId": "A0020458",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "188": {
     "stationId": "A0023693",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "189": {
     "stationId": "A0025085",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "190": {
     "stationId": "A0023179",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "191": {
     "stationId": "A0022857",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "192": {
     "stationId": "A0013970",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "193": {
     "stationId": "A0013587",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "194": {
     "stationId": "A0016768",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "195": {
     "stationId": "A0016757",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "196": {
     "stationId": "A0014103",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "197": {
     "stationId": "A0027204",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "198": {
     "stationId": "A0031427",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "199": {
     "stationId": "A0031995",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "200": {
     "stationId": "A0032086",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "201": {
     "stationId": "A0027353",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "202": {
     "stationId": "A0009502",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "203": {
     "stationId": "A0000680",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "204": {
     "stationId": "A0001257",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "205": {
     "stationId": "A0009492",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "206": {
     "stationId": "A0000139",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "207": {
     "stationId": "A0033659",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "208": {
     "stationId": "A0000279",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "209": {
     "stationId": "A0014389",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "210": {
     "stationId": "A0014198",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "211": {
     "stationId": "A0014461",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "212": {
     "stationId": "A0014238",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "213": {
     "stationId": "A0014276",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "214": {
     "stationId": "A0031618",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "215": {
     "stationId": "A0031667",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "216": {
     "stationId": "A0028912",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "217": {
     "stationId": "A0031515",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "218": {
     "stationId": "A0001616",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "219": {
     "stationId": "A0006110",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "220": {
     "stationId": "A0014138",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "221": {
     "stationId": "A0001599",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "222": {
     "stationId": "A0011948",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "223": {
     "stationId": "A0033398",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "224": {
     "stationId": "A0020908",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "225": {
     "stationId": "A0022076",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "226": {
     "stationId": "A0019115",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "227": {
     "stationId": "A0018685",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "228": {
     "stationId": "A0019315",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "229": {
     "stationId": "A0031118",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "230": {
     "stationId": "A0015299",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "231": {
     "stationId": "A0016111",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "232": {
     "stationId": "A0016121",
-    "method": "name-exact",
-    "score": 85
+    "method": "manual",
+    "score": 100
   },
   "233": {
     "stationId": "A0033148",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "234": {
     "stationId": "A0032715",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "235": {
     "stationId": "A0013228",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "236": {
     "stationId": "A0016919",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "237": {
     "stationId": "A0011964",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "238": {
     "stationId": "A0017368",
-    "method": "name-exact",
-    "score": 85
+    "method": "manual",
+    "score": 100
   },
   "239": {
     "stationId": "A0011160",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "240": {
     "stationId": "A0011150",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "241": {
     "stationId": "A0010566",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "242": {
     "stationId": "A0011566",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "243": {
     "stationId": "A0010326",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "244": {
     "stationId": "A0010481",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "245": {
     "stationId": "A0005181",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "246": {
     "stationId": "A0032941",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "247": {
     "stationId": "A0004155",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "248": {
     "stationId": "A0009753",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "249": {
     "stationId": "A0007077",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "250": {
     "stationId": "A0003432",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "251": {
     "stationId": "A0030134",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "252": {
     "stationId": "A0030597",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "253": {
     "stationId": "A0029698",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "254": {
     "stationId": "A0028181",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "255": {
     "stationId": "A0028667",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "256": {
     "stationId": "A0026409",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "257": {
     "stationId": "A0026114",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "258": {
     "stationId": "A0024185",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "259": {
     "stationId": "A0024530",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "260": {
     "stationId": "A0026752",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "261": {
     "stationId": "A0019752",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "262": {
     "stationId": "A0020586",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "263": {
     "stationId": "A0020372",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "264": {
     "stationId": "A0033247",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "265": {
     "stationId": "A0023581",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "266": {
     "stationId": "A0023199",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "267": {
     "stationId": "A0022810",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "268": {
     "stationId": "A0023271",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "269": {
     "stationId": "A0013918",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "270": {
     "stationId": "A0013945",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "271": {
     "stationId": "A0013986",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "272": {
     "stationId": "A0013856",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "273": {
     "stationId": "A0013917",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "274": {
     "stationId": "A0027320",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "275": {
     "stationId": "A0027266",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "276": {
     "stationId": "A0027436",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "277": {
     "stationId": "A0000549",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "278": {
     "stationId": "A0001005",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "279": {
     "stationId": "A0001023",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "280": {
     "stationId": "A0001015",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "281": {
     "stationId": "A0009834",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "282": {
     "stationId": "A0001157",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "283": {
     "stationId": "A0009765",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "284": {
     "stationId": "A0033424",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "285": {
     "stationId": "A0009989",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "286": {
     "stationId": "A0033513",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "287": {
     "stationId": "A0014189",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "288": {
     "stationId": "A0031594",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "289": {
     "stationId": "A0029150",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "290": {
     "stationId": "A0031976",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "291": {
     "stationId": "A0031647",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "292": {
     "stationId": "A0029092",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "293": {
     "stationId": "A0001425",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "294": {
     "stationId": "A0006156",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "295": {
     "stationId": "A0008107",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "296": {
     "stationId": "A0007953",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "297": {
     "stationId": "A0021316",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "298": {
     "stationId": "A0033558",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "299": {
     "stationId": "A0021156",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "300": {
     "stationId": "A0021189",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "301": {
     "stationId": "A0021236",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "302": {
     "stationId": "A0019544",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "303": {
     "stationId": "A0019354",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "304": {
     "stationId": "A0030863",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "305": {
     "stationId": "A0031029",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "306": {
     "stationId": "A0033239",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "307": {
     "stationId": "A0014435",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "308": {
     "stationId": "A0016542",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "309": {
     "stationId": "A0014807",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "310": {
     "stationId": "A0016452",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "311": {
     "stationId": "A0032692",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "312": {
     "stationId": "A0012500",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "313": {
     "stationId": "A0012007",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "314": {
     "stationId": "A0017127",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "316": {
     "stationId": "A0010431",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "317": {
     "stationId": "A0010392",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "318": {
     "stationId": "A0033649",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "319": {
     "stationId": "A0005003",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "320": {
     "stationId": "A0004808",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "321": {
     "stationId": "A0004826",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "322": {
     "stationId": "A0006122",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "323": {
     "stationId": "A0004417",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "324": {
     "stationId": "A0028429",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "325": {
     "stationId": "A0024102",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "326": {
     "stationId": "A0023664",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "327": {
     "stationId": "A0023551",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "328": {
     "stationId": "A0023330",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "329": {
     "stationId": "A0016846",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "330": {
     "stationId": "A0027502",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "331": {
     "stationId": "A0001132",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "332": {
     "stationId": "A0009939",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "333": {
     "stationId": "A0000686",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "334": {
     "stationId": "A0009272",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "335": {
     "stationId": "A0031491",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "336": {
     "stationId": "A0033724",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "337": {
     "stationId": "A0001267",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "338": {
     "stationId": "A0019690",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "339": {
     "stationId": "A0033669",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "340": {
     "stationId": "A0033781",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "341": {
     "stationId": "A0018249",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "342": {
     "stationId": "A0031139",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "343": {
     "stationId": "A0033618",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "344": {
     "stationId": "A0031081",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "345": {
     "stationId": "A0031075",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "346": {
     "stationId": "A0015265",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "347": {
     "stationId": "A0016250",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "348": {
     "stationId": "A0016904",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "349": {
     "stationId": "A0014531",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "350": {
     "stationId": "A0013150",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "351": {
     "stationId": "A0002005",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "352": {
     "stationId": "A0009978",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "353": {
     "stationId": "A0005030",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "354": {
     "stationId": "A0028707",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "355": {
     "stationId": "A0028706",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "356": {
     "stationId": "A0028622",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "357": {
     "stationId": "A0028266",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "358": {
     "stationId": "A0026124",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "359": {
     "stationId": "A0022913",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "360": {
     "stationId": "A0016604",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "361": {
     "stationId": "A0013952",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "362": {
     "stationId": "A0016802",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "363": {
     "stationId": "A0017447",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "364": {
     "stationId": "A0016445",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "365": {
     "stationId": "A0000444",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "366": {
     "stationId": "A0000427",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "367": {
     "stationId": "A0033328",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "368": {
     "stationId": "A0000567",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "369": {
     "stationId": "A0033792",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "370": {
     "stationId": "A0009895",
-    "method": "address-sido",
-    "score": 95
+    "method": "manual",
+    "score": 100
   },
   "371": {
     "stationId": "A0001539",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "372": {
     "stationId": "A0006214",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "373": {
     "stationId": "A0019865",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "374": {
     "stationId": "A0017926",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "375": {
     "stationId": "A0031045",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "376": {
     "stationId": "A0031022",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "377": {
     "stationId": "A0016149",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "378": {
     "stationId": "A0010489",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "379": {
     "stationId": "A0028578",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "380": {
     "stationId": "A0026112",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "381": {
     "stationId": "A0026282",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "382": {
     "stationId": "A0026119",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "383": {
     "stationId": "A0020608",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "384": {
     "stationId": "A0019692",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "385": {
     "stationId": "A0023362",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "386": {
     "stationId": "A0003125",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "387": {
     "stationId": "A0010753",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "388": {
     "stationId": "A0031821",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "389": {
     "stationId": "A0031410",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "390": {
     "stationId": "A0027753",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "391": {
     "stationId": "A0031255",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "392": {
     "stationId": "A0032866",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "393": {
     "stationId": "A0009293",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "394": {
     "stationId": "A0000854",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "395": {
     "stationId": "A0009217",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "396": {
     "stationId": "A0009158",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "397": {
     "stationId": "A0014379",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "398": {
     "stationId": "A0022666",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "399": {
     "stationId": "A0017955",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "400": {
     "stationId": "A0030981",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "401": {
     "stationId": "A0016035",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "402": {
     "stationId": "A0017353",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "403": {
     "stationId": "A0012380",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "404": {
     "stationId": "A0011396",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "405": {
     "stationId": "A0011488",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "406": {
     "stationId": "A0005266",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "407": {
     "stationId": "A0005163",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "408": {
     "stationId": "A0006954",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "409": {
     "stationId": "A0006107",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "410": {
     "stationId": "A0009185",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "411": {
     "stationId": "A0028484",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "412": {
     "stationId": "A0029821",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "413": {
     "stationId": "A0030635",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "414": {
     "stationId": "A0026102",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "415": {
     "stationId": "A0025956",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "416": {
     "stationId": "A0026147",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "417": {
     "stationId": "A0022955",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "418": {
     "stationId": "A0026818",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "419": {
     "stationId": "A0014019",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "420": {
     "stationId": "A0013991",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "421": {
     "stationId": "A0013597",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "422": {
     "stationId": "A0016492",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "423": {
     "stationId": "A0031310",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "424": {
     "stationId": "A0031376",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "425": {
     "stationId": "A0009682",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "426": {
     "stationId": "A0006667",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "427": {
     "stationId": "A0001146",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "428": {
     "stationId": "A0033575",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "429": {
     "stationId": "A0033199",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "430": {
     "stationId": "A0033222",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "431": {
     "stationId": "A0022868",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "432": {
     "stationId": "A0028859",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "433": {
     "stationId": "A0001532",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "434": {
     "stationId": "A0001484",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "435": {
     "stationId": "A0020221",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "436": {
     "stationId": "A0020678",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "437": {
     "stationId": "A0020076",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "438": {
     "stationId": "A0019803",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "439": {
     "stationId": "A0019694",
-    "method": "name-exact",
-    "score": 85
+    "method": "manual",
+    "score": 100
   },
   "440": {
     "stationId": "A0020645",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "441": {
     "stationId": "A0018150",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "442": {
     "stationId": "A0033287",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "443": {
     "stationId": "A0018008",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "444": {
     "stationId": "A0015784",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "445": {
     "stationId": "A0016189",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "446": {
     "stationId": "A0012793",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "447": {
     "stationId": "A0012717",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "448": {
     "stationId": "A0012712",
-    "method": "address",
+    "method": "manual",
     "score": 100
   },
   "449": {
     "stationId": "A0012711",
-    "method": "address",
+    "method": "manual",
     "score": 100
   }
 }

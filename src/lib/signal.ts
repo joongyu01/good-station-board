@@ -24,10 +24,25 @@ import { regionKey } from "./region.ts";
  */
 export const GAP_GREEN = 0;
 /**
- * 노랑/빨강 경계 — 지역 최저가 + 이 값까지는 노랑.
- * 운영하며 조정할 값이라 여기 한 곳만 고치면 된다.
+ * 노랑/빨강 경계 기본값 — 지역 최저가 + 이 값까지는 노랑.
+ *
+ * 관리 화면(판정 설정)에서 바꾼 값이 있으면 그쪽이 우선한다. 여기 값은
+ * Supabase 를 쓰지 않을 때의 기본값이다.
  */
 export const GAP_YELLOW = 20;
+
+/** 집계에 쓰는 임계값 묶음. 관리 화면에서 내려온 값으로 덮어쓸 수 있다. */
+export interface Thresholds {
+  gapYellow: number;
+  minSample: number;
+  minCompare: number;
+}
+
+export const DEFAULT_THRESHOLDS: Thresholds = {
+  gapYellow: GAP_YELLOW,
+  minSample: 5,
+  minCompare: 2,
+};
 
 /** z점수는 신호등에 쓰지 않지만 화면 표시용으로 계속 계산한다. */
 export const Z_GREEN = -0.5;
@@ -81,6 +96,7 @@ export function describe(values: number[]): Distribution {
 export function buildRegionStats(
   rows: Array<StationPriceRow & { sigungu: string }>,
   fuelTypes: FuelType[],
+  minSample: number = MIN_SAMPLE,
 ): Map<string, RegionStat> {
   const stats = new Map<string, RegionStat>();
 
@@ -113,7 +129,7 @@ export function buildRegionStats(
 
     for (const [key, bucket] of bySigungu) {
       const own = describe(bucket.values);
-      const useFallback = own.n < MIN_SAMPLE;
+      const useFallback = own.n < minSample;
       const basis = useFallback ? sidoDist.get(bucket.sido) : undefined;
 
       stats.set(`${key}|${fuel}`, {
@@ -142,10 +158,10 @@ export function buildRegionStats(
  *
  * @param gap 해당 주유소 가격 − 그 지역 최저가 (원/L). 0이면 최저가.
  */
-export function toSignal(gap: number | null): SignalColor {
+export function toSignal(gap: number | null, gapYellow: number = GAP_YELLOW): SignalColor {
   if (gap == null || !Number.isFinite(gap)) return "unknown";
   if (gap <= GAP_GREEN) return "green";
-  if (gap <= GAP_YELLOW) return "yellow";
+  if (gap <= gapYellow) return "yellow";
   return "red";
 }
 

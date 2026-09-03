@@ -237,8 +237,7 @@
     "sigungu": "북구",
     "sigunguDetail": "북구",
     "regionKey": "전남광주|북구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 25,
@@ -248,8 +247,7 @@
     "sigungu": "북구",
     "sigunguDetail": "북구",
     "regionKey": "전남광주|북구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 26,
@@ -259,8 +257,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 27,
@@ -270,8 +267,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 28,
@@ -281,8 +277,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 29,
@@ -682,8 +677,7 @@
     "sigungu": "광양시",
     "sigunguDetail": "광양시",
     "regionKey": "전남광주|광양시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 69,
@@ -693,8 +687,7 @@
     "sigungu": "여수시",
     "sigunguDetail": "여수시",
     "regionKey": "전남광주|여수시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 70,
@@ -704,8 +697,7 @@
     "sigungu": "장성군",
     "sigunguDetail": "장성군",
     "regionKey": "전남광주|장성군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 71,
@@ -715,8 +707,7 @@
     "sigungu": "순천시",
     "sigunguDetail": "순천시",
     "regionKey": "전남광주|순천시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 72,
@@ -726,8 +717,7 @@
     "sigungu": "고흥군",
     "sigunguDetail": "고흥군",
     "regionKey": "전남광주|고흥군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 73,
@@ -1117,8 +1107,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 112,
@@ -1128,8 +1117,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 113,
@@ -1139,8 +1127,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 114,
@@ -1440,8 +1427,7 @@
     "sigungu": "진도군",
     "sigunguDetail": "진도군",
     "regionKey": "전남광주|진도군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 144,
@@ -1451,8 +1437,7 @@
     "sigungu": "곡성군",
     "sigunguDetail": "곡성군",
     "regionKey": "전남광주|곡성군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 145,
@@ -1462,8 +1447,7 @@
     "sigungu": "보성군",
     "sigunguDetail": "보성군",
     "regionKey": "전남광주|보성군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 146,
@@ -1473,8 +1457,7 @@
     "sigungu": "담양군",
     "sigunguDetail": "담양군",
     "regionKey": "전남광주|담양군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 147,
@@ -1484,8 +1467,7 @@
     "sigungu": "진도군",
     "sigunguDetail": "진도군",
     "regionKey": "전남광주|진도군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 148,
@@ -1845,8 +1827,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 184,
@@ -1856,8 +1837,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 185,
@@ -1867,8 +1847,7 @@
     "sigungu": "서구",
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 186,
@@ -1878,8 +1857,7 @@
     "sigungu": "서구",
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 187,
@@ -1889,8 +1867,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 188,
@@ -2250,8 +2227,7 @@
     "sigungu": "장흥군",
     "sigunguDetail": "장흥군",
     "regionKey": "전남광주|장흥군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 224,
@@ -2261,8 +2237,7 @@
     "sigungu": "무안군",
     "sigunguDetail": "무안군",
     "regionKey": "전남광주|무안군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 225,
@@ -2272,8 +2247,7 @@
     "sigungu": "순천시",
     "sigunguDetail": "순천시",
     "regionKey": "전남광주|순천시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 226,
@@ -2633,8 +2607,7 @@
     "sigungu": "북구",
     "sigunguDetail": "북구",
     "regionKey": "전남광주|북구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 262,
@@ -2644,8 +2617,7 @@
     "sigungu": "서구",
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 263,
@@ -2655,8 +2627,7 @@
     "sigungu": "서구",
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 264,
@@ -2996,8 +2967,7 @@
     "sigungu": "영암군",
     "sigunguDetail": "영암군",
     "regionKey": "전남광주|영암군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 298,
@@ -3007,8 +2977,7 @@
     "sigungu": "영암군",
     "sigunguDetail": "영암군",
     "regionKey": "전남광주|영암군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 299,
@@ -3018,8 +2987,7 @@
     "sigungu": "함평군",
     "sigunguDetail": "함평군",
     "regionKey": "전남광주|함평군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 300,
@@ -3029,8 +2997,7 @@
     "sigungu": "나주시",
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 301,
@@ -3040,8 +3007,7 @@
     "sigungu": "나주시",
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 302,
@@ -3411,8 +3377,7 @@
     "sigungu": "화순군",
     "sigunguDetail": "화순군",
     "regionKey": "전남광주|화순군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 339,
@@ -3422,8 +3387,7 @@
     "sigungu": "나주시",
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 340,
@@ -3433,8 +3397,7 @@
     "sigungu": "나주시",
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 341,
@@ -3764,8 +3727,7 @@
     "sigungu": "장성군",
     "sigunguDetail": "장성군",
     "regionKey": "전남광주|장성군",
-    "stationId": null,
-    "anomaly": "전남"
+    "stationId": null
   },
   {
     "seq": 374,
@@ -3865,8 +3827,7 @@
     "sigungu": "광산구",
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
-    "stationId": null,
-    "anomaly": "광주"
+    "stationId": null
   },
   {
     "seq": 384,
@@ -3876,8 +3837,7 @@
     "sigungu": "남구",
     "sigunguDetail": "남구",
     "regionKey": "전남광주|남구",
-    "stationId": null,
-    "anomaly": "광주광역시"
+    "stationId": null
   },
   {
     "seq": 385,

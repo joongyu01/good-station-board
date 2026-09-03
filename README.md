@@ -153,9 +153,79 @@ VITE_TILE_ATTRIBUTION=국토교통부 브이월드
 
 ---
 
+## Supabase — 명단 관리와 로그인
+
+착한주유소 명단은 이제 `adress.csv` 가 아니라 Supabase 가 원본이다. 관리 화면에서 고치면 다음 수집 때 반영된다.
+
+**접근 모델은 계정 없이 접근코드 하나**다(기본 `kpetro`). 관리 화면은 `#/admin`.
+
+```
+현황판  https://joongyu01.github.io/good-station-board/
+관리    https://joongyu01.github.io/good-station-board/#/admin
+```
+
+### 왜 anon 키를 공개해도 되는가
+
+모든 테이블에 RLS 를 켜되 **정책을 하나도 만들지 않았다.** 그래서 anon 키로는 테이블을 읽지도 쓰지도 못하고, 모든 접근이 `SECURITY DEFINER` 함수를 지나야 한다. 접근코드도 함수 안에서 대조하므로 브라우저로 내려오지 않는다.
+
+실제로 확인한 결과다.
+
+| 시도 | 결과 |
+|---|---|
+| 네 테이블 직접 읽기 | 전부 `[]` |
+| `gs_config` PATCH 로 접근코드 변조 | 204 를 받지만 실제 0행. `kpetro` 그대로 |
+| `gs_station` 직접 insert | 반영 안 됨 |
+
+`gs_config` PATCH 가 204 를 주는 건 PostgREST 가 "영향받은 행 없음"에도 204 를 돌려주기 때문이다. 로그인으로 확정했다.
+
+### API 키는 화면으로 내려보내지 않는다
+
+`gs_secret` 에 넣은 값은 관리 화면에 **이름·설정여부·앞뒤 4자만** 보인다. 실제 값은 수집 작업이 `service_role` 로 직접 읽는다. 접근코드 하나로 들어오는 구조라, 코드가 새더라도 API 키까지 함께 새면 안 되기 때문이다.
+
+오피넷 키는 관리 화면 → **API 키** 탭에서 `OPINET_API_KEY` 로 등록하면 된다. 등록하면 다음 실행부터 주유소 좌표가 446곳 전량으로 채워진다.
+
+### 설치
+
+1. Supabase → SQL Editor 에 [`supabase/schema.sql`](supabase/schema.sql) 전체를 붙여넣고 Run (멱등, 두 번 실행해도 안전)
+2. `client/public/config.js` 에 Project URL 과 anon public 키 입력
+3. 명단 이관: `SUPABASE_URL=... SUPABASE_ANON_KEY=... npm run supabase:seed`
+4. GitHub 저장소에 등록
+   - 변수 `SUPABASE_URL` (공개값)
+   - 시크릿 `SUPABASE_SERVICE_ROLE_KEY`
+
+### 테이블
+
+| 테이블 | 내용 |
+|---|---|
+| `gs_config` | 접근코드, 신호등 임계값 |
+| `gs_secret` | 외부 API 키 (값은 화면에 안 나옴) |
+| `gs_station` | 착한주유소 명단 |
+| `gs_daily` | 일별 판정 결과 — **449곳 × 4유종만** |
+| `gs_session` | 세션 |
+
+`gs_daily` 에 전국 1만 건을 매일 넣으면 연 370만 행이라 무료 한도(500MB)를 넘는다. 그래서 착한주유소 것만 넣고(하루 1,796행) 전국 원본은 수집 작업 안에서만 쓰고 버린다.
+
+### 스크립트
+
+| 명령 | 하는 일 |
+|---|---|
+| `npm run supabase:seed` | 기존 명단 449곳을 Supabase 로 이관 |
+| `npm run supabase:pull` | 명단·임계값·오피넷 키를 내려받아 파일로 떨어뜨린다 |
+| `npm run supabase:push` | 일별 판정 결과를 `gs_daily` 에 적재 (service_role 필요) |
+
+`supabase:pull` 은 `service_role` 이 있으면 테이블을 직접 읽고, `anon` 키 + 접근코드만 있으면 관리 화면과 같은 RPC 로 읽는다. `service_role` 을 로컬에 내려놓지 않고도 읽기를 확인할 수 있게 두 갈래를 뒀다.
+
+**Supabase 가 없거나 접속이 안 되면 아무것도 덮어쓰지 않고 넘어간다.** 저장소에 커밋된 기존 파일로 파이프라인이 계속 돌아야 하기 때문이다.
+
+---
+
 ## 자동 갱신
 
-`.github/workflows/collect.yml` 이 매일 10:20 KST에 수집 → 매칭 → 집계 → 커밋 → GitHub Pages 배포한다.
+`.github/workflows/collect.yml` 이 매일 10:20 KST에 돌아간다.
+
+```
+Supabase pull → 수집 → 매칭 → 좌표 보강 → 집계 → Supabase push → 커밋 → Pages 배포
+```
 
 오피넷 다운로드 페이지는 **NetFunnel 대기열**을 통과해야 해서 간헐적으로 실패한다. 이는 정상 범주로 보고, 수집 단계는 `continue-on-error`로 두었다. 실패하면 커밋을 건너뛰고 **직전 데이터로 현황판이 그대로 뜬다.** 수집기 자체도 3회 재시도한다.
 

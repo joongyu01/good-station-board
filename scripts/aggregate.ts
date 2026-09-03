@@ -13,7 +13,10 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildRegionStats, computeZ, toSignal, describe, rankOf, MIN_SAMPLE, MIN_COMPARE } from "../src/lib/signal.ts";
+import {
+  buildRegionStats, computeZ, toSignal, describe, rankOf,
+  DEFAULT_THRESHOLDS, type Thresholds,
+} from "../src/lib/signal.ts";
 import { FUEL_TYPES, type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
 import type { EnrichedRow } from "./collect.ts";
@@ -63,6 +66,12 @@ function main() {
   const mapping: Record<string, { stationId: string }> = existsSync(mappingPath)
     ? JSON.parse(readFileSync(mappingPath, "utf8")) : {};
 
+  // 관리 화면에서 바꾼 임계값. 없으면 코드 기본값을 쓴다.
+  const thPath = path.join(DATA, "thresholds.json");
+  const th: Thresholds = existsSync(thPath)
+    ? { ...DEFAULT_THRESHOLDS, ...JSON.parse(readFileSync(thPath, "utf8")) }
+    : DEFAULT_THRESHOLDS;
+
   const coordsPath = path.join(DATA, "station-coords.json");
   const coords: Record<string, { lat: number; lng: number }> = existsSync(coordsPath)
     ? JSON.parse(readFileSync(coordsPath, "utf8")) : {};
@@ -70,7 +79,7 @@ function main() {
   console.log(`[aggregate] 기준일 ${date} — 전국 ${raw.rows.length}건`);
 
   // ── 시군구 × 유종 통계 ──────────────────────────────────────────────
-  const stats = buildRegionStats(raw.rows, FUEL_TYPES);
+  const stats = buildRegionStats(raw.rows, FUEL_TYPES, th.minSample);
   console.log(`[aggregate] 시군구 통계 ${stats.size}건 (${FUEL_TYPES.length}개 유종 × 시군구)`);
 
   // 순위 계산을 위해 시군구별 정렬된 가격 목록을 따로 둔다.
@@ -133,7 +142,7 @@ function main() {
         rank = rankOf(price, sorted);
         // 신호등 기준선. 그 지역 최저가와 몇 원 차이인가.
         // 관내에 비교할 주유소가 없으면 판정하지 않는다.
-        gap = sorted.length >= MIN_COMPARE ? price - sorted[0] : null;
+        gap = sorted.length >= th.minCompare ? price - sorted[0] : null;
       }
 
       signals.push({
@@ -153,8 +162,8 @@ function main() {
         gapFromMin: gap,
         diff,
         zScore: z == null ? null : Math.round(z * 1000) / 1000,
-        signal: toSignal(gap),
-        isRegionLowest: price != null && sorted.length >= MIN_COMPARE && price === sorted[0],
+        signal: toSignal(gap, th.gapYellow),
+        isRegionLowest: price != null && sorted.length >= th.minCompare && price === sorted[0],
         regionRank: rank,
         regionN: stat?.n ?? 0,
         lowSample: stat?.fallback ?? false,
@@ -210,7 +219,8 @@ function main() {
   console.log(`[aggregate] 완료 — 기준일 ${date}`);
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  휘발유 신호등: 초록 ${g.green} / 노랑 ${g.yellow} / 빨강 ${g.red} / 미상 ${g.unknown}`);
-  console.log(`  표본부족(n<${MIN_SAMPLE}) 시군구: ${lowSampleRegions}개 — 시·도 σ로 대체`);
+  console.log(`  표본부족(n<${th.minSample}) 시군구: ${lowSampleRegions}개 — 시·도 σ로 대체`);
+  console.log(`  적용 임계값: 근접 +${th.gapYellow}원 / 표본 ${th.minSample} / 비교 ${th.minCompare}`);
   console.log(`\n  client/public/data/latest.json`);
 }
 
