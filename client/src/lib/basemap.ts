@@ -16,11 +16,17 @@ export interface TileSource {
 }
 
 /**
- * 기본값은 OpenStreetMap.
+ * 기본값은 OpenStreetMap 표준 타일. **API 키가 필요 없다.**
  *
- * 주의: OSM 공개 타일 서버는 가벼운 사용을 전제로 한 무료 서비스다. 실제 운영에
- * 올릴 때는 **브이월드**(국토교통부, 무료 키 발급·한글 표기)로 바꾸는 것이 맞다.
- * `.env` 에 VITE_TILE_URL 을 넣으면 교체된다.
+ * 다른 무료 후보를 살펴봤지만 이게 남았다.
+ *   - CARTO(basemaps.cartocdn.com): HTTP 200에 PNG를 돌려주지만 이미지에
+ *     "API KEY REQUIRED" 워터마크가 찍혀 나온다. 지명도 로마자 표기다.
+ *   - Nominatim/기타 지오코더: 좌표 문제라 여기와는 무관.
+ *   - 브이월드(국토교통부): 한글 표기에 기관 표준이지만 키가 필요하다.
+ *
+ * OSM 표준 타일은 지명이 한글로 나와 국내 현황판에 적합하다. 다만 OSMF 타일
+ * 사용정책상 **가벼운 사용**을 전제로 하고, 대량 트래픽은 허용하지 않는다.
+ * 접속이 늘면 브이월드로 옮기는 것이 맞다. `.env` 로 교체된다.
  *
  *   VITE_TILE_URL=https://api.vworld.kr/req/wmts/1.0.0/{키}/Base/{z}/{y}/{x}.png
  *   VITE_TILE_ATTRIBUTION=국토교통부 브이월드

@@ -24,12 +24,15 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # 잡 수준에 둬야 step의 if 조건에서 볼 수 있다.
+    env:
+      OPINET_API_KEY: ${{ secrets.OPINET_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
 
       - run: npm ci
@@ -48,6 +51,13 @@ jobs:
         if: steps.collect.outcome == 'success'
         run: npm run match
 
+      # 오피넷 키가 등록돼 있으면 주유소 좌표를 채운다. 없으면 통째로 건너뛰고
+      # 지도 핀은 이미 확보된 좌표만 찍는다.
+      - name: 주유소 좌표 보강
+        if: steps.collect.outcome == 'success' && env.OPINET_API_KEY != ''
+        continue-on-error: true
+        run: npm run coords
+
       - name: 집계 및 신호등 판정
         if: steps.collect.outcome == 'success'
         run: npm run aggregate
@@ -57,7 +67,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add client/public/data data/station-index.json data/station-mapping.json data/match-report.md
+          git add client/public/data data/station-index.json data/station-mapping.json data/match-report.md data/station-coords.json
           if git diff --staged --quiet; then
             echo "변경 없음"
           else
@@ -70,11 +80,19 @@ jobs:
         run: |
           echo "::warning::오피넷 수집에 실패했습니다. 직전 데이터로 현황판이 유지됩니다."
 
+      # 배경 지도 타일. 시크릿이 비어 있으면 OpenStreetMap으로 떨어진다.
+      #
+      # VITE_ 접두사가 붙은 값은 빌드 시 클라이언트 번들에 그대로 박힌다. 브이월드
+      # 키는 원래 공개되는 값이고 도메인 제한으로 보호하는 방식이라 문제 없지만,
+      # 저장소 소스에 두지 않기 위해 시크릿으로 받는다.
       - name: 정적 사이트 빌드
         run: npm run build
+        env:
+          VITE_TILE_URL: ${{ secrets.VITE_TILE_URL }}
+          VITE_TILE_ATTRIBUTION: ${{ secrets.VITE_TILE_ATTRIBUTION }}
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -86,4 +104,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
