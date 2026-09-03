@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import {
@@ -11,6 +12,14 @@ import { FUEL_LABELS, FUEL_TYPES } from "@shared/lib/types.ts";
 const EMPTY_GEO: GeoCollection = { type: "FeatureCollection", features: [] };
 
 export default function App() {
+  // 정적 사이트라 라우터를 두지 않고 해시만 본다. #/admin 이면 관리 화면.
+  const [hash, setHash] = useState(() => window.location.hash);
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   const [board, setBoard] = useState<BoardData | null>(null);
   const [sidoGeo, setSidoGeo] = useState<GeoCollection | null>(null);
   const [sigunguGeo, setSigunguGeo] = useState<GeoCollection | null>(null);
@@ -157,6 +166,10 @@ export default function App() {
 
   const totals = useMemo(() => summarize(stations, "전국", ""), [stations]);
 
+  if (hash.startsWith("#/admin")) {
+    return <Admin onExit={() => { window.location.hash = ""; }} />;
+  }
+
   if (error) {
     return (
       <div className="state-msg">
@@ -184,6 +197,8 @@ export default function App() {
           <span className="sep">·</span>
           <span className="matched">{board.summary.matched}/{board.summary.total}곳 가격 연계</span>
         </div>
+
+        <a className="admin-link" href="#/admin" title="명단 관리">관리</a>
 
         <div className="fuel-tabs" role="tablist" aria-label="유종 선택">
           {FUEL_TYPES.map((f) => (
