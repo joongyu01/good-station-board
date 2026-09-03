@@ -33,9 +33,9 @@ export const SIGNAL_COLORS: Record<SignalColor, string> = {
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {
-  green: "저렴",
-  yellow: "보통",
-  red: "비쌈",
+  green: "지역 최저가",
+  yellow: "근접",
+  red: "미달",
   unknown: "미상",
 };
 
@@ -49,31 +49,39 @@ export interface RegionSummary {
   red: number;
   unknown: number;
   total: number;
-  /** 착한주유소들의 평균 z점수. 지도 색은 이 값으로 정한다. */
-  meanZ: number | null;
+  /** 착한주유소들이 지역 최저가에서 평균 몇 원 떨어져 있는지. 지도 색의 근거. */
+  meanGap: number | null;
   signal: SignalColor;
 }
 
 /**
- * 지역 색은 그 지역 착한주유소들의 평균 z점수로 정한다.
+ * 지역 색은 그 지역에 **미달(빨강) 주유소가 얼마나 있는지**로 정한다.
  *
- * 개별 주유소와 같은 임계값(±0.5)을 쓰므로 "이 지역 착한주유소들이 동네 시세보다
- * 싼가"를 그대로 읽을 수 있다. 초록이 아닌 지역이 곧 점검 대상이다.
+ *   🟢 미달 0곳
+ *   🟡 미달이 있지만 절반 미만
+ *   🔴 절반 이상이 미달
+ *
+ * 처음에는 격차의 평균을 썼는데 시·도 단위에서 무너졌다. 한 도의 착한주유소
+ * 수십 곳을 평균 내면 거의 항상 20원을 넘어 전국 지도가 통째로 빨강이 됐다.
+ * 비율은 지역 크기와 무관하게 같은 의미를 유지한다 — 시·군·구든 시·도든
+ * "여기 점검 대상이 얼마나 되나"를 그대로 읽을 수 있다.
  */
 export function summarize(stations: StationSignal[], label: string, sido: string): RegionSummary {
   const s: RegionSummary = {
     label, sido,
     green: 0, yellow: 0, red: 0, unknown: 0,
-    total: stations.length, meanZ: null, signal: "unknown",
+    total: stations.length, meanGap: null, signal: "unknown",
   };
-  const zs: number[] = [];
+  const gaps: number[] = [];
   for (const st of stations) {
     s[st.signal]++;
-    if (st.zScore != null) zs.push(st.zScore);
+    if (st.gapFromMin != null) gaps.push(st.gapFromMin);
   }
-  if (zs.length) {
-    s.meanZ = zs.reduce((a, b) => a + b, 0) / zs.length;
-    s.signal = s.meanZ <= -0.5 ? "green" : s.meanZ <= 0.5 ? "yellow" : "red";
+  if (gaps.length) s.meanGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+
+  const judged = s.green + s.yellow + s.red;
+  if (judged > 0) {
+    s.signal = s.red === 0 ? "green" : s.red / judged < 0.5 ? "yellow" : "red";
   }
   return s;
 }

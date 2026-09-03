@@ -108,7 +108,7 @@ export default function App() {
       return {
         title: activeDistrict,
         subtitle: `${activeRegion} · 착한주유소 ${list.length}곳`,
-        stations: [...list].sort((a, b) => (a.zScore ?? 99) - (b.zScore ?? 99)),
+        stations: [...list].sort((a, b) => (a.gapFromMin ?? 1e9) - (b.gapFromMin ?? 1e9)),
         showRegion: false,
         empty: "이 구에는 착한주유소가 없습니다.",
       };
@@ -126,7 +126,7 @@ export default function App() {
         title: activeRegion,
         subtitle: `${sidoLabel(activeSido)} · 착한주유소 ${list.length}곳`
           + (hasDistricts ? " · 지도에서 구를 누르면 더 좁혀집니다" : ""),
-        stations: [...list].sort((a, b) => (a.zScore ?? 99) - (b.zScore ?? 99)),
+        stations: [...list].sort((a, b) => (a.gapFromMin ?? 1e9) - (b.gapFromMin ?? 1e9)),
         showRegion: (f?.properties.units?.length ?? 1) > 1,
         empty: "이 지역에는 착한주유소가 없습니다.",
       };
@@ -137,7 +137,7 @@ export default function App() {
       return {
         title: sidoLabel(activeSido),
         subtitle: `착한주유소 ${list.length}곳 · 지도에서 시·군·구를 누르면 좁혀집니다`,
-        stations: [...list].sort((a, b) => (b.zScore ?? -99) - (a.zScore ?? -99)),
+        stations: [...list].sort((a, b) => (b.gapFromMin ?? -1) - (a.gapFromMin ?? -1)),
         showRegion: true,
         empty: "이 시·도에는 착한주유소가 없습니다.",
       };
@@ -145,13 +145,13 @@ export default function App() {
 
     // 전국 보기 — 지역 시세보다 비싼 곳부터. 현황판에서 먼저 봐야 할 대상이다.
     const reds = stations.filter((s) => s.signal === "red");
-    const worst = [...reds].sort((a, b) => (b.zScore ?? 0) - (a.zScore ?? 0)).slice(0, 30);
+    const worst = [...reds].sort((a, b) => (b.gapFromMin ?? 0) - (a.gapFromMin ?? 0)).slice(0, 30);
     return {
       title: "점검 우선 대상",
-      subtitle: `지역 평균보다 비싼 착한주유소 ${reds.length}곳 중 상위 ${worst.length}곳`,
+      subtitle: `지역 최저가에 미달한 착한주유소 ${reds.length}곳 중 격차가 큰 ${worst.length}곳`,
       stations: worst,
       showRegion: true,
-      empty: "지역 평균보다 비싼 착한주유소가 없습니다.",
+      empty: "지역 최저가에 미달한 착한주유소가 없습니다.",
     };
   }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations]);
 
@@ -209,7 +209,7 @@ export default function App() {
           </div>
         ))}
         <div className="stat stat-note">
-          지역 평균가 대비 <strong>표준편차 ±0.5</strong> 기준
+<strong>지역 최저가</strong> 기준 · 최저가 +20원 이내는 근접
         </div>
       </div>
 
@@ -291,9 +291,15 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 전국 주유소 대비 시·군·구 분포로 판정</span>
+        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 전국 주유소 대비 시·군·구 최저가로 판정</span>
         <span className="mono">생성 {new Date(board.generatedAt).toLocaleString("ko-KR")}</span>
       </footer>
+
+      {/* kpetrosafety 와 동일한 표기를 유지한다 */}
+      <div className="copyright">
+        © 2026 Korea Petroleum Quality &amp; Distribution Authority.
+        <div className="cr-sub">Developed by Joongyu Shin.</div>
+      </div>
     </div>
   );
 }

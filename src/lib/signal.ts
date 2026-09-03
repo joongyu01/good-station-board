@@ -1,20 +1,36 @@
 /**
- * 신호등 판정
+ * 신호등 판정 — **지역 최저가 기준**
  *
- * 시군구 내 전체 주유소 가격 분포에서 z점수를 구해 색을 정한다.
+ * 착한주유소는 자기 지역에서 가장 싸야 한다는 것이 제도의 취지다. 그래서 평균이
+ * 아니라 그 시·군·구의 **최저가**를 기준선으로 삼는다.
  *
- *   z = (해당 주유소 가격 − 시군구 평균) / 시군구 표준편차
+ *   🟢 최저가   그 지역 최저가와 같음
+ *   🟡 근접     최저가 + 20원 이내
+ *   🔴 미달     그보다 비쌈
  *
- *   🟢 z ≤ −0.5        지역 평균보다 유의미하게 저렴
- *   🟡 −0.5 < z ≤ +0.5 평균 수준
- *   🔴 z > +0.5        지역 평균보다 비쌈
+ * 노랑 구간을 둔 이유가 있다. 최저가와 1원 차이인 곳과 200원 차이인 곳을 똑같이
+ * 빨강으로 칠하면 정작 급한 곳을 골라낼 수 없다. 사실상 최저가권인 곳을 노랑으로
+ * 흡수해야 빨강이 실제 점검 대상 목록이 된다.
+ *
+ * 평균·표준편차는 계속 계산한다. 신호등 판정에는 쓰지 않지만 "지역평균 대비 얼마"가
+ * 담당자에게는 여전히 필요한 수치라 화면 표에 남긴다.
  */
 import type { FuelType, RegionStat, SignalColor, StationPriceRow } from "./types.ts";
 import { regionKey } from "./region.ts";
 
-/** 초록/노랑 경계. z점수 기준. */
+/**
+ * 초록/노랑 경계 — 지역 최저가와의 차이(원/L).
+ * 0이면 최저가와 정확히 같아야 초록이다.
+ */
+export const GAP_GREEN = 0;
+/**
+ * 노랑/빨강 경계 — 지역 최저가 + 이 값까지는 노랑.
+ * 운영하며 조정할 값이라 여기 한 곳만 고치면 된다.
+ */
+export const GAP_YELLOW = 20;
+
+/** z점수는 신호등에 쓰지 않지만 화면 표시용으로 계속 계산한다. */
 export const Z_GREEN = -0.5;
-/** 노랑/빨강 경계. */
 export const Z_RED = 0.5;
 
 /**
@@ -25,6 +41,15 @@ export const Z_RED = 0.5;
  * 신호등 색만 매일 바뀌는 현상이 생긴다.
  */
 export const MIN_SAMPLE = 5;
+
+/**
+ * 최저가 판정에 필요한 최소 주유소 수.
+ *
+ * 관내 주유소가 그 한 곳뿐이면 자동으로 "지역 최저가"가 되어버린다. 실제로
+ * 부산 중구가 그렇다. 비교 대상이 없는데 초록을 주면 사실과 다르므로 '미상'으로
+ * 떨어뜨린다.
+ */
+export const MIN_COMPARE = 2;
 
 export interface Distribution {
   n: number;
@@ -112,11 +137,15 @@ export function buildRegionStats(
   return stats;
 }
 
-/** z점수 → 신호등 색. */
-export function toSignal(z: number | null): SignalColor {
-  if (z == null || !Number.isFinite(z)) return "unknown";
-  if (z <= Z_GREEN) return "green";
-  if (z <= Z_RED) return "yellow";
+/**
+ * 지역 최저가와의 차이 → 신호등 색.
+ *
+ * @param gap 해당 주유소 가격 − 그 지역 최저가 (원/L). 0이면 최저가.
+ */
+export function toSignal(gap: number | null): SignalColor {
+  if (gap == null || !Number.isFinite(gap)) return "unknown";
+  if (gap <= GAP_GREEN) return "green";
+  if (gap <= GAP_YELLOW) return "yellow";
   return "red";
 }
 

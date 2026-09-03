@@ -87,7 +87,11 @@ export interface StationSignal {
   price: number | null;
   /** 시군구 평균 */
   regionMean: number | null;
-  /** 평균 대비 편차 (원/L). 음수면 평균보다 쌈 */
+  /** 시군구 최저가 — 신호등 판정의 기준선 */
+  regionMin: number | null;
+  /** 지역 최저가와의 차이 (원/L). 0이면 최저가. 신호등은 이 값으로 정한다 */
+  gapFromMin: number | null;
+  /** 평균 대비 편차 (원/L). 음수면 평균보다 쌈. 참고용 */
   diff: number | null;
   zScore: number | null;
   signal: SignalColor;

@@ -315,3 +315,11 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 11.5px; background: #eef1f4; border-radius: 4px; padding: 2px 7px; color: #24313c;
 }
+
+/* ── 저작권 표기 (kpetrosafety 와 동일) ─────────────────── */
+.copyright {
+  margin-top: 20px; text-align: center;
+  font-size: .67rem; font-weight: 600;
+  color: var(--text-muted); letter-spacing: .02em;
+}
+.copyright .cr-sub { font-size: .55rem; font-weight: 400; margin-top: 2px; opacity: .8; }

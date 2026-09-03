@@ -1,6 +1,6 @@
 /** 주유소 목록 표. 패널 오른쪽에 들어간다. */
 import type { StationSignal } from "../lib/board.ts";
-import { SIGNAL_LABELS, formatDiff, formatPrice } from "../lib/board.ts";
+import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 
 interface Props {
   stations: StationSignal[];
@@ -22,8 +22,9 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
           <th>주유소</th>
           {showRegion && <th>지역</th>}
           <th className="num">판매가</th>
+          <th className="num">지역최저가</th>
+          <th className="num">최저가 대비</th>
           <th className="num">지역평균</th>
-          <th className="num">편차</th>
           <th className="num">지역순위</th>
         </tr>
       </thead>
@@ -35,7 +36,12 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
             </td>
             <td className="col-name">
               <span className="name">{s.name}</span>
-              {s.isRegionLowest && <span className="badge badge-low">지역최저가</span>}
+              {s.price != null && s.regionN < 2 && (
+                <span className="badge badge-warn" title="관내에 비교할 주유소가 없어 최저가 여부를 판정할 수 없습니다">
+                  비교불가
+                </span>
+              )}
+              {s.isRegionLowest && <span className="badge badge-low">지역 최저가</span>}
               {s.lowSample && (
                 <span className="badge badge-warn" title="관내 주유소가 적어 시·도 표준편차로 판정했습니다">
                   표본부족
@@ -49,10 +55,11 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
             </td>
             {showRegion && <td className="col-region">{s.sigungu}</td>}
             <td className="num">{formatPrice(s.price)}</td>
-            <td className="num muted">{formatPrice(s.regionMean)}</td>
-            <td className={`num diff ${s.diff == null ? "" : s.diff < 0 ? "neg" : "pos"}`}>
-              {formatDiff(s.diff)}
+            <td className="num muted">{formatPrice(s.regionMin)}</td>
+            <td className={`num diff ${s.gapFromMin == null ? "" : s.gapFromMin <= 0 ? "neg" : "pos"}`}>
+              {s.gapFromMin == null ? "—" : s.gapFromMin === 0 ? "최저가" : `+${Math.round(s.gapFromMin).toLocaleString("ko-KR")}`}
             </td>
+            <td className="num muted">{formatPrice(s.regionMean)}</td>
             <td className="num muted">
               {s.regionRank == null ? "—" : `${s.regionRank} / ${s.regionN}`}
             </td>

@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildRegionStats, computeZ, toSignal, describe, rankOf, MIN_SAMPLE } from "../src/lib/signal.ts";
+import { buildRegionStats, computeZ, toSignal, describe, rankOf, MIN_SAMPLE, MIN_COMPARE } from "../src/lib/signal.ts";
 import { FUEL_TYPES, type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
 import type { EnrichedRow } from "./collect.ts";
@@ -125,11 +125,15 @@ function main() {
       let z: number | null = null;
       let diff: number | null = null;
       let rank: number | null = null;
+      let gap: number | null = null;
 
       if (price != null && stat) {
         z = computeZ(price, stat);
         diff = Math.round((price - stat.mean) * 10) / 10;
         rank = rankOf(price, sorted);
+        // 신호등 기준선. 그 지역 최저가와 몇 원 차이인가.
+        // 관내에 비교할 주유소가 없으면 판정하지 않는다.
+        gap = sorted.length >= MIN_COMPARE ? price - sorted[0] : null;
       }
 
       signals.push({
@@ -145,10 +149,12 @@ function main() {
         fuelType: fuel,
         price,
         regionMean: stat?.mean ?? null,
+        regionMin: sorted.length > 0 ? sorted[0] : null,
+        gapFromMin: gap,
         diff,
         zScore: z == null ? null : Math.round(z * 1000) / 1000,
-        signal: toSignal(z),
-        isRegionLowest: price != null && sorted.length > 0 && price === sorted[0],
+        signal: toSignal(gap),
+        isRegionLowest: price != null && sorted.length >= MIN_COMPARE && price === sorted[0],
         regionRank: rank,
         regionN: stat?.n ?? 0,
         lowSample: stat?.fallback ?? false,
