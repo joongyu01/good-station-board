@@ -20,7 +20,7 @@ import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { GeoCollection, GeoFeature, RegionSummary, StationSignal } from "../lib/board.ts";
 import { SIGNAL_COLORS, formatPrice } from "../lib/board.ts";
 import { poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
-import { withBrand } from "@shared/lib/brand.ts";
+import { withBrand, type BrandCode } from "@shared/lib/brand.ts";
 import { tileSource, visibleTiles } from "../lib/basemap.ts";
 
 const WIDTH = 720;
@@ -35,6 +35,15 @@ const HEIGHT = 860;
  * 차지하는 영역 자체가 커져야 한다.
  */
 const LABEL_SCALE = 1.5;
+
+/** 주유소 핀 이름표 글자 크기(SVG 단위). 지역 라벨과 달리 확대율을 곱하지 않는다. */
+const PIN_FONT = 10.5;
+
+/** 주유기 아이콘 높이(SVG 단위). 꼬리 끝이 주유소 좌표를 짚는다. */
+const PIN_ICON = 26;
+
+/** 이름표에 넣을 상호 최대 글자 수. 넘으면 줄인다 — 전체 이름은 목록과 툴팁에 있다. */
+const PIN_NAME_MAX = 12;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 16;
 /** 이 거리(px)를 넘게 끌어야 지도 이동으로 친다. 클릭 시 손떨림과 구분하기 위함. */
@@ -279,12 +288,19 @@ export default function KoreaMap({
   const pins = useMemo(() => {
     if (!isDetail) return [];
     const k = tf.k;
-    const font = (11 * LABEL_SCALE) / k;
+
+    // 핀 글자는 지역 라벨보다 작다. LABEL_SCALE 을 그대로 곱했더니 화면에서
+    // 25px 짜리 글씨가 되어 지도를 덮었다.
+    const font = PIN_FONT / k;
+    const chipH = 19 / k;
+    const iconH = PIN_ICON / k;
 
     const entries = detailStations.pinned.map((s) => {
       const pt = projection([s.lng!, s.lat!]);
       const anchor = { x: pt?.[0] ?? 0, y: pt?.[1] ?? 0 };
-      const label = withBrand(s.name, s.brand);
+      const label = pinLabel(s.name, s.brand);
+      // 점 + 여백 + 글자 + 여백
+      const w = textWidth(label, font) + 22 / k;
       return {
         station: s,
         label,
@@ -292,17 +308,19 @@ export default function KoreaMap({
         chip: {
           id: String(s.seq),
           anchor,
-          // 이름표는 핀 오른쪽 위에서 출발한다.
-          x: anchor.x + (label.length * font) / 2 + 16 / k,
-          y: anchor.y - 15 / k,
-          w: label.length * font + 16 / k,
-          h: 20 / k,
+          // 아이콘 **위**에서 출발한다. 아이콘과 같은 높이에 두면 이름표가
+          // 주유기를 덮어 무엇을 가리키는지 알 수 없다.
+          x: anchor.x,
+          y: anchor.y - iconH - chipH / 2 - 3 / k,
+          w,
+          h: chipH,
         } as Chip,
         font,
+        iconH,
       };
     });
 
-    const byId = new Map(relaxChips(entries.map((e) => e.chip), { w: WIDTH, h: HEIGHT }, 80).map((c) => [c.id, c]));
+    const byId = new Map(relaxChips(entries.map((e) => e.chip), { w: WIDTH, h: HEIGHT }, 120).map((c) => [c.id, c]));
     return entries.map((e) => ({ ...e, chip: byId.get(e.chip.id) ?? e.chip }));
   }, [isDetail, detailStations, projection, tf.k]);
 
@@ -501,14 +519,15 @@ export default function KoreaMap({
           })}
 
           {/* 주유소 핀 — 상세 단계에서만 */}
-          {pins.map(({ chip, anchor }) => (
+          {pins.map(({ chip, anchor, iconH }) => (
             <line key={`pl-${chip.id}`} className="pin-leader"
-              x1={anchor.x} y1={anchor.y} x2={chip.x} y2={chip.y + chip.h / 2} />
+              x1={anchor.x} y1={anchor.y - iconH} x2={chip.x} y2={chip.y + chip.h / 2} />
           ))}
 
-          {pins.map(({ station, label, anchor, chip, font }) => {
+          {pins.map(({ station, label, anchor, chip, font, iconH }) => {
             const color = SIGNAL_COLORS[station.signal];
-            const tip = `${label} · 휘발유 ${formatPrice(station.prices.gasoline)}`
+            const full = withBrand(station.name, station.brand);
+            const tip = `${full} · 휘발유 ${formatPrice(station.prices.gasoline)}`
               + ` / 경유 ${formatPrice(station.prices.diesel)}`
               + (station.priceIndex == null ? "" : ` · 계수 ${station.priceIndex.coefficient.toFixed(3)}`)
               + (station.regionRank == null ? "" : ` · 시·도 ${station.regionRank}위`);
@@ -516,25 +535,24 @@ export default function KoreaMap({
               if (suppressClick.current) { suppressClick.current = false; return; }
               onSelectStation?.(station);
             };
+            const showTip = (e: React.MouseEvent) => {
+              const rect = svgRef.current!.getBoundingClientRect();
+              setHover({ x: e.clientX - rect.left, y: e.clientY - rect.top, text: `${tip} · 누르면 추이` });
+            };
             return (
-              <g key={`pin-${station.seq}`} className="pin" onClick={open}>
+              <g key={`pin-${station.seq}`} className="pin" onClick={open} onMouseMove={showTip}>
                 <rect className="pin-chip"
                   x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
-                  width={chip.w} height={chip.h} rx={4 / k}
-                  stroke={color} />
-                <text className="pin-name" x={chip.x} y={chip.y}
-                  style={{ fontSize: `${font}px` }} fill={color}>
+                  width={chip.w} height={chip.h} rx={chip.h / 2} />
+                <circle className="pin-chip-dot"
+                  cx={chip.x - chip.w / 2 + 9 / k} cy={chip.y} r={3.4 / k} fill={color} />
+                <text className="pin-name" x={chip.x - chip.w / 2 + 16 / k} y={chip.y}
+                  style={{ fontSize: `${font}px` }}>
                   {label}
                 </text>
-                <PumpIcon x={anchor.x} y={anchor.y} size={22 / k} color={color} />
-                <circle
-                  cx={anchor.x} cy={anchor.y - 9 / k} r={14 / k}
-                  fill="transparent" className="pin-hit"
-                  onMouseMove={(e) => {
-                    const rect = svgRef.current!.getBoundingClientRect();
-                    setHover({ x: e.clientX - rect.left, y: e.clientY - rect.top, text: `${tip} · 누르면 추이` });
-                  }}
-                >
+                <PumpIcon x={anchor.x} y={anchor.y} h={iconH} color={color} />
+                <circle cx={anchor.x} cy={anchor.y - iconH * 0.55} r={iconH * 0.6}
+                  fill="transparent" className="pin-hit">
                   <title>{tip}</title>
                 </circle>
               </g>
@@ -661,34 +679,52 @@ function roundedSegment(
 /**
  * 주유기 아이콘 핀.
  *
- * 원형 점 대신 주유기 모양을 쓴다. 지도 위에서 "여기가 주유소"라는 게 색만으로
- * 읽히지 않아서다. 색은 신호등 그대로다.
+ * 신호등 색으로 채운 배지 안에 흰색 주유기를 그린다. 주유기만 덩그러니
+ * 그렸더니 지도 위에서 배경과 섞여 무엇인지 알아보기 어려웠다. 배지로 감싸면
+ * 색이 면으로 읽혀 멀리서도 신호등이 구분된다.
  *
- * (x, y)가 주유소의 실제 좌표이고 아이콘은 그 위에 선다 — 지도 핀의 관례대로
- * 뾰족한 끝이 좌표를 가리킨다.
+ * 꼬리 끝이 (x, y) — 주유소의 실제 좌표를 짚는다.
  */
-function PumpIcon({ x, y, size, color }: { x: number; y: number; size: number; color: string }) {
-  // 24×24 좌표계로 그린 뒤 통째로 옮기고 줄인다.
-  const s = size / 24;
+function PumpIcon({ x, y, h, color }: { x: number; y: number; h: number; color: string }) {
+  // 24×30 좌표계로 그린 뒤 통째로 옮기고 줄인다.
+  const s = h / 30;
   return (
-    <g
-      className="pin-pump"
-      transform={`translate(${x - size / 2},${y - size}) scale(${s})`}
-      style={{ color }}
-    >
-      {/* 바닥 그림자 — 좌표 지점을 짚어준다 */}
-      <ellipse cx={12} cy={23} rx={4.5} ry={1.6} fill="rgba(0,0,0,.22)" />
-      {/* 본체 */}
-      <rect x={3} y={3} width={11} height={19} rx={2} fill={color} stroke="#fff" strokeWidth={1.4} />
-      {/* 표시창 */}
-      <rect x={5.4} y={5.6} width={6.2} height={4.6} rx={1} fill="#fff" opacity={0.92} />
-      {/* 급유 호스와 노즐 */}
+    <g className="pin-pump" transform={`translate(${x - 12 * s},${y - 30 * s}) scale(${s})`}>
+      <ellipse cx={12} cy={29.4} rx={4} ry={1.3} fill="rgba(0,0,0,.2)" />
       <path
-        d="M14 8 h2.6 a1.6 1.6 0 0 1 1.6 1.6 V16 a1.7 1.7 0 0 0 1.7 1.7 a1.7 1.7 0 0 0 1.7 -1.7 V10.4"
-        fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round"
-        style={{ paintOrder: "stroke" }}
+        d="M12 29.5 L8.6 23 h6.8 Z"
+        fill={color} stroke="#fff" strokeWidth={1.4} strokeLinejoin="round"
       />
-      <circle cx={21.6} cy={8.4} r={1.5} fill={color} stroke="#fff" strokeWidth={1} />
+      <rect x={0.9} y={0.9} width={22.2} height={22.6} rx={6.5}
+        fill={color} stroke="#fff" strokeWidth={1.8} />
+
+      {/* 주유기 — 흰색 */}
+      <rect x={6.4} y={5.4} width={8.2} height={12.8} rx={1.6} fill="#fff" />
+      <rect x={8} y={7.1} width={5} height={3.4} rx={.8} fill={color} />
+      <path
+        d="M14.6 9.2 h1.9 a1.4 1.4 0 0 1 1.4 1.4 V14.6 a1.3 1.3 0 0 0 2.6 0 V11"
+        fill="none" stroke="#fff" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"
+      />
+      <circle cx={19.9} cy={9.9} r={1.15} fill="#fff" />
     </g>
   );
+}
+
+/** 이름표에 넣을 문구. 긴 상호는 줄이되 폴 코드는 남긴다. */
+function pinLabel(name: string, brand: BrandCode | null): string {
+  const short = name.length > PIN_NAME_MAX ? `${name.slice(0, PIN_NAME_MAX - 1)}…` : name;
+  return brand ? `${short}(${brand})` : short;
+}
+
+/**
+ * 글자 폭 어림값.
+ *
+ * 글자 수 × 글자 크기로 잡으면 한글과 영문이 뒤섞인 상호에서 크게 빗나간다.
+ * `구도일주유소 뉴설악(SOIL)` 같은 이름은 폭이 과하게 잡혀 이름표가 지도를
+ * 덮었다. 한글은 한 칸, 그 밖은 절반 남짓으로 센다.
+ */
+function textWidth(text: string, font: number): number {
+  let units = 0;
+  for (const ch of text) units += /[㄰-㆏가-힯]/.test(ch) ? 1 : 0.56;
+  return units * font;
 }

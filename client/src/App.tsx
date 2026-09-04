@@ -3,6 +3,7 @@ import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
+import SplitLayout from "./components/SplitLayout.tsx";
 import {
   dataUrl, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel,
@@ -222,8 +223,8 @@ export default function App() {
         </div>
       </div>
 
-      <main className="layout">
-        <section className="map-col">
+      <SplitLayout
+        left={<>
           <div className="breadcrumb">
             <button
               className={activeSido ? "crumb" : "crumb is-current"}
@@ -283,9 +284,8 @@ export default function App() {
             {activeSido && !activeRegion && "시·군·구를 누르면 실제 지도 위에 주유소 핀이 찍힙니다. 휠로 확대, 끌어서 이동."}
             {activeSido && activeRegion && "주유기 아이콘 색이 그 주유소의 신호등입니다. 누르면 판매가 추이가 열립니다. 휠로 확대, 끌어서 이동."}
           </p>
-        </section>
-
-        <section className="panel-col">
+        </>}
+        right={<>
           <div className="panel-head">
             <h2>{panel.title}</h2>
             <p className="panel-sub">{panel.subtitle}</p>
@@ -298,8 +298,8 @@ export default function App() {
               onSelect={setChartOf}
             />
           </div>
-        </section>
-      </main>
+        </>}
+      />
 
       <footer className="foot">
         <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 휘발유+경유 합계의 시·도 순위로 판정</span>

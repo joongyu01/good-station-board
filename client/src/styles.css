@@ -119,13 +119,34 @@ button { font: inherit; }
 }
 
 /* ── 레이아웃 ─────────────────────────────────────────── */
-/* 지도 칸을 1.5배로 넓힌다. 종전 1 : 1.15 였다.
-   전국 보기에서 시·도 이름과 신호등 비율 바가 겹치지 않으려면 폭이 필요하다. */
+/* 지도 : 목록 폭은 분할선을 끌어서 조절한다. --map-col 은 SplitLayout 이 넣는다.
+   기본 58%. 두 칸에 필요한 폭이 사람마다 달라 고정 비율로는 늘 한쪽이 좁았다. */
 .layout {
-  display: grid; grid-template-columns: minmax(560px, 1.5fr) minmax(460px, 1fr);
-  gap: 14px; align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, var(--map-col, 58%)) 8px minmax(0, 1fr);
+  gap: 10px; align-items: start;
 }
-@media (max-width: 1240px) { .layout { grid-template-columns: 1fr; } }
+.layout.is-resizing { cursor: col-resize; user-select: none; }
+
+.layout-resizer {
+  align-self: stretch; min-height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: col-resize; border-radius: 5px; touch-action: none;
+}
+.layout-resizer:hover, .layout-resizer:focus-visible { background: rgba(141, 198, 63, .18); }
+.layout-resizer:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+.layout-grip {
+  width: 3px; height: 34px; border-radius: 2px;
+  background: var(--line);
+}
+.layout-resizer:hover .layout-grip, .is-resizing .layout-grip { background: var(--green); }
+
+/* 좁은 화면에서는 한 줄로 쌓는다. 분할선은 의미가 없어 감춘다.
+   SplitLayout 의 STACK_WIDTH 와 같은 값이다. */
+@media (max-width: 1240px) {
+  .layout { grid-template-columns: 1fr; }
+  .layout-resizer { display: none; }
+}
 
 .map-col, .panel-col {
   background: var(--card); border: 1px solid var(--line);
@@ -219,17 +240,24 @@ button { font: inherit; }
   stroke: var(--green-deep); stroke-width: 2; stroke-dasharray: 6 4;
   cursor: default; pointer-events: none;
 }
-.pin-dot { stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .pin-hit { cursor: pointer; }
 .pin-leader {
-  stroke: rgba(88, 89, 91, .6); stroke-width: 1;
+  stroke: rgba(63, 65, 68, .45); stroke-width: 1.1;
+  stroke-dasharray: 3 2;
   vector-effect: non-scaling-stroke; pointer-events: none;
 }
+/* 이름표는 흰 알약. 글자를 신호등 색으로 칠했더니 배경 지도와 겹쳐 읽기
+   힘들었다. 색은 왼쪽 점 하나가 맡고 글자는 검게 둔다. */
 .pin-chip {
-  fill: rgba(255, 255, 255, .96); stroke-width: 1.5;
-  vector-effect: non-scaling-stroke; pointer-events: none;
+  fill: #fff; stroke: rgba(46, 48, 51, .22); stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .22));
 }
-.pin-name { text-anchor: middle; dominant-baseline: middle; font-weight: 700; pointer-events: none; }
+.pin-chip-dot { pointer-events: none; }
+.pin-name {
+  text-anchor: start; dominant-baseline: middle;
+  font-weight: 700; fill: var(--ink); pointer-events: none;
+}
 
 .map-credit {
   position: absolute; right: 8px; bottom: 6px; z-index: 4;
@@ -517,4 +545,5 @@ button { font: inherit; }
 /* 지도 주유기 핀 */
 .pin { cursor: pointer; }
 .pin-pump { pointer-events: none; }
-.pin:hover .pin-chip { fill: #fff; }
+.pin:hover .pin-chip { stroke: var(--green-deep); stroke-width: 1.6; }
+.pin:hover .pin-pump { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .35)); }
