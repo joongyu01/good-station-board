@@ -94,13 +94,13 @@ async function main() {
     writeFileSync(
       path.join(DATA, "thresholds.json"),
       JSON.stringify({
-        gapYellow: cfg.gap_yellow,
-        minSample: cfg.min_sample,
-        minCompare: cfg.min_compare,
+        rankGreenMetro: cfg.rank_green_metro,
+        rankGreenDefault: cfg.rank_green_default,
+        rankYellowFactor: cfg.rank_yellow_factor,
       }, null, 2),
       "utf8",
     );
-    console.log(`[pull] 임계값 — 근접 +${cfg.gap_yellow}원 / 표본 ${cfg.min_sample} / 비교 ${cfg.min_compare}`);
+    console.log(`[pull] 기준 — 서울·경기 ${cfg.rank_green_metro}위 / 그 외 ${cfg.rank_green_default}위 / 노랑 ${cfg.rank_yellow_factor}배`);
   }
 
   // ── 외부 API 키 ─────────────────────────────────────────────────────

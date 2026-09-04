@@ -22,10 +22,10 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
           <th>주유소</th>
           {showRegion && <th>지역</th>}
           <th className="num">판매가</th>
-          <th className="num">지역최저가</th>
-          <th className="num">최저가 대비</th>
-          <th className="num">지역평균</th>
-          <th className="num">지역순위</th>
+          <th className="num" title="휘발유+경유 합계를 그 시·도 최저 합계로 나눈 값. 1.000 이 지역 최저 수준">계수</th>
+          <th className="num">시·도 순위</th>
+          <th className="num">시·도 최저</th>
+          <th className="num">시·도 평균</th>
         </tr>
       </thead>
       <tbody>
@@ -36,17 +36,7 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
             </td>
             <td className="col-name">
               <span className="name">{s.name}</span>
-              {s.price != null && s.regionN < 2 && (
-                <span className="badge badge-warn" title="관내에 비교할 주유소가 없어 최저가 여부를 판정할 수 없습니다">
-                  비교불가
-                </span>
-              )}
-              {s.isRegionLowest && <span className="badge badge-low">지역 최저가</span>}
-              {s.lowSample && (
-                <span className="badge badge-warn" title="관내 주유소가 적어 시·도 표준편차로 판정했습니다">
-                  표본부족
-                </span>
-              )}
+              {s.isRegionLowest && <span className="badge badge-low">시·도 최저가</span>}
               {!s.stationId && (
                 <span className="badge badge-warn" title="Opinet 주유소 코드를 찾지 못해 가격을 붙이지 못했습니다">
                   미매칭
@@ -55,14 +45,16 @@ export default function StationTable({ stations, showRegion, emptyText }: Props)
             </td>
             {showRegion && <td className="col-region">{s.sigungu}</td>}
             <td className="num">{formatPrice(s.price)}</td>
+            <td className="num idx" title={s.priceIndex
+              ? `휘발유+경유 ${s.priceIndex.sum.toLocaleString("ko-KR")}원 / 지역 최저 합계 ${s.priceIndex.regionBase.toLocaleString("ko-KR")}원`
+              : "휘발유·경유 중 하나를 취급하지 않아 산출 불가"}>
+              {s.priceIndex ? s.priceIndex.coefficient.toFixed(3) : "—"}
+            </td>
+            <td className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
+              {s.regionRank == null ? "—" : `${s.regionRank.toLocaleString("ko-KR")} / ${s.regionN.toLocaleString("ko-KR")}`}
+            </td>
             <td className="num muted">{formatPrice(s.regionMin)}</td>
-            <td className={`num diff ${s.gapFromMin == null ? "" : s.gapFromMin <= 0 ? "neg" : "pos"}`}>
-              {s.gapFromMin == null ? "—" : s.gapFromMin === 0 ? "최저가" : `+${Math.round(s.gapFromMin).toLocaleString("ko-KR")}`}
-            </td>
             <td className="num muted">{formatPrice(s.regionMean)}</td>
-            <td className="num muted">
-              {s.regionRank == null ? "—" : `${s.regionRank} / ${s.regionN}`}
-            </td>
           </tr>
         ))}
       </tbody>

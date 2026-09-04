@@ -1,27 +1,42 @@
 /**
- * 신호등 판정 — **지역 최저가 기준**
+ * 신호등 판정 — **시·도 내 순위 기준**
  *
- * 착한주유소는 자기 지역에서 가장 싸야 한다는 것이 제도의 취지다. 그래서 평균이
- * 아니라 그 시·군·구의 **최저가**를 기준선으로 삼는다.
+ * 비교 모집단은 시·도(특별시·광역시·도)다. 시·군·구가 아니다. 같은 도 안에서는
+ * 유통 여건이 비슷하고, 시·군·구로 쪼개면 주유소가 두세 곳뿐인 곳이 생겨
+ * "관내 1위"가 아무 의미도 없어지기 때문이다.
  *
- *   🟢 최저가   그 지역 최저가와 같음
- *   🟡 근접     최저가 + 20원 이내
- *   🔴 미달     그보다 비쌈
+ *   🟢 초록  그 시·도에서 상위 N위 이내
+ *   🟡 노랑  N위 밖이지만 2N위 이내
+ *   🔴 빨강  그보다 뒤
  *
- * 노랑 구간을 둔 이유가 있다. 최저가와 1원 차이인 곳과 200원 차이인 곳을 똑같이
- * 빨강으로 칠하면 정작 급한 곳을 골라낼 수 없다. 사실상 최저가권인 곳을 노랑으로
- * 흡수해야 빨강이 실제 점검 대상 목록이 된다.
+ * N 은 지역에 따라 다르다. 서울·경기는 주유소가 압도적으로 많아(각각 389곳,
+ * 2167곳) 같은 5위 기준을 적용하면 사실상 아무도 통과하지 못한다. 그래서
+ * 서울·경기는 10위, 나머지 시·도는 5위로 둔다.
  *
- * 평균·표준편차는 계속 계산한다. 신호등 판정에는 쓰지 않지만 "지역평균 대비 얼마"가
- * 담당자에게는 여전히 필요한 수치라 화면 표에 남긴다.
+ * 평균·표준편차는 계속 계산해 화면 표에 남긴다. 판정에는 쓰지 않지만
+ * "지역평균 대비 얼마"가 담당자에게는 여전히 필요한 수치다.
  */
 import type { FuelType, RegionStat, SignalColor, StationPriceRow } from "./types.ts";
 import { regionKey } from "./region.ts";
 
 /**
- * 초록/노랑 경계 — 지역 최저가와의 차이(원/L).
- * 0이면 최저가와 정확히 같아야 초록이다.
+ * 초록 기준 순위 — 서울·경기.
+ * 두 지역은 주유소가 수백~수천 곳이라 다른 시·도와 같은 잣대를 못 쓴다.
  */
+export const RANK_GREEN_METRO = 10;
+
+/** 초록 기준 순위 — 그 밖의 시·도. */
+export const RANK_GREEN_DEFAULT = 5;
+
+/** 노랑 구간은 초록 기준의 이 배수 순위까지. */
+export const RANK_YELLOW_FACTOR = 2;
+
+/** 서울·경기 여부에 따라 초록 기준 순위를 고른다. */
+export function greenRankFor(sido: string): number {
+  return sido === "서울" || sido === "경기" ? RANK_GREEN_METRO : RANK_GREEN_DEFAULT;
+}
+
+/** @deprecated 최저가 기준이던 시절의 값. 화면 표시에만 남아 있다. */
 export const GAP_GREEN = 0;
 /**
  * 노랑/빨강 경계 기본값 — 지역 최저가 + 이 값까지는 노랑.
@@ -33,16 +48,24 @@ export const GAP_YELLOW = 20;
 
 /** 집계에 쓰는 임계값 묶음. 관리 화면에서 내려온 값으로 덮어쓸 수 있다. */
 export interface Thresholds {
-  gapYellow: number;
-  minSample: number;
-  minCompare: number;
+  /** 서울·경기 초록 기준 순위 */
+  rankGreenMetro: number;
+  /** 그 밖의 시·도 초록 기준 순위 */
+  rankGreenDefault: number;
+  /** 노랑 구간 배수 */
+  rankYellowFactor: number;
 }
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
-  gapYellow: GAP_YELLOW,
-  minSample: 5,
-  minCompare: 2,
+  rankGreenMetro: RANK_GREEN_METRO,
+  rankGreenDefault: RANK_GREEN_DEFAULT,
+  rankYellowFactor: RANK_YELLOW_FACTOR,
 };
+
+/** 임계값을 반영한 초록 기준 순위. */
+export function greenRankWith(sido: string, th: Thresholds): number {
+  return sido === "서울" || sido === "경기" ? th.rankGreenMetro : th.rankGreenDefault;
+}
 
 /** z점수는 신호등에 쓰지 않지만 화면 표시용으로 계속 계산한다. */
 export const Z_GREEN = -0.5;
@@ -154,15 +177,41 @@ export function buildRegionStats(
 }
 
 /**
- * 지역 최저가와의 차이 → 신호등 색.
+ * 시·도 내 순위 → 신호등 색.
  *
- * @param gap 해당 주유소 가격 − 그 지역 최저가 (원/L). 0이면 최저가.
+ * @param rank      1 이 그 시·도 최저가
+ * @param greenRank 초록 기준 순위 (서울·경기 10, 그 외 5)
  */
-export function toSignal(gap: number | null, gapYellow: number = GAP_YELLOW): SignalColor {
-  if (gap == null || !Number.isFinite(gap)) return "unknown";
-  if (gap <= GAP_GREEN) return "green";
-  if (gap <= gapYellow) return "yellow";
+export function toSignal(
+  rank: number | null,
+  greenRank: number,
+  yellowFactor: number = RANK_YELLOW_FACTOR,
+): SignalColor {
+  if (rank == null || !Number.isFinite(rank)) return "unknown";
+  if (rank <= greenRank) return "green";
+  if (rank <= greenRank * yellowFactor) return "yellow";
   return "red";
+}
+
+/**
+ * 휘발유+경유 합산 가격지수.
+ *
+ * 그 시·도의 최저 휘발유가 + 최저 경유가를 1.000 으로 두고 비례 환산한다.
+ * 기준선은 서로 다른 주유소의 최저가를 더한 값이라 실제로 그 값에 파는 곳은
+ * 없을 수 있다. 환산 기준일 뿐이다.
+ */
+export function priceIndexOf(
+  gasoline: number | null,
+  diesel: number | null,
+  regionMinGasoline: number | null,
+  regionMinDiesel: number | null,
+): { sum: number; regionBase: number; coefficient: number } | null {
+  if (gasoline == null || diesel == null) return null;
+  if (regionMinGasoline == null || regionMinDiesel == null) return null;
+  const regionBase = regionMinGasoline + regionMinDiesel;
+  if (!(regionBase > 0)) return null;
+  const sum = gasoline + diesel;
+  return { sum, regionBase, coefficient: Math.round((sum / regionBase) * 1000) / 1000 };
 }
 
 /**

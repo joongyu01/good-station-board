@@ -105,21 +105,26 @@ export async function fetchStations(): Promise<StationRow[]> {
 }
 
 export interface ConfigRow {
-  gap_yellow: number;
-  min_sample: number;
-  min_compare: number;
+  rank_green_metro: number;
+  rank_green_default: number;
+  rank_yellow_factor: number;
 }
 
 export async function fetchConfig(): Promise<ConfigRow | null> {
   if (mode() === "service") {
-    const rows = await select<ConfigRow>("gs_config", "select=gap_yellow,min_sample,min_compare&id=eq.1");
+    const rows = await select<ConfigRow>(
+      "gs_config", "select=rank_green_metro,rank_green_default,rank_yellow_factor&id=eq.1");
     return rows[0] ?? null;
   }
   // anon 경로는 camelCase 로 온다. 호출부가 한 모양만 보게 여기서 맞춰준다.
-  const c = await rpc<{ gapYellow: number; minSample: number; minCompare: number }>(
+  const c = await rpc<{ rankGreenMetro: number; rankGreenDefault: number; rankYellowFactor: number }>(
     "gs_config_get", { p_token: await token() },
   );
-  return { gap_yellow: c.gapYellow, min_sample: c.minSample, min_compare: c.minCompare };
+  return {
+    rank_green_metro: c.rankGreenMetro,
+    rank_green_default: c.rankGreenDefault,
+    rank_yellow_factor: c.rankYellowFactor,
+  };
 }
 
 /**

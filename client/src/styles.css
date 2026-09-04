@@ -415,3 +415,8 @@ button { font: inherit; }
 .form-hint { margin: 8px 0 0; font-size: 12.5px; font-weight: 600; }
 .form-hint.ok { color: var(--good); }
 .form-hint.warn { color: var(--warn); }
+
+/* 합산 계수 — 1.000 이 지역 최저 수준 */
+.station-table .idx { font-weight: 700; font-variant-numeric: tabular-nums; }
+/* 초록 기준 순위 안에 든 경우 강조 */
+.station-table .rank.in { color: var(--good); font-weight: 700; }

@@ -340,25 +340,30 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
 
   return (
     <section className="admin-body narrow">
-      <h3>신호등 임계값</h3>
+      <h3>신호등 기준 순위</h3>
       <p className="muted">
-        바꾼 값은 다음 집계부터 반영됩니다. 이미 만들어진 화면은 그대로 남습니다.
+        비교 모집단은 <b>시·도</b>입니다. 그 시·도에서 몇 위 안에 들면 초록으로 볼지 정합니다.
+        바꾼 값은 다음 집계부터 반영됩니다.
       </p>
 
-      <label>근접(노랑) 상한 — 지역 최저가 + 몇 원까지
-        <input type="number" value={c.gapYellow}
-          onChange={(e) => setC({ ...c, gapYellow: Number(e.target.value) })} />
+      <label>서울·경기 — 몇 위 이내를 초록으로
+        <input type="number" value={c.rankGreenMetro}
+          onChange={(e) => setC({ ...c, rankGreenMetro: Number(e.target.value) })} />
       </label>
 
-      <label>표준편차 대체 기준 — 관내 주유소가 몇 곳 미만일 때
-        <input type="number" value={c.minSample}
-          onChange={(e) => setC({ ...c, minSample: Number(e.target.value) })} />
+      <label>그 밖의 시·도 — 몇 위 이내를 초록으로
+        <input type="number" value={c.rankGreenDefault}
+          onChange={(e) => setC({ ...c, rankGreenDefault: Number(e.target.value) })} />
       </label>
 
-      <label>최저가 판정 최소 주유소 수
-        <input type="number" value={c.minCompare}
-          onChange={(e) => setC({ ...c, minCompare: Number(e.target.value) })} />
+      <label>노랑 구간 배수 <span className="muted">(초록 기준의 몇 배 순위까지)</span>
+        <input type="number" value={c.rankYellowFactor}
+          onChange={(e) => setC({ ...c, rankYellowFactor: Number(e.target.value) })} />
       </label>
+      <p className="muted" style={{ fontSize: "12px", marginTop: "6px" }}>
+        현재 설정: 서울·경기 {c.rankGreenMetro}위 이내 초록 · {c.rankGreenMetro * c.rankYellowFactor}위까지 노랑 /
+        그 외 {c.rankGreenDefault}위 이내 초록 · {c.rankGreenDefault * c.rankYellowFactor}위까지 노랑
+      </p>
 
       <button className="btn" onClick={async () => {
         try { await saveConfig(token, c); setMsg("저장했습니다."); setErr(null); }

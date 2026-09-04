@@ -19,18 +19,26 @@ create extension if not exists pgcrypto;
 create table if not exists gs_config (
   id           smallint primary key default 1,
   access_code  text        not null,
-  -- 신호등 임계값 (원/L). 지역 최저가 + 이 값까지는 '근접'(노랑).
-  gap_yellow   integer     not null default 20,
-  -- 시·군·구 표본이 이보다 적으면 표준편차를 시·도 값으로 대체한다.
-  min_sample   integer     not null default 5,
-  -- 최저가 판정에 필요한 최소 주유소 수. 1이면 자동으로 최저가가 되어버린다.
-  min_compare  integer     not null default 2,
+  -- 신호등 기준 순위 (시·도 내). 서울·경기는 주유소가 압도적으로 많아 따로 둔다.
+  rank_green_metro   integer not null default 10,
+  rank_green_default integer not null default 5,
+  -- 노랑 구간은 초록 기준의 이 배수 순위까지.
+  rank_yellow_factor integer not null default 2,
   updated_at   timestamptz not null default now(),
   constraint gs_config_one_row check (id = 1)
 );
 
 insert into gs_config (id, access_code) values (1, 'kpetro')
 on conflict (id) do nothing;
+
+-- 이전 버전(최저가 기준)에서 올라오는 경우를 위한 정리.
+-- 새로 만든 DB 에서는 아무 일도 하지 않는다.
+alter table gs_config add column if not exists rank_green_metro   integer not null default 10;
+alter table gs_config add column if not exists rank_green_default integer not null default 5;
+alter table gs_config add column if not exists rank_yellow_factor integer not null default 2;
+alter table gs_config drop column if exists gap_yellow;
+alter table gs_config drop column if exists min_sample;
+alter table gs_config drop column if exists min_compare;
 
 -- ┌─────────────────────────────────────────────────────────────────────────┐
 -- │ 외부 API 키 보관                                                        │
@@ -299,9 +307,9 @@ declare
 begin
   perform gs_require_session(p_token);
   select json_build_object(
-    'gapYellow', gap_yellow,
-    'minSample', min_sample,
-    'minCompare', min_compare,
+    'rankGreenMetro', rank_green_metro,
+    'rankGreenDefault', rank_green_default,
+    'rankYellowFactor', rank_yellow_factor,
     'updatedAt', updated_at
   ) into v from gs_config where id = 1;
   return v;
@@ -309,10 +317,10 @@ end;
 $$;
 
 create or replace function gs_config_save(
-  p_token       text,
-  p_gap_yellow  integer,
-  p_min_sample  integer,
-  p_min_compare integer
+  p_token          text,
+  p_rank_green_metro   integer,
+  p_rank_green_default integer,
+  p_rank_yellow_factor integer
 )
 returns json
 language plpgsql
@@ -322,18 +330,19 @@ as $$
 begin
   perform gs_require_session(p_token);
 
-  if p_gap_yellow < 0 or p_gap_yellow > 500 then
-    raise exception 'GAP_RANGE' using errcode = '22000';
+  if p_rank_green_metro < 1 or p_rank_green_metro > 500
+     or p_rank_green_default < 1 or p_rank_green_default > 500 then
+    raise exception 'RANK_RANGE' using errcode = '22000';
   end if;
-  if p_min_sample < 1 or p_min_compare < 1 then
-    raise exception 'MIN_RANGE' using errcode = '22000';
+  if p_rank_yellow_factor < 1 or p_rank_yellow_factor > 20 then
+    raise exception 'FACTOR_RANGE' using errcode = '22000';
   end if;
 
   update gs_config set
-    gap_yellow  = p_gap_yellow,
-    min_sample  = p_min_sample,
-    min_compare = p_min_compare,
-    updated_at  = now()
+    rank_green_metro   = p_rank_green_metro,
+    rank_green_default = p_rank_green_default,
+    rank_yellow_factor = p_rank_yellow_factor,
+    updated_at         = now()
   where id = 1;
 
   return json_build_object('ok', true);

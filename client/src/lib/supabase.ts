@@ -41,8 +41,8 @@ const MESSAGES: Record<string, string> = {
   NAME_REQUIRED: "주유소 상호를 입력해 주세요.",
   ADDRESS_REQUIRED: "주소를 입력해 주세요.",
   CODE_TOO_SHORT: "접근코드는 4자 이상이어야 합니다.",
-  GAP_RANGE: "근접 임계값은 0~500원 사이여야 합니다.",
-  MIN_RANGE: "최소 표본 수는 1 이상이어야 합니다.",
+  RANK_RANGE: "기준 순위는 1~500 사이여야 합니다.",
+  FACTOR_RANGE: "노랑 배수는 1~20 사이여야 합니다.",
   NOT_CONFIGURED: "Supabase 접속 정보가 설정되지 않았습니다. public/config.js 를 확인해 주세요.",
 };
 
@@ -120,9 +120,12 @@ export interface StationRow {
 }
 
 export interface AdminConfig {
-  gapYellow: number;
-  minSample: number;
-  minCompare: number;
+  /** 서울·경기 초록 기준 순위 */
+  rankGreenMetro: number;
+  /** 그 밖의 시·도 초록 기준 순위 */
+  rankGreenDefault: number;
+  /** 노랑 구간 배수 */
+  rankYellowFactor: number;
   updatedAt: string;
 }
 
@@ -182,9 +185,9 @@ export const getConfig = (token: string) =>
 export const saveConfig = (token: string, c: AdminConfig) =>
   rpc("gs_config_save", {
     p_token: token,
-    p_gap_yellow: c.gapYellow,
-    p_min_sample: c.minSample,
-    p_min_compare: c.minCompare,
+    p_rank_green_metro: c.rankGreenMetro,
+    p_rank_green_default: c.rankGreenDefault,
+    p_rank_yellow_factor: c.rankYellowFactor,
   });
 
 export const changeCode = (token: string, newCode: string) =>

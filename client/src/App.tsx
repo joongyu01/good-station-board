@@ -120,7 +120,7 @@ export default function App() {
       return {
         title: activeDistrict,
         subtitle: `${activeRegion} · 착한주유소 ${list.length}곳`,
-        stations: [...list].sort((a, b) => (a.gapFromMin ?? 1e9) - (b.gapFromMin ?? 1e9)),
+        stations: [...list].sort((a, b) => (a.regionRank ?? 1e9) - (b.regionRank ?? 1e9)),
         showRegion: false,
         empty: "이 구에는 착한주유소가 없습니다.",
       };
@@ -138,7 +138,7 @@ export default function App() {
         title: activeRegion,
         subtitle: `${sidoLabel(activeSido)} · 착한주유소 ${list.length}곳`
           + (hasDistricts ? " · 지도에서 구를 누르면 더 좁혀집니다" : ""),
-        stations: [...list].sort((a, b) => (a.gapFromMin ?? 1e9) - (b.gapFromMin ?? 1e9)),
+        stations: [...list].sort((a, b) => (a.regionRank ?? 1e9) - (b.regionRank ?? 1e9)),
         showRegion: (f?.properties.units?.length ?? 1) > 1,
         empty: "이 지역에는 착한주유소가 없습니다.",
       };
@@ -149,7 +149,7 @@ export default function App() {
       return {
         title: sidoLabel(activeSido),
         subtitle: `착한주유소 ${list.length}곳 · 지도에서 시·군·구를 누르면 좁혀집니다`,
-        stations: [...list].sort((a, b) => (b.gapFromMin ?? -1) - (a.gapFromMin ?? -1)),
+        stations: [...list].sort((a, b) => (b.regionRank ?? -1) - (a.regionRank ?? -1)),
         showRegion: true,
         empty: "이 시·도에는 착한주유소가 없습니다.",
       };
@@ -157,13 +157,13 @@ export default function App() {
 
     // 전국 보기 — 지역 시세보다 비싼 곳부터. 현황판에서 먼저 봐야 할 대상이다.
     const reds = stations.filter((s) => s.signal === "red");
-    const worst = [...reds].sort((a, b) => (b.gapFromMin ?? 0) - (a.gapFromMin ?? 0)).slice(0, 30);
+    const worst = [...reds].sort((a, b) => (b.regionRank ?? 0) - (a.regionRank ?? 0)).slice(0, 30);
     return {
       title: "점검 우선 대상",
-      subtitle: `지역 최저가에 미달한 착한주유소 ${reds.length}곳 중 격차가 큰 ${worst.length}곳`,
+      subtitle: `시·도 순위 기준에 미달한 착한주유소 ${reds.length}곳 중 순위가 낮은 ${worst.length}곳`,
       stations: worst,
       showRegion: true,
-      empty: "지역 최저가에 미달한 착한주유소가 없습니다.",
+      empty: "기준에 미달한 착한주유소가 없습니다.",
     };
   }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations]);
 
@@ -231,7 +231,7 @@ export default function App() {
           </div>
         ))}
         <div className="stat stat-note">
-<strong>지역 최저가</strong> 기준 · 최저가 +20원 이내는 근접
+<strong>시·도 순위</strong> 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
         </div>
       </div>
 

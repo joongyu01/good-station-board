@@ -39,7 +39,7 @@ export const SIGNAL_COLORS: Record<SignalColor, string> = {
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {
-  green: "지역 최저가",
+  green: "상위권",
   yellow: "근접",
   red: "미달",
   unknown: "미상",
@@ -60,17 +60,21 @@ export interface RegionSummary {
   signal: SignalColor;
 }
 
+/** 지역이 초록으로 칠해지는 최소 상위권 비율. */
+const GREEN_SHARE = 0.3;
+
 /**
- * 지역 색은 그 지역에 **미달(빨강) 주유소가 얼마나 있는지**로 정한다.
+ * 지역 색은 그 지역 착한주유소 중 **상위권(초록)이 얼마나 되는지**로 정한다.
  *
- *   🟢 미달 0곳
- *   🟡 미달이 있지만 절반 미만
- *   🔴 절반 이상이 미달
+ *   🟢 상위권이 30% 이상
+ *   🟡 상위권이 있지만 30% 미만
+ *   🔴 상위권이 하나도 없음
  *
- * 처음에는 격차의 평균을 썼는데 시·도 단위에서 무너졌다. 한 도의 착한주유소
- * 수십 곳을 평균 내면 거의 항상 20원을 넘어 전국 지도가 통째로 빨강이 됐다.
- * 비율은 지역 크기와 무관하게 같은 의미를 유지한다 — 시·군·구든 시·도든
- * "여기 점검 대상이 얼마나 되나"를 그대로 읽을 수 있다.
+ * 판정이 시·도 상위 N위 기준으로 바뀌면서 전국의 82%가 미달이 됐다. 그래서
+ * "미달이 절반 이상이면 빨강" 같은 규칙은 모든 지역을 빨강으로 만들어 변별을
+ * 못 한다. 반대로 "상위권이 있으면 초록" 은 너무 후해서 시·도가 거의 다
+ * 초록이 된다. 비율로 잡아야 시·군·구(18/9/121)와 시·도(1/13/2) 양쪽에서
+ * 의미가 살아난다.
  */
 export function summarize(stations: StationSignal[], label: string, sido: string): RegionSummary {
   const s: RegionSummary = {
@@ -87,7 +91,8 @@ export function summarize(stations: StationSignal[], label: string, sido: string
 
   const judged = s.green + s.yellow + s.red;
   if (judged > 0) {
-    s.signal = s.red === 0 ? "green" : s.red / judged < 0.5 ? "yellow" : "red";
+    const share = s.green / judged;
+    s.signal = share >= GREEN_SHARE ? "green" : s.green > 0 ? "yellow" : "red";
   }
   return s;
 }
