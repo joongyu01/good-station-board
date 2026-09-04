@@ -27,6 +27,7 @@ jobs:
     # 잡 수준에 둬야 step의 if 조건에서 볼 수 있다.
     env:
       OPINET_API_KEY: ${{ secrets.OPINET_API_KEY }}
+      VWORLD_API_KEY: ${{ secrets.VWORLD_API_KEY }}
       SUPABASE_URL: ${{ vars.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
@@ -59,9 +60,17 @@ jobs:
         if: steps.collect.outcome == 'success'
         run: npm run match
 
-      # 오피넷 키가 등록돼 있으면 주유소 좌표를 채운다. 없으면 통째로 건너뛰고
-      # 지도 핀은 이미 확보된 좌표만 찍는다.
-      - name: 주유소 좌표 보강
+      # 좌표 보강. 등록된 키만 쓰고 없으면 건너뛴다.
+      #
+      # 브이월드를 먼저 돌린다. 주소만 있으면 되므로 주유소코드가 없는 곳도
+      # 채울 수 있고, 오피넷 detailById 보다 커버리지가 넓다.
+      - name: 주유소 좌표 보강 (브이월드)
+        if: steps.collect.outcome == 'success' && env.VWORLD_API_KEY != ''
+        continue-on-error: true
+        run: npm run coords:vworld
+
+      # 오피넷은 주유소코드로 정확한 값을 준다. 키가 살아 있으면 함께 돌린다.
+      - name: 주유소 좌표 보강 (오피넷)
         if: steps.collect.outcome == 'success' && env.OPINET_API_KEY != ''
         continue-on-error: true
         run: npm run coords

@@ -12,6 +12,7 @@
     "geo": "tsx scripts/build-geo.ts",
     "coords": "tsx scripts/fetch-coords.ts",
     "coords:osm": "tsx scripts/fetch-coords-osm.ts",
+    "coords:vworld": "tsx scripts/fetch-coords-vworld.ts",
     "reindex": "tsx scripts/reindex.ts",
     "supabase:seed": "tsx scripts/supabase-seed.ts",
     "supabase:pull": "tsx scripts/supabase-pull.ts",
