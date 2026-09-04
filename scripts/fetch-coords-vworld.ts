@@ -27,6 +27,19 @@ const API = "https://api.vworld.kr/req/address";
 /** 요청 간 간격(ms). 공공 API라 완만하게 두드린다. */
 const GAP_MS = 90;
 
+/**
+ * 지역 검증 완충 거리(m).
+ *
+ * 경계 폴리곤은 130m 정도 오차로 단순화돼 있고(build-geo 의 tolerance),
+ * 애초에 경계에 바로 붙은 주유소도 있다. 엄격하게 안팎만 따지면 멀쩡한
+ * 좌표가 기각된다 — 실제로 속초·아산·성북·대덕 4건이 경계에서 3~142m
+ * 떨어진 지점인데 인접 시군구로 넘어갔다.
+ *
+ * 이 거리 안이면 받아들인다. 도시를 통째로 잘못 짚으면 수 km 가 나므로
+ * 그런 건 여전히 걸러진다.
+ */
+const BOUNDARY_TOLERANCE_M = 300;
+
 interface GeoFeature {
   properties: { sido: string; label: string; keys?: string[] };
   geometry: { type: "MultiPolygon"; coordinates: number[][][][] };
@@ -54,6 +67,53 @@ function pointInFeature(lng: number, lat: number, f: GeoFeature): boolean {
     if (!inHole) return true;
   }
   return false;
+}
+
+/** 점에서 선분까지의 거리(m). 위경도를 미터로 환산해 잰다. */
+function segmentDistanceM(
+  px: number, py: number, x1: number, y1: number, x2: number, y2: number,
+): number {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  let t = 0;
+  if (dx !== 0 || dy !== 0) {
+    t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)));
+  }
+  const cx = x1 + dx * t;
+  const cy = y1 + dy * t;
+  const mPerLat = 110540;
+  const mPerLng = 111320 * Math.cos((py * Math.PI) / 180);
+  return Math.hypot((px - cx) * mPerLng, (py - cy) * mPerLat);
+}
+
+/** 폴리곤 경계선까지의 최단거리(m). */
+function distanceToFeatureM(lng: number, lat: number, f: GeoFeature): number {
+  let min = Infinity;
+  for (const poly of f.geometry.coordinates) {
+    for (const ring of poly) {
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        min = Math.min(min, segmentDistanceM(lng, lat, ring[j][0], ring[j][1], ring[i][0], ring[i][1]));
+      }
+    }
+  }
+  return min;
+}
+
+/** 그 지역 안이거나, 경계에서 완충 거리 안이면 받아들인다. */
+function nearFeature(lng: number, lat: number, f: GeoFeature): boolean {
+  if (pointInFeature(lng, lat, f)) return true;
+  return distanceToFeatureM(lng, lat, f) <= BOUNDARY_TOLERANCE_M;
+}
+
+/**
+ * 읍·면 토큰을 뺀 주소.
+ *
+ * 브이월드는 "울주군 삼남면 하방로 26" 을 못 찾는데 "울주군 하방로 26" 은 찾는다.
+ * 도로명주소 체계에서 도로명은 시·군 단위로 유일해서 읍·면이 들어가면 오히려
+ * 매칭이 깨진다. 실측으로 5곳이 이 변형으로 해결됐다.
+ */
+function withoutEupMyeon(address: string): string {
+  return address.split(/\s+/).filter((t) => !/(읍|면)$/.test(t)).join(" ");
 }
 
 type GeocodeResult =
@@ -135,6 +195,15 @@ async function main() {
   const mapping: Record<string, { stationId: string }> = existsSync(mappingPath)
     ? JSON.parse(readFileSync(mappingPath, "utf8")) : {};
 
+  // 오피넷이 들고 있는 현재 주소. 명단 주소로 못 찾을 때 대신 써본다.
+  //
+  // 명단은 행정구역 개편을 못 따라간 곳이 있다. 인천 서구가 검단구·서해구로
+  // 분구됐는데 명단은 아직 `서구` 라서, 브이월드 주소DB(현행 기준)가 못 찾는다.
+  // 오피넷 쪽 주소는 `서해구` 로 갱신돼 있다.
+  const indexPath = path.join(DATA, "station-index.json");
+  const stationIndex: Record<string, { address?: string }> = existsSync(indexPath)
+    ? JSON.parse(readFileSync(indexPath, "utf8")) : {};
+
   const coordsPath = path.join(DATA, "station-coords.json");
   const coords: Record<string, { lat: number; lng: number; src?: string }> =
     existsSync(coordsPath) ? JSON.parse(readFileSync(coordsPath, "utf8")) : {};
@@ -142,7 +211,7 @@ async function main() {
   // 이미 정확한 출처(오피넷·수기)로 채운 건 건드리지 않는다.
   const keepSrc = new Set(["manual", undefined, "opinet"]);
 
-  let ok = 0, outside = 0, notFound = 0, failed = 0, skipped = 0, noId = 0;
+  let ok = 0, outside = 0, notFound = 0, failed = 0, skipped = 0, noId = 0, viaOpinetAddr = 0, viaStripped = 0;
   const outsideSamples: string[] = [];
   let stop = false;
 
@@ -157,8 +226,30 @@ async function main() {
     const cur = coords[id];
     if (cur && keepSrc.has(cur.src)) { skipped++; continue; }
 
-    const r = await geocode(g.address, key);
+    let r = await geocode(g.address, key);
     await new Promise((res) => setTimeout(res, GAP_MS));
+
+    // 못 찾으면 변형을 차례로 시도한다.
+    //   1) 오피넷이 들고 있는 현재 주소 (행정구역 개편 반영본)
+    //   2) 읍·면 토큰을 뺀 주소
+    if (!r.ok && r.reason === "NOT_FOUND") {
+      const alt = stationIndex[id]?.address?.trim();
+      if (alt && alt !== g.address) {
+        r = await geocode(alt, key);
+        await new Promise((res) => setTimeout(res, GAP_MS));
+        if (r.ok) viaOpinetAddr++;
+      }
+    }
+    if (!r.ok && r.reason === "NOT_FOUND") {
+      for (const base of [g.address, stationIndex[id]?.address?.trim()]) {
+        if (!base) continue;
+        const stripped = withoutEupMyeon(base);
+        if (stripped === base) continue;
+        r = await geocode(stripped, key);
+        await new Promise((res) => setTimeout(res, GAP_MS));
+        if (r.ok) { viaStripped++; break; }
+      }
+    }
 
     if (!r.ok) {
       if (r.reason.startsWith("ERROR")) {
@@ -174,10 +265,11 @@ async function main() {
 
     // 지역 검증 — 엉뚱한 곳이면 버린다.
     const f = featureByKey.get(g.regionKey);
-    if (f && !pointInFeature(r.lng, r.lat, f)) {
+    if (f && !nearFeature(r.lng, r.lat, f)) {
       outside++;
       if (outsideSamples.length < 5) {
-        outsideSamples.push(`${g.name} (${g.sido} ${g.sigungu}) → ${r.lat.toFixed(4)},${r.lng.toFixed(4)}`);
+        const d = Math.round(distanceToFeatureM(r.lng, r.lat, f));
+        outsideSamples.push(`${g.name} (${g.sido} ${g.sigungu}) → ${r.lat.toFixed(4)},${r.lng.toFixed(4)} · 경계에서 ${d}m`);
       }
       continue;
     }
@@ -197,6 +289,8 @@ async function main() {
   const have = Object.keys(coords).length;
   console.log(`\n[vworld] 완료 — 신규 ${ok}곳`);
   console.log(`  기존 좌표 유지        ${skipped}곳`);
+  if (viaOpinetAddr) console.log(`  오피넷 주소로 구제     ${viaOpinetAddr}곳`);
+  if (viaStripped) console.log(`  읍·면 빼고 구제        ${viaStripped}곳`);
   console.log(`  주소를 못 찾음        ${notFound}곳`);
   console.log(`  지역 밖이라 기각      ${outside}곳`);
   console.log(`  조회 실패            ${failed}곳`);
