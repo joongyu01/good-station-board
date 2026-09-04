@@ -89,7 +89,15 @@ async function main() {
   console.log(`[pull] 수기 지정 주유소코드 ${Object.keys(manual).length}건, 수기 좌표 ${manualCoords}건`);
 
   // ── 임계값 ──────────────────────────────────────────────────────────
-  const cfg = await fetchConfig();
+  //
+  // 여기서 실패해도 뒤 단계를 죽이지 않는다. 한 번 그랬다가 스키마가 아직
+  // 갱신되지 않은 상태에서 설정 조회가 던지는 바람에, 뒤따르는 API 키 읽기가
+  // 통째로 건너뛰어졌다. 각 조각은 서로 독립적으로 실패해야 한다.
+  const cfg = await fetchConfig().catch((e) => {
+    console.warn(`[pull] 설정을 못 읽었습니다 — 코드 기본값을 씁니다. (${e instanceof Error ? e.message : e})`);
+    console.warn("  supabase/schema.sql 을 SQL Editor 에서 다시 실행해 보세요.");
+    return null;
+  });
   if (cfg) {
     writeFileSync(
       path.join(DATA, "thresholds.json"),
@@ -109,7 +117,10 @@ async function main() {
   // GitHub 시크릿이 아니라 Supabase 에서 온 값이라 로그에 자동 마스킹되지
   // 않으므로 add-mask 로 직접 가려준다.
   for (const name of ["OPINET_API_KEY", "VWORLD_API_KEY"]) {
-    const value = (await fetchSecret(name))?.trim();
+    const value = (await fetchSecret(name).catch((e) => {
+      console.warn(`[pull] ${name} 를 못 읽었습니다: ${e instanceof Error ? e.message : e}`);
+      return null;
+    }))?.trim();
     if (!value) {
       if (mode() === "service") console.log(`[pull] ${name} 미등록`);
       continue;

@@ -316,6 +316,10 @@ begin
 end;
 $$;
 
+-- 파라미터 이름이 바뀌면 create or replace 가 거부한다(42P13).
+-- 이전 버전(p_gap_yellow ...)이 남아 있으면 먼저 지운다. 없으면 아무 일도 없다.
+drop function if exists gs_config_save(text, integer, integer, integer);
+
 create or replace function gs_config_save(
   p_token          text,
   p_rank_green_metro   integer,
