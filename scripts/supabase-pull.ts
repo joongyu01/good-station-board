@@ -31,7 +31,67 @@ async function main() {
   }
   console.log(`[pull] 접속 방식: ${describeMode()}`);
 
-  // ── 명단 ────────────────────────────────────────────────────────────
+  // 명단·설정·키는 서로 독립이다. 한 조각이 실패했다고 뒤를 건너뛰면 안 된다.
+  // 예전에 설정 조회 실패가 API 키 읽기까지 통째로 삼킨 적이 있고, 명단 가드에
+  // return 을 쓰자 같은 일이 다시 벌어졌다.
+  await pullStations().catch((e) => {
+    console.warn(`[pull] 명단 처리 실패 — 저장소 파일을 그대로 씁니다. (${e instanceof Error ? e.message : e})`);
+  });
+
+  // ── 임계값 ──────────────────────────────────────────────────────────
+  //
+  // 여기서 실패해도 뒤 단계를 죽이지 않는다. 한 번 그랬다가 스키마가 아직
+  // 갱신되지 않은 상태에서 설정 조회가 던지는 바람에, 뒤따르는 API 키 읽기가
+  // 통째로 건너뛰어졌다. 각 조각은 서로 독립적으로 실패해야 한다.
+  const cfg = await fetchConfig().catch((e) => {
+    console.warn(`[pull] 설정을 못 읽었습니다 — 코드 기본값을 씁니다. (${e instanceof Error ? e.message : e})`);
+    console.warn("  supabase/schema.sql 을 SQL Editor 에서 다시 실행해 보세요.");
+    return null;
+  });
+  if (cfg) {
+    writeFileSync(
+      path.join(DATA, "thresholds.json"),
+      JSON.stringify({
+        rankGreenMetro: cfg.rank_green_metro,
+        rankGreenDefault: cfg.rank_green_default,
+        rankYellowFactor: cfg.rank_yellow_factor,
+      }, null, 2),
+      "utf8",
+    );
+    console.log(`[pull] 기준 — 서울·경기 ${cfg.rank_green_metro}위 / 그 외 ${cfg.rank_green_default}위 / 노랑 ${cfg.rank_yellow_factor}배`);
+  }
+
+  // ── 외부 API 키 ─────────────────────────────────────────────────────
+  //
+  // 관리 화면에서 등록한 키를 뒤따르는 단계가 쓸 수 있게 넘긴다.
+  // GitHub 시크릿이 아니라 Supabase 에서 온 값이라 로그에 자동 마스킹되지
+  // 않으므로 add-mask 로 직접 가려준다.
+  for (const name of ["OPINET_API_KEY", "VWORLD_API_KEY"]) {
+    const value = (await fetchSecret(name).catch((e) => {
+      console.warn(`[pull] ${name} 를 못 읽었습니다: ${e instanceof Error ? e.message : e}`);
+      return null;
+    }))?.trim();
+    if (!value) {
+      if (mode() === "service") console.log(`[pull] ${name} 미등록`);
+      continue;
+    }
+    if (process.env.GITHUB_ENV) {
+      console.log(`::add-mask::${value}`);
+      appendFileSync(process.env.GITHUB_ENV, `${name}=${value}\n`);
+      console.log(`[pull] ${name} 를 Supabase 에서 가져왔습니다.`);
+    } else {
+      console.log(`[pull] ${name} 가 Supabase 에 있습니다 (로컬에서는 환경변수로 직접 넣어주세요).`);
+    }
+  }
+}
+
+/**
+ * 명단을 내려받아 파일로 떨어뜨린다.
+ *
+ * 덮어쓰지 않고 넘어가는 경우가 둘 있다 — 비어 있을 때와, Supabase 쪽이
+ * 저장소보다 오래됐을 때다. 둘 다 저장소 파일이 기준이 된다.
+ */
+async function pullStations(): Promise<void> {
   const rows = await fetchStations();
   if (rows.length === 0) {
     console.warn("[pull] 명단이 비어 있습니다. 덮어쓰지 않고 기존 파일을 유지합니다.");
@@ -119,51 +179,6 @@ async function main() {
   console.log(`[pull] 명단 ${active.length}곳 (제외 ${rows.length - active.length}곳)`);
   console.log(`[pull] 수기 지정 주유소코드 ${Object.keys(manual).length}건, 수기 좌표 ${manualCoords}건`);
 
-  // ── 임계값 ──────────────────────────────────────────────────────────
-  //
-  // 여기서 실패해도 뒤 단계를 죽이지 않는다. 한 번 그랬다가 스키마가 아직
-  // 갱신되지 않은 상태에서 설정 조회가 던지는 바람에, 뒤따르는 API 키 읽기가
-  // 통째로 건너뛰어졌다. 각 조각은 서로 독립적으로 실패해야 한다.
-  const cfg = await fetchConfig().catch((e) => {
-    console.warn(`[pull] 설정을 못 읽었습니다 — 코드 기본값을 씁니다. (${e instanceof Error ? e.message : e})`);
-    console.warn("  supabase/schema.sql 을 SQL Editor 에서 다시 실행해 보세요.");
-    return null;
-  });
-  if (cfg) {
-    writeFileSync(
-      path.join(DATA, "thresholds.json"),
-      JSON.stringify({
-        rankGreenMetro: cfg.rank_green_metro,
-        rankGreenDefault: cfg.rank_green_default,
-        rankYellowFactor: cfg.rank_yellow_factor,
-      }, null, 2),
-      "utf8",
-    );
-    console.log(`[pull] 기준 — 서울·경기 ${cfg.rank_green_metro}위 / 그 외 ${cfg.rank_green_default}위 / 노랑 ${cfg.rank_yellow_factor}배`);
-  }
-
-  // ── 외부 API 키 ─────────────────────────────────────────────────────
-  //
-  // 관리 화면에서 등록한 키를 뒤따르는 단계가 쓸 수 있게 넘긴다.
-  // GitHub 시크릿이 아니라 Supabase 에서 온 값이라 로그에 자동 마스킹되지
-  // 않으므로 add-mask 로 직접 가려준다.
-  for (const name of ["OPINET_API_KEY", "VWORLD_API_KEY"]) {
-    const value = (await fetchSecret(name).catch((e) => {
-      console.warn(`[pull] ${name} 를 못 읽었습니다: ${e instanceof Error ? e.message : e}`);
-      return null;
-    }))?.trim();
-    if (!value) {
-      if (mode() === "service") console.log(`[pull] ${name} 미등록`);
-      continue;
-    }
-    if (process.env.GITHUB_ENV) {
-      console.log(`::add-mask::${value}`);
-      appendFileSync(process.env.GITHUB_ENV, `${name}=${value}\n`);
-      console.log(`[pull] ${name} 를 Supabase 에서 가져왔습니다.`);
-    } else {
-      console.log(`[pull] ${name} 가 Supabase 에 있습니다 (로컬에서는 환경변수로 직접 넣어주세요).`);
-    }
-  }
 }
 
 main().catch((e) => { console.error("[pull] 예외:", e); process.exit(1); });
