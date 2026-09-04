@@ -10,6 +10,11 @@ on:
         description: "수집할 기준일 (YYYYMMDD, 비우면 어제)"
         required: false
         type: string
+      skip_collect:
+        description: "수집 건너뛰고 배포만 (커밋된 데이터 사용)"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: collect
@@ -51,8 +56,13 @@ jobs:
 
       # 오피넷 다운로드 페이지는 NetFunnel 대기열을 통과해야 한다. 간헐적 실패가
       # 정상 범주라서 실패해도 워크플로를 죽이지 않고, 직전 커밋된 데이터를 유지한다.
+      # 코드만 바뀌었을 때는 수집을 건너뛴다. 가격은 하루 한 번이면 충분하고,
+      # NetFunnel 대기열이 길면 20분 넘게 잡혀 있기도 한다.
+      # 이 단계를 건너뛰면 뒤따르는 데이터 단계들도 자동으로 빠지고
+      # (outcome 이 'success' 가 아니게 된다) 빌드·배포만 돌아간다.
       - name: 전국 주유소 가격 수집
         id: collect
+        if: ${{ !inputs.skip_collect }}
         continue-on-error: true
         run: npm run collect ${{ inputs.date }}
 
@@ -99,8 +109,12 @@ jobs:
             git push
           fi
 
+      - name: 수집 건너뜀 안내
+        if: ${{ inputs.skip_collect }}
+        run: echo "::notice::수집을 건너뛰고 커밋된 데이터로 배포합니다."
+
       - name: 수집 실패 알림
-        if: steps.collect.outcome != 'success'
+        if: ${{ !inputs.skip_collect && steps.collect.outcome != 'success' }}
         run: |
           echo "::warning::오피넷 수집에 실패했습니다. 직전 데이터로 현황판이 유지됩니다."
 
