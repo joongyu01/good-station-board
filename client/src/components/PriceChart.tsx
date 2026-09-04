@@ -68,10 +68,12 @@ export default function PriceChart({ station, onClose }: Props) {
 
   const chart = useMemo(() => {
     if (!history || !series) return null;
+    // 아래 헬퍼들이 중첩 함수라 history 의 null 좁히기가 풀린다. 한 번 묶어 둔다.
+    const dates = history.dates;
 
     // 값이 하나라도 있는 구간만 그린다. 앞뒤로 빈 날짜가 길면 선이 구석에 몰린다.
     const idx: number[] = [];
-    for (let i = 0; i < history.dates.length; i++) {
+    for (let i = 0; i < dates.length; i++) {
       if (series.g[i] != null || series.d[i] != null || series.c[i] != null) idx.push(i);
     }
     if (idx.length === 0) return null;
@@ -100,40 +102,49 @@ export default function PriceChart({ station, onClose }: Props) {
     const yP = (v: number) => PAD.top + innerH - ((v - p0) / (p1 - p0)) * innerH;
     const yC = (v: number) => PAD.top + innerH - ((v - c0) / (c1 - c0)) * innerH;
 
-    /** null 이 섞인 계열을 끊어진 선분들로 만든다. 결측을 직선으로 이으면 거짓말이 된다. */
+    /**
+     * null 이 섞인 계열을 끊어진 선분들로 만든다.
+     *
+     * 값이 빈 날뿐 아니라 **날짜축 자체가 건너뛴 구간**에서도 끊는다. 아직 안
+     * 받아온 기간을 직선으로 이으면 그동안 가격이 그대로였던 것처럼 보인다.
+     * 실제로 7/12 다음이 9/2 인 상태에서 두 점을 이었더니 7주 내내 평평한
+     * 그래프가 나왔다.
+     */
     function line(values: (number | null)[], y: (v: number) => number): string[] {
       const segs: string[] = [];
       let cur: string[] = [];
+      const flush = () => { if (cur.length > 1) segs.push(cur.join(" ")); cur = []; };
+
       idx.forEach((i, k) => {
         const v = values[i];
-        if (v == null) {
-          if (cur.length > 1) segs.push(cur.join(" "));
-          cur = [];
-          return;
-        }
+        if (v == null) { flush(); return; }
+        if (k > 0 && gapDays(dates[idx[k - 1]], dates[i]) > 1) flush();
         cur.push(`${cur.length ? "L" : "M"}${x(k).toFixed(1)},${y(v).toFixed(1)}`);
       });
-      if (cur.length > 1) segs.push(cur.join(" "));
+      flush();
       return segs;
     }
 
-    /** 선이 하나뿐인 점은 path 로 안 보인다. 점으로 따로 찍는다. */
+    /** 앞뒤가 모두 끊긴 외톨이 점은 선으로 안 보인다. 점으로 따로 찍는다. */
     function dots(values: (number | null)[], y: (v: number) => number) {
       const out: Array<{ x: number; y: number }> = [];
+      const linked = (a: number, b: number) =>
+        values[idx[a]] != null && values[idx[b]] != null
+        && gapDays(dates[idx[a]], dates[idx[b]]) <= 1;
       idx.forEach((i, k) => {
-        const v = values[i];
-        if (v == null) return;
-        const prev = k > 0 ? values[idx[k - 1]] : null;
-        const next = k < idx.length - 1 ? values[idx[k + 1]] : null;
-        if (prev == null && next == null) out.push({ x: x(k), y: y(v) });
+        if (values[i] == null) return;
+        const back = k > 0 && linked(k - 1, k);
+        const fwd = k < idx.length - 1 && linked(k, k + 1);
+        if (!back && !fwd) out.push({ x: x(k), y: y(v0(values[i])) });
       });
       return out;
+      function v0(v: number | null) { return v as number; }
     }
 
     // x축 눈금 — 6개 안팎으로 솎는다. 65일치 날짜를 다 쓰면 글자가 겹친다.
     const step = Math.max(1, Math.ceil(idx.length / 6));
     const ticks = idx
-      .map((i, k) => ({ k, date: history.dates[i] }))
+      .map((i, k) => ({ k, date: dates[i] }))
       .filter(({ k }) => k % step === 0 || k === idx.length - 1);
 
     const priceTicks = niceTicks(p0, p1, 4);
@@ -148,7 +159,7 @@ export default function PriceChart({ station, onClose }: Props) {
       ticks, priceTicks, coefTicks,
       cutoffY: c0 <= 1 && 1 <= c1 ? yC(1) : null,
       innerW, innerH,
-      from: history.dates[idx[0]], to: history.dates[last],
+      from: dates[idx[0]], to: dates[last],
       latest: { g: series.g[last], d: series.d[last], c: series.c[last] },
     };
   }, [history, series]);
@@ -274,6 +285,13 @@ function niceTicks(lo: number, hi: number, count: number): number[] {
     out.push(Math.round(v * 1000) / 1000);
   }
   return out;
+}
+
+/** 두 YYYYMMDD 사이의 일수. 1이면 바로 다음 날이다. */
+function gapDays(a: string, b: string): number {
+  const at = Date.UTC(+a.slice(0, 4), +a.slice(4, 6) - 1, +a.slice(6, 8));
+  const bt = Date.UTC(+b.slice(0, 4), +b.slice(4, 6) - 1, +b.slice(6, 8));
+  return Math.round((bt - at) / 86_400_000);
 }
 
 function fmtDate(d: string): string {
