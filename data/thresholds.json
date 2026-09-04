@@ -1,5 +1,5 @@
 {
-  "gapYellow": 20,
-  "minSample": 5,
-  "minCompare": 2
+  "rankGreenMetro": 10,
+  "rankGreenDefault": 5,
+  "rankYellowFactor": 2
 }
