@@ -8,9 +8,9 @@
     "sigunguDetail": "철원군",
     "regionKey": "강원|철원군",
     "stationId": "A0004302",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
     "seq": 2,
@@ -21,9 +21,9 @@
     "sigunguDetail": "원주시",
     "regionKey": "강원|원주시",
     "stationId": "A0010871",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
     "seq": 3,
@@ -34,9 +34,9 @@
     "sigunguDetail": "강릉시",
     "regionKey": "강원|강릉시",
     "stationId": "A0011351",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
     "seq": 4,
@@ -47,9 +47,9 @@
     "sigunguDetail": "속초시",
     "regionKey": "강원|속초시",
     "stationId": "A0011705",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
     "seq": 5,
@@ -60,9 +60,9 @@
     "sigunguDetail": "속초시",
     "regionKey": "강원|속초시",
     "stationId": "A0011618",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
     "seq": 6,
@@ -73,25 +73,12 @@
     "sigunguDetail": "구리시",
     "regionKey": "경기|구리시",
     "stationId": "A0006625",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
     "seq": 7,
-    "name": "풍산에너지(주)",
-    "address": "경기 김포시 풍무로 164",
-    "sido": "경기",
-    "sigungu": "김포시",
-    "sigunguDetail": "김포시",
-    "regionKey": "경기|김포시",
-    "stationId": "A0007581",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 8,
     "name": "양운개발 구도일주유소 에듀시티",
     "address": "경기도 오산시 수목원로 371",
     "sido": "경기",
@@ -99,25 +86,25 @@
     "sigunguDetail": "오산시",
     "regionKey": "경기|오산시",
     "stationId": "A0033799",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 9,
+    "seq": 8,
     "name": "㈜정도인더스트리",
     "address": "경기 안산시 단원구 정왕대로 424",
     "sido": "경기",
     "sigungu": "안산시",
-    "sigunguDetail": "안산시 단원구",
+    "sigunguDetail": "안산시",
     "regionKey": "경기|안산시",
     "stationId": "A0006996",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 10,
+    "seq": 9,
     "name": "서울석유(주) 호평첨단주유소",
     "address": "경기 남양주시 늘을1로 161",
     "sido": "경기",
@@ -125,25 +112,25 @@
     "sigunguDetail": "남양주시",
     "regionKey": "경기|남양주시",
     "stationId": "A0006505",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 11,
+    "seq": 10,
     "name": "(주)나눔에너지",
     "address": "경기 수원시 영통구 영통로 171",
     "sido": "경기",
     "sigungu": "수원시",
-    "sigunguDetail": "수원시 영통구",
+    "sigunguDetail": "수원시",
     "regionKey": "경기|수원시",
     "stationId": "A0007548",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 12,
+    "seq": 11,
     "name": "서울석유㈜ 진위산단주유소",
     "address": "경기 평택시 진위면 삼남로 712",
     "sido": "경기",
@@ -151,12 +138,12 @@
     "sigunguDetail": "평택시",
     "regionKey": "경기|평택시",
     "stationId": "A0008147",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 13,
+    "seq": 12,
     "name": "교문주유소",
     "address": "경기 구리시 아차산로 436 (교문동)",
     "sido": "경기",
@@ -164,12 +151,12 @@
     "sigunguDetail": "구리시",
     "regionKey": "경기|구리시",
     "stationId": "A0006308",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 14,
+    "seq": 13,
     "name": "옥종농협주유소 북천지점",
     "address": "경남 하동군 북천면 가리골길 4",
     "sido": "경남",
@@ -177,12 +164,12 @@
     "sigunguDetail": "하동군",
     "regionKey": "경남|하동군",
     "stationId": "A0033685",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 15,
+    "seq": 14,
     "name": "옥종농협주유소",
     "address": "경남 하동군 옥종면 주포중앙길 28",
     "sido": "경남",
@@ -190,64 +177,64 @@
     "sigunguDetail": "하동군",
     "regionKey": "경남|하동군",
     "stationId": "A0030232",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차"
+  },
+  {
+    "seq": 15,
+    "name": "새천년주유소",
+    "address": "경남 창원시 마산합포구 진동면 남해안",
+    "sido": "경남",
+    "sigungu": "창원시",
+    "sigunguDetail": "창원시",
+    "regionKey": "경남|창원시",
+    "stationId": "A0027923",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
     "seq": 16,
-    "name": "새천년주유소",
-    "address": "경남 창원시 마산합포구 진동면 남해안대로5422",
+    "name": "태진주유소",
+    "address": "경남 창원시 마산합포구 진전면 남해안",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산합포구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
-    "stationId": "A0027923",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "stationId": "A0028300",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
     "seq": 17,
-    "name": "태진주유소",
-    "address": "경남 창원시 마산합포구 진전면 남해안대로4434",
-    "sido": "경남",
-    "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산합포구",
-    "regionKey": "경남|창원시",
-    "stationId": "A0028300",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 18,
     "name": "북마산주유소",
     "address": "경남 창원시 마산회원구 무학로 617",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산회원구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028338",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 19,
+    "seq": 18,
     "name": "해뜨는주유소",
     "address": "경북 포항시 북구 용흥로 288 (용흥동)",
     "sido": "경북",
     "sigungu": "포항시",
-    "sigunguDetail": "포항시 북구",
+    "sigunguDetail": "포항시",
     "regionKey": "경북|포항시",
     "stationId": "A0024502",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 20,
+    "seq": 19,
     "name": "비산이룸주유소",
     "address": "경북 구미시 낙동강변로 735 (비산동)",
     "sido": "경북",
@@ -255,12 +242,12 @@
     "sigunguDetail": "구미시",
     "regionKey": "경북|구미시",
     "stationId": "A0026259",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 21,
+    "seq": 20,
     "name": "광평세종주유소",
     "address": "경상북도 구미시 박정희로 359 (광평동)",
     "sido": "경북",
@@ -268,12 +255,12 @@
     "sigunguDetail": "구미시",
     "regionKey": "경북|구미시",
     "stationId": "A0025986",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 22,
+    "seq": 21,
     "name": "행운주유소",
     "address": "경북 김천시 영남대로 1500 (부곡동)",
     "sido": "경북",
@@ -281,38 +268,25 @@
     "sigunguDetail": "김천시",
     "regionKey": "경북|김천시",
     "stationId": "A0025416",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 23,
+    "seq": 22,
     "name": "김가네주유소",
-    "address": "경상북도 구미시 인동가산로 453",
+    "address": "경상북도 구미시 인동가산로 453 (인동",
     "sido": "경북",
     "sigungu": "구미시",
     "sigunguDetail": "구미시",
     "regionKey": "경북|구미시",
     "stationId": "A0026308",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 24,
-    "name": "두암주유소",
-    "address": "광주 북구 군왕로 103 (두암동)",
-    "sido": "전남광주",
-    "sigungu": "북구",
-    "sigunguDetail": "북구",
-    "regionKey": "전남광주|북구",
-    "stationId": null,
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 25,
+    "seq": 23,
     "name": "자모셀프주유소",
     "address": "광주 북구 우치로 7",
     "sido": "전남광주",
@@ -320,12 +294,13 @@
     "sigunguDetail": "북구",
     "regionKey": "전남광주|북구",
     "stationId": "A0019951",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차",
+    "anomaly": "광주"
   },
   {
-    "seq": 26,
+    "seq": 24,
     "name": "전송주유소",
     "address": "광주 광산구 어등대로 583",
     "sido": "전남광주",
@@ -333,12 +308,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020477",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차",
+    "anomaly": "광주"
   },
   {
-    "seq": 27,
+    "seq": 25,
     "name": "(주)평동제일주유소",
     "address": "광주 광산구 동곡로 552 (장록동)",
     "sido": "전남광주",
@@ -346,12 +322,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020705",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "1차",
+    "anomaly": "광주"
   },
   {
-    "seq": 28,
+    "seq": 26,
     "name": "㈜더착한주유소",
     "address": "광주 광산구 동곡로 72 (본덕동)",
     "sido": "전남광주",
@@ -359,12 +336,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020238",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차",
+    "anomaly": "광주"
   },
   {
-    "seq": 29,
+    "seq": 27,
     "name": "평리동양주유소",
     "address": "대구 서구 북비산로 241 (평리동)",
     "sido": "대구",
@@ -372,12 +350,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023245",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 30,
+    "seq": 28,
     "name": "버디클럽오일뱅크",
     "address": "대구 수성구 무학로 12 (상동)",
     "sido": "대구",
@@ -385,25 +363,12 @@
     "sigunguDetail": "수성구",
     "regionKey": "대구|수성구",
     "stationId": "A0023001",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 31,
-    "name": "한일주유소",
-    "address": "대구 수성구 청수로 162 (지산동)",
-    "sido": "대구",
-    "sigungu": "수성구",
-    "sigunguDetail": "수성구",
-    "regionKey": "대구|수성구",
-    "stationId": "A0022762",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 32,
+    "seq": 29,
     "name": "옥포고속주유소",
     "address": "대구 달성군 비슬로 2190",
     "sido": "대구",
@@ -411,12 +376,12 @@
     "sigunguDetail": "달성군",
     "regionKey": "대구|달성군",
     "stationId": "A0023236",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 33,
+    "seq": 30,
     "name": "수성현대셀프주유소",
     "address": "대구 수성구 동대구로 74 (지산동)",
     "sido": "대구",
@@ -424,12 +389,12 @@
     "sigunguDetail": "수성구",
     "regionKey": "대구|수성구",
     "stationId": "A0022980",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 34,
+    "seq": 31,
     "name": "(주)황제주유소",
     "address": "대전 유성구 대덕대로 934 (화암동)",
     "sido": "대전",
@@ -437,12 +402,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0017444",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 35,
+    "seq": 32,
     "name": "오정동SM셀프주유소",
     "address": "대전 대덕구 오정로 123 (오정동)",
     "sido": "대전",
@@ -450,25 +415,12 @@
     "sigunguDetail": "대덕구",
     "regionKey": "대전|대덕구",
     "stationId": "A0013609",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 36,
-    "name": "㈜대성바이오",
-    "address": "대전 대덕구 한밭대로 1180",
-    "sido": "대전",
-    "sigungu": "대덕구",
-    "sigunguDetail": "대덕구",
-    "regionKey": "대전|대덕구",
-    "stationId": "A0017446",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 37,
+    "seq": 33,
     "name": "중도석유(주) 대덕주유소",
     "address": "대전 서구 월평북로 84 (월평동)",
     "sido": "대전",
@@ -476,12 +428,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0016791",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 38,
+    "seq": 34,
     "name": "(주)하나주유소",
     "address": "대전 유성구 유성대로 1127 (하기동)",
     "sido": "대전",
@@ -489,12 +441,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0016874",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 39,
+    "seq": 35,
     "name": "광신석유(주)직영 가야대로주유소",
     "address": "부산 사상구 가야대로 395",
     "sido": "부산",
@@ -502,12 +454,12 @@
     "sigunguDetail": "사상구",
     "regionKey": "부산|사상구",
     "stationId": "A0027641",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 40,
+    "seq": 36,
     "name": "제일주유소",
     "address": "부산 강서구 가락대로 1417",
     "sido": "부산",
@@ -515,12 +467,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "부산|강서구",
     "stationId": "A0027480",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 41,
+    "seq": 37,
     "name": "금룡주유소",
     "address": "부산 강서구 가락대로 1361 (봉림동)",
     "sido": "부산",
@@ -528,12 +480,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "부산|강서구",
     "stationId": "A0032126",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 42,
+    "seq": 38,
     "name": "상계동주유소",
     "address": "서울 노원구 노원로26길 191 (상계동)",
     "sido": "서울",
@@ -541,12 +493,12 @@
     "sigunguDetail": "노원구",
     "regionKey": "서울|노원구",
     "stationId": "A0010124",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 43,
+    "seq": 39,
     "name": "(주)아이에스피에너지(서울서부고속주유소)",
     "address": "서울 은평구 응암로 163",
     "sido": "서울",
@@ -554,12 +506,12 @@
     "sigunguDetail": "은평구",
     "regionKey": "서울|은평구",
     "stationId": "A0005900",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 44,
+    "seq": 40,
     "name": "(주)한미석유구로그린주유소",
     "address": "서울 구로구 구로중앙로 76 (구로동)",
     "sido": "서울",
@@ -567,12 +519,12 @@
     "sigunguDetail": "구로구",
     "regionKey": "서울|구로구",
     "stationId": "A0000849",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 45,
+    "seq": 41,
     "name": "서일석유(주)락성주유소",
     "address": "서울 관악구 남부순환로 1920 (봉천동)",
     "sido": "서울",
@@ -580,12 +532,12 @@
     "sigunguDetail": "관악구",
     "regionKey": "서울|관악구",
     "stationId": "A0001155",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 46,
+    "seq": 42,
     "name": "(주)타이거오일 방화주유소",
     "address": "서울 강서구 방화동로 58-2",
     "sido": "서울",
@@ -593,12 +545,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0000491",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 47,
+    "seq": 43,
     "name": "한이에너지(주) 쌍문주유소",
     "address": "서울 도봉구 도봉로 547 (쌍문동)",
     "sido": "서울",
@@ -606,12 +558,12 @@
     "sigunguDetail": "도봉구",
     "regionKey": "서울|도봉구",
     "stationId": "A0032674",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 48,
+    "seq": 44,
     "name": "마포시엠주유소",
     "address": "서울 마포구 월드컵북로 62",
     "sido": "서울",
@@ -619,12 +571,12 @@
     "sigunguDetail": "마포구",
     "regionKey": "서울|마포구",
     "stationId": "A0000146",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 49,
+    "seq": 45,
     "name": "개화주유소",
     "address": "서울 강서구 양천로 57",
     "sido": "서울",
@@ -632,12 +584,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0000480",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 50,
+    "seq": 46,
     "name": "구도일주유소 파크빌",
     "address": "서울 도봉구 해등로3길 86 (창동)",
     "sido": "서울",
@@ -645,12 +597,12 @@
     "sigunguDetail": "도봉구",
     "regionKey": "서울|도봉구",
     "stationId": "A0000074",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 51,
+    "seq": 47,
     "name": "우리주유소",
     "address": "서울 성북구 화랑로 292",
     "sido": "서울",
@@ -658,12 +610,12 @@
     "sigunguDetail": "성북구",
     "regionKey": "서울|성북구",
     "stationId": "A0009490",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 52,
+    "seq": 48,
     "name": "(주)강서오일",
     "address": "서울 영등포구 도신로 151",
     "sido": "서울",
@@ -671,12 +623,12 @@
     "sigunguDetail": "영등포구",
     "regionKey": "서울|영등포구",
     "stationId": "A0000421",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 53,
+    "seq": 49,
     "name": "㈜진성 가람Self주유소",
     "address": "세종특별자치시 금송로 589",
     "sido": "세종",
@@ -684,12 +636,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033459",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 54,
+    "seq": 50,
     "name": "새롬주유소",
     "address": "세종시 어울로 77 (새롬동)",
     "sido": "세종",
@@ -697,12 +649,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014391",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 55,
+    "seq": 51,
     "name": "세종반곡주유소",
     "address": "세종특별자치시 국책연구원3로 9",
     "sido": "세종",
@@ -710,12 +662,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033469",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 56,
+    "seq": 52,
     "name": "아주알뜰주유소 ㈜아주",
     "address": "세종특별자치시 다정북로 40",
     "sido": "세종",
@@ -723,12 +675,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033332",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 57,
+    "seq": 53,
     "name": "도담알뜰주유소",
     "address": "세종 갈매로 596",
     "sido": "세종",
@@ -736,12 +688,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033200",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 58,
+    "seq": 54,
     "name": "구도일주유소 워싱데이",
     "address": "울산 울주군 범서읍 구영로 240",
     "sido": "울산",
@@ -749,12 +701,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0012069",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 59,
+    "seq": 55,
     "name": "남주유소",
     "address": "울산 울주군 삼남면 중남로 100",
     "sido": "울산",
@@ -762,12 +714,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031650",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 60,
+    "seq": 56,
     "name": "통도IC주유소",
     "address": "울산 울주군 삼남면 반구대로 38",
     "sido": "울산",
@@ -775,12 +727,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031489",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 61,
+    "seq": 57,
     "name": "방기주유소",
     "address": "울산 울주군 삼남면 하방로 26",
     "sido": "울산",
@@ -788,12 +740,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031636",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 62,
+    "seq": 58,
     "name": "성산주유소",
     "address": "울산 울주군 범서읍 관문로 600",
     "sido": "울산",
@@ -801,12 +753,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031655",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 63,
+    "seq": 59,
     "name": "㈜이림 삼남지점",
     "address": "울산 울주군 삼남면 반구대로 640",
     "sido": "울산",
@@ -814,12 +766,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031633",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 64,
+    "seq": 60,
     "name": "인천주유소",
     "address": "인천 미추홀구 인주대로 286 (주안동)",
     "sido": "인천",
@@ -827,12 +779,12 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0001442",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 65,
+    "seq": 61,
     "name": "가좌금강주유소",
     "address": "인천 서구 장고개로 233 (가좌동)",
     "sido": "인천",
@@ -840,12 +792,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0007649",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 66,
+    "seq": 62,
     "name": "(주)서해에너지",
     "address": "인천 연수구 경원대로 536",
     "sido": "인천",
@@ -853,12 +805,12 @@
     "sigunguDetail": "연수구",
     "regionKey": "인천|연수구",
     "stationId": "A0006295",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 67,
+    "seq": 63,
     "name": "청라에너지",
     "address": "인천 서구 봉수대로 690 (연희동)",
     "sido": "인천",
@@ -866,64 +818,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0032936",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 68,
-    "name": "SK행복충전 ㈜영우 동광양주유소",
-    "address": "전남 광양시 강변로 98 (광영동)",
-    "sido": "전남광주",
-    "sigungu": "광양시",
-    "sigunguDetail": "광양시",
-    "regionKey": "전남광주|광양시",
-    "stationId": "A0022111",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 69,
-    "name": "(유) 삼일인",
-    "address": "전남 여수시 여수산단로 547 (중흥동)",
-    "sido": "전남광주",
-    "sigungu": "여수시",
-    "sigunguDetail": "여수시",
-    "regionKey": "전남광주|여수시",
-    "stationId": "A0022481",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 70,
-    "name": "(주)장성보해주유소",
-    "address": "전남 장성군 장성읍 단풍로 111",
-    "sido": "전남광주",
-    "sigungu": "장성군",
-    "sigunguDetail": "장성군",
-    "regionKey": "전남광주|장성군",
-    "stationId": "A0019958",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 71,
-    "name": "남선석유㈜ 서순천셀프주유소",
-    "address": "전남 순천시 중앙로 511",
-    "sido": "전남광주",
-    "sigungu": "순천시",
-    "sigunguDetail": "순천시",
-    "regionKey": "전남광주|순천시",
-    "stationId": "A0021966",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 72,
+    "seq": 64,
     "name": "거금도농협주유소",
     "address": "전남 고흥군 금산면 거금중앙길 117",
     "sido": "전남광주",
@@ -931,12 +831,55 @@
     "sigunguDetail": "고흥군",
     "regionKey": "전남광주|고흥군",
     "stationId": "A0033145",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차",
+    "anomaly": "전남"
   },
   {
-    "seq": 73,
+    "seq": 65,
+    "name": "(유) 삼일인",
+    "address": "전남 여수시 여수산단로 547 (중흥동)",
+    "sido": "전남광주",
+    "sigungu": "여수시",
+    "sigunguDetail": "여수시",
+    "regionKey": "전남광주|여수시",
+    "stationId": "A0022481",
+    "brand": "GS",
+    "isSelf": false,
+    "round": "1차",
+    "anomaly": "전남"
+  },
+  {
+    "seq": 66,
+    "name": "(주)장성보해주유소",
+    "address": "전남 장성군 장성읍 단풍로 111",
+    "sido": "전남광주",
+    "sigungu": "장성군",
+    "sigunguDetail": "장성군",
+    "regionKey": "전남광주|장성군",
+    "stationId": "A0019958",
+    "brand": "SK",
+    "isSelf": false,
+    "round": "1차",
+    "anomaly": "전남"
+  },
+  {
+    "seq": 67,
+    "name": "남선석유㈜ 서순천셀프주유소",
+    "address": "전남 순천시 중앙로 511",
+    "sido": "전남광주",
+    "sigungu": "순천시",
+    "sigunguDetail": "순천시",
+    "regionKey": "전남광주|순천시",
+    "stationId": "A0021966",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차",
+    "anomaly": "전남"
+  },
+  {
+    "seq": 68,
     "name": "서원주유소",
     "address": "전북 군산시 옥녀로 18",
     "sido": "전북",
@@ -944,12 +887,12 @@
     "sigunguDetail": "군산시",
     "regionKey": "전북|군산시",
     "stationId": "A0018496",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 74,
+    "seq": 69,
     "name": "에스제이오일㈜ 에스제이주유소",
     "address": "전북 군산시 해망로 252",
     "sido": "전북",
@@ -957,12 +900,12 @@
     "sigunguDetail": "군산시",
     "regionKey": "전북|군산시",
     "stationId": "A0017497",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 75,
+    "seq": 70,
     "name": "유쾌한주유소",
     "address": "전북 군산시 구암로 97 (구암동)",
     "sido": "전북",
@@ -970,12 +913,12 @@
     "sigunguDetail": "군산시",
     "regionKey": "전북|군산시",
     "stationId": "A0017519",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 76,
+    "seq": 71,
     "name": "미소주유소",
     "address": "전북 군산시 대학로 618",
     "sido": "전북",
@@ -983,12 +926,12 @@
     "sigunguDetail": "군산시",
     "regionKey": "전북|군산시",
     "stationId": "A0017509",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 77,
+    "seq": 72,
     "name": "SJ오일(주) 스마일주유소",
     "address": "전북 군산시 공단대로 284 (수송동)",
     "sido": "전북",
@@ -996,12 +939,12 @@
     "sigunguDetail": "군산시",
     "regionKey": "전북|군산시",
     "stationId": "A0017627",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 78,
+    "seq": 73,
     "name": "주천삼거리 주유소",
     "address": "전북 정읍시 소성로 639",
     "sido": "전북",
@@ -1009,12 +952,12 @@
     "sigunguDetail": "정읍시",
     "regionKey": "전북|정읍시",
     "stationId": "A0018737",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 79,
+    "seq": 74,
     "name": "지에스칼텍스㈜ 연세주유소",
     "address": "전북 익산시 부송로 33",
     "sido": "전북",
@@ -1022,25 +965,25 @@
     "sigunguDetail": "익산시",
     "regionKey": "전북|익산시",
     "stationId": "A0022488",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 80,
+    "seq": 75,
     "name": "구좌농협주유소",
-    "address": "제주특별자치도 제주시 구좌읍 일주동로3190",
+    "address": "제주특별자치도 제주시 구좌읍 일주동로",
     "sido": "제주",
     "sigungu": "제주시",
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0031123",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 81,
+    "seq": 76,
     "name": "고산주유소",
     "address": "제주 제주시 한경면 고산로 5",
     "sido": "제주",
@@ -1048,12 +991,12 @@
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0030868",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 82,
+    "seq": 77,
     "name": "대정농협무릉주유소",
     "address": "제주 서귀포시 대정읍 서삼중로 66",
     "sido": "제주",
@@ -1061,12 +1004,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031125",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 83,
+    "seq": 78,
     "name": "대정농협주유소",
     "address": "제주 서귀포시 대정읍 상모대서로 55",
     "sido": "제주",
@@ -1074,12 +1017,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031107",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 84,
+    "seq": 79,
     "name": "모슬포행운주유소",
     "address": "제주 서귀포시 대정읍 일주서로 2419",
     "sido": "제주",
@@ -1087,25 +1030,25 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031011",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 85,
+    "seq": 80,
     "name": "산방주유소",
-    "address": "제주특별자치도 서귀포시 대정읍 신영로34",
+    "address": "제주특별자치도 서귀포시 대정읍 신영로",
     "sido": "제주",
     "sigungu": "서귀포시",
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0030821",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 86,
+    "seq": 81,
     "name": "중앙주유소",
     "address": "제주 제주시 구좌읍 구좌로 74",
     "sido": "제주",
@@ -1113,12 +1056,12 @@
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0030982",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 87,
+    "seq": 82,
     "name": "용정self주유소",
     "address": "충남 부여군 부여읍 백제문화로 136",
     "sido": "충남",
@@ -1126,25 +1069,25 @@
     "sigunguDetail": "부여군",
     "regionKey": "충남|부여군",
     "stationId": "A0014667",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 88,
+    "seq": 83,
     "name": "서천안 ㈜오일컴퍼니",
     "address": "충남 천안시 동남구 풍세로 689",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0015959",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 89,
+    "seq": 84,
     "name": "천지주유소",
     "address": "충남 공주시 정안면 차령로 3270",
     "sido": "충남",
@@ -1152,25 +1095,25 @@
     "sigunguDetail": "공주시",
     "regionKey": "충남|공주시",
     "stationId": "A0014318",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "1차"
   },
   {
-    "seq": 90,
+    "seq": 85,
     "name": "대원주유소",
-    "address": "충남 천안시 동남구 충절로 261",
+    "address": "충남 천안시 동남구 충절로 261 (구성동",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0001186",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 91,
+    "seq": 86,
     "name": "중도석유(주)중도행복주유소",
     "address": "충남 아산시 배방읍 고속철대로 171",
     "sido": "충남",
@@ -1178,12 +1121,12 @@
     "sigunguDetail": "아산시",
     "regionKey": "충남|아산시",
     "stationId": "A0016217",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 92,
+    "seq": 87,
     "name": "하이테크에너지(주)단양하이테크주유소",
     "address": "충북 단양군 매포읍 단양로 2727",
     "sido": "충북",
@@ -1191,12 +1134,12 @@
     "sigunguDetail": "단양군",
     "regionKey": "충북|단양군",
     "stationId": "A0016454",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 93,
+    "seq": 88,
     "name": "단양사랑주유소",
     "address": "충북 단양군 매포읍 단양로 2478",
     "sido": "충북",
@@ -1204,25 +1147,25 @@
     "sigunguDetail": "단양군",
     "regionKey": "충북|단양군",
     "stationId": "A0023201",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 94,
+    "seq": 89,
     "name": "동찬주유소",
     "address": "충북 청주시 흥덕구 오송읍 서평길 22-1",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 흥덕구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0017260",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 95,
+    "seq": 90,
     "name": "신동주유소",
     "address": "충북 제천시 내토로 134",
     "sido": "충북",
@@ -1230,12 +1173,12 @@
     "sigunguDetail": "제천시",
     "regionKey": "충북|제천시",
     "stationId": "A0013440",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "1차"
   },
   {
-    "seq": 96,
+    "seq": 91,
     "name": "대현주유소",
     "address": "강원 화천군 화천읍 평화로 117",
     "sido": "강원",
@@ -1243,12 +1186,12 @@
     "sigunguDetail": "화천군",
     "regionKey": "강원|화천군",
     "stationId": "A0010404",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 97,
+    "seq": 92,
     "name": "광탄셀프주유소",
     "address": "경기 파주시 광탄면 혜음로 1178",
     "sido": "경기",
@@ -1256,25 +1199,12 @@
     "sigunguDetail": "파주시",
     "regionKey": "경기|파주시",
     "stationId": "A0005090",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 98,
-    "name": "구도일 새한주유소",
-    "address": "경기 수원시 장안구 서부로 2348",
-    "sido": "경기",
-    "sigungu": "수원시",
-    "sigunguDetail": "수원시 장안구",
-    "regionKey": "경기|수원시",
-    "stationId": "A0007367",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 99,
+    "seq": 93,
     "name": "코리아주유소",
     "address": "경기 여주시 대신면 여양로 2012",
     "sido": "경기",
@@ -1282,12 +1212,12 @@
     "sigunguDetail": "여주시",
     "regionKey": "경기|여주시",
     "stationId": "A0003754",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 100,
+    "seq": 94,
     "name": "㈜두한 동안성주유소",
     "address": "경기 안성시 삼죽면 서동대로 6034",
     "sido": "경기",
@@ -1295,12 +1225,12 @@
     "sigunguDetail": "안성시",
     "regionKey": "경기|안성시",
     "stationId": "A0003386",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 101,
+    "seq": 95,
     "name": "대신석유(주)당리주유소",
     "address": "경기 군포시 용호1로1번길 16 (당동)",
     "sido": "경기",
@@ -1308,12 +1238,12 @@
     "sigunguDetail": "군포시",
     "regionKey": "경기|군포시",
     "stationId": "A0001977",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 102,
+    "seq": 96,
     "name": "금강주유소",
     "address": "경기 양주시 부흥로 1643",
     "sido": "경기",
@@ -1321,25 +1251,25 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0004251",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 103,
+    "seq": 97,
     "name": "구장주유소",
-    "address": "경기 화성시 만세구 팔탄면 푸른들판로639",
+    "address": "경기 화성시 만세구 팔탄면 푸른들판로",
     "sido": "경기",
     "sigungu": "화성시",
-    "sigunguDetail": "화성시 만세구",
+    "sigunguDetail": "화성시",
     "regionKey": "경기|화성시",
     "stationId": "A0002242",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 104,
+    "seq": 98,
     "name": "HD현대오일뱅크㈜직영 통영주유소",
     "address": "경남 통영시 안개로 22 (무전동)",
     "sido": "경남",
@@ -1347,12 +1277,12 @@
     "sigunguDetail": "통영시",
     "regionKey": "경남|통영시",
     "stationId": "A0029651",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 105,
+    "seq": 99,
     "name": "해금강주유소",
     "address": "경남 거제시 동부면 거제중앙로 659",
     "sido": "경남",
@@ -1360,12 +1290,12 @@
     "sigunguDetail": "거제시",
     "regionKey": "경남|거제시",
     "stationId": "A0029592",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 106,
+    "seq": 100,
     "name": "대양주유소",
     "address": "경남 진주시 망경로 272 (망경동)",
     "sido": "경남",
@@ -1373,12 +1303,12 @@
     "sigunguDetail": "진주시",
     "regionKey": "경남|진주시",
     "stationId": "A0029745",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 107,
+    "seq": 101,
     "name": "동산주유소",
     "address": "경남 합천군 초계면 동부로 1045",
     "sido": "경남",
@@ -1386,25 +1316,12 @@
     "sigunguDetail": "합천군",
     "regionKey": "경남|합천군",
     "stationId": "A0029290",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 108,
-    "name": "(주)미광에너지",
-    "address": "경북 포항시 남구 오천읍 냉천로 544",
-    "sido": "경북",
-    "sigungu": "포항시",
-    "sigunguDetail": "포항시 남구",
-    "regionKey": "경북|포항시",
-    "stationId": "A0024666",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 109,
+    "seq": 102,
     "name": "부래주유소",
     "address": "경북 봉화군 석포면 청옥로 1762",
     "sido": "경북",
@@ -1412,25 +1329,25 @@
     "sigunguDetail": "봉화군",
     "regionKey": "경북|봉화군",
     "stationId": "A0025824",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 110,
+    "seq": 103,
     "name": "용산주유소",
     "address": "경북 포항시 남구 오천읍 정몽주로 189",
     "sido": "경북",
     "sigungu": "포항시",
-    "sigunguDetail": "포항시 남구",
+    "sigunguDetail": "포항시",
     "regionKey": "경북|포항시",
     "stationId": "A0024643",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 111,
+    "seq": 104,
     "name": "송촌주유소",
     "address": "광주 광산구 동곡로 656",
     "sido": "전남광주",
@@ -1438,12 +1355,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020427",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "광주"
   },
   {
-    "seq": 112,
+    "seq": 105,
     "name": "진영주유소",
     "address": "광주 광산구 송도로 292 (송정동)",
     "sido": "전남광주",
@@ -1451,12 +1369,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020262",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "광주"
   },
   {
-    "seq": 113,
+    "seq": 106,
     "name": "하남현대주유소(H)",
     "address": "광주 광산구 임곡로 573 (안청동)",
     "sido": "전남광주",
@@ -1464,12 +1383,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020130",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "광주"
   },
   {
-    "seq": 114,
+    "seq": 107,
     "name": "동부주유소",
     "address": "대구광역시 군위군 군위읍 군청로 15",
     "sido": "대구",
@@ -1477,12 +1397,12 @@
     "sigunguDetail": "군위군",
     "regionKey": "대구|군위군",
     "stationId": "A0024943",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 115,
+    "seq": 108,
     "name": "이화주유소",
     "address": "대구광역시 군위군 우보면 동부로 1616",
     "sido": "대구",
@@ -1490,12 +1410,12 @@
     "sigunguDetail": "군위군",
     "regionKey": "대구|군위군",
     "stationId": "A0025227",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 116,
+    "seq": 109,
     "name": "SK에너지㈜ 유공셀프주유소",
     "address": "대전 유성구 유성대로 614 (구암동)",
     "sido": "대전",
@@ -1503,12 +1423,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0000249",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 117,
+    "seq": 110,
     "name": "대광주유소",
     "address": "대전 유성구 금남구즉로 1355 (봉산동)",
     "sido": "대전",
@@ -1516,12 +1436,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0016699",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 118,
+    "seq": 111,
     "name": "남부산고속주유소",
     "address": "부산 부산진구 거제대로 84 (양정동)",
     "sido": "부산",
@@ -1529,12 +1449,12 @@
     "sigunguDetail": "부산진구",
     "regionKey": "부산|부산진구",
     "stationId": "A0027766",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 119,
+    "seq": 112,
     "name": "대양산업(주)대양가덕주유소",
     "address": "부산 강서구 거가대로 2571",
     "sido": "부산",
@@ -1542,12 +1462,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "부산|강서구",
     "stationId": "A0027672",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 120,
+    "seq": 113,
     "name": "HD현대오일뱅크㈜직영 감전주유소",
     "address": "부산 사상구 낙동대로 978 (감전동)",
     "sido": "부산",
@@ -1555,12 +1475,12 @@
     "sigunguDetail": "사상구",
     "regionKey": "부산|사상구",
     "stationId": "A0027607",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 121,
+    "seq": 114,
     "name": "고려주유소",
     "address": "부산 중구 대청로 153 (중앙동5가)",
     "sido": "부산",
@@ -1568,12 +1488,12 @@
     "sigunguDetail": "중구",
     "regionKey": "부산|중구",
     "stationId": "A0027039",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 122,
+    "seq": 115,
     "name": "박물관주유소",
     "address": "서울 강서구 양천로53길 97 (가양동)",
     "sido": "서울",
@@ -1581,12 +1501,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0000482",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 123,
+    "seq": 116,
     "name": "SK서광주유소",
     "address": "서울 강남구 역삼로 142",
     "sido": "서울",
@@ -1594,12 +1514,12 @@
     "sigunguDetail": "강남구",
     "regionKey": "서울|강남구",
     "stationId": "A0010207",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 124,
+    "seq": 117,
     "name": "한영주유소 (한화)",
     "address": "서울 동대문구 망우로 38 (휘경동)",
     "sido": "서울",
@@ -1607,12 +1527,12 @@
     "sigunguDetail": "동대문구",
     "regionKey": "서울|동대문구",
     "stationId": "A0009240",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 125,
+    "seq": 118,
     "name": "양재주유소",
     "address": "서울 서초구 바우뫼로 178",
     "sido": "서울",
@@ -1620,12 +1540,12 @@
     "sigunguDetail": "서초구",
     "regionKey": "서울|서초구",
     "stationId": "A0011828",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 126,
+    "seq": 119,
     "name": "동일주유소",
     "address": "서울 성동구 광나루로 254 (성수동2가)",
     "sido": "서울",
@@ -1633,12 +1553,12 @@
     "sigunguDetail": "성동구",
     "regionKey": "서울|성동구",
     "stationId": "A0010154",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 127,
+    "seq": 120,
     "name": "대원셀프주유소",
     "address": "서울 구로구 개봉로 7",
     "sido": "서울",
@@ -1646,12 +1566,12 @@
     "sigunguDetail": "구로구",
     "regionKey": "서울|구로구",
     "stationId": "A0000855",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 128,
+    "seq": 121,
     "name": "대신석유(주)대우주유소",
     "address": "서울 서초구 양재대로 173 (양재동)",
     "sido": "서울",
@@ -1659,12 +1579,12 @@
     "sigunguDetail": "서초구",
     "regionKey": "서울|서초구",
     "stationId": "A0009916",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 129,
+    "seq": 122,
     "name": "(주)소모 수락산셀프주유소",
     "address": "서울 노원구 동일로 1772",
     "sido": "서울",
@@ -1672,12 +1592,12 @@
     "sigunguDetail": "노원구",
     "regionKey": "서울|노원구",
     "stationId": "A0010138",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 130,
+    "seq": 123,
     "name": "방죽주유소",
     "address": "서울 강남구 밤고개로 215 (율현동)",
     "sido": "서울",
@@ -1685,12 +1605,12 @@
     "sigunguDetail": "강남구",
     "regionKey": "서울|강남구",
     "stationId": "A0009828",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 131,
+    "seq": 124,
     "name": "(주)한유에너지 중부주유소",
     "address": "세종시 조치원읍 세종로 2167",
     "sido": "세종",
@@ -1698,12 +1618,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014466",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 132,
+    "seq": 125,
     "name": "차사랑주유소",
     "address": "세종 부강면 부강외천로 271",
     "sido": "세종",
@@ -1711,12 +1631,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0012125",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 133,
+    "seq": 126,
     "name": "연기주유소",
     "address": "세종특별자치시 연기면 당산로 116",
     "sido": "세종",
@@ -1724,12 +1644,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014194",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 134,
+    "seq": 127,
     "name": "세종부강농협주유소",
     "address": "세종특별자치시 부강면 부강외천로 10",
     "sido": "세종",
@@ -1737,12 +1657,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033210",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 135,
+    "seq": 128,
     "name": "양정주유소",
     "address": "울산 북구 염포로 499 (양정동)",
     "sido": "울산",
@@ -1750,12 +1670,12 @@
     "sigunguDetail": "북구",
     "regionKey": "울산|북구",
     "stationId": "A0031640",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 136,
+    "seq": 129,
     "name": "동남주유소",
     "address": "울산 울주군 온양읍 광청로 305",
     "sido": "울산",
@@ -1763,12 +1683,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0028953",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 137,
+    "seq": 130,
     "name": "능산주유소",
     "address": "울산 울주군 상북면 상북로 90",
     "sido": "울산",
@@ -1776,12 +1696,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031652",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 138,
+    "seq": 131,
     "name": "울산주유소",
     "address": "울산 중구 구교로 83 (학성동)",
     "sido": "울산",
@@ -1789,12 +1709,12 @@
     "sigunguDetail": "중구",
     "regionKey": "울산|중구",
     "stationId": "A0031526",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 139,
+    "seq": 132,
     "name": "자월주유소",
     "address": "인천 옹진군 자월면 자월동로 38",
     "sido": "인천",
@@ -1802,12 +1722,12 @@
     "sigunguDetail": "옹진군",
     "regionKey": "인천|옹진군",
     "stationId": "A0033346",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 140,
+    "seq": 133,
     "name": "선재주유소",
     "address": "인천 옹진군 영흥면 선재로 123",
     "sido": "인천",
@@ -1815,12 +1735,12 @@
     "sigunguDetail": "옹진군",
     "regionKey": "인천|옹진군",
     "stationId": "A0001299",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 141,
+    "seq": 134,
     "name": "장수셀프(self)주유소",
     "address": "인천 부평구 백범로 502",
     "sido": "인천",
@@ -1828,12 +1748,12 @@
     "sigunguDetail": "부평구",
     "regionKey": "인천|부평구",
     "stationId": "A0004684",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 142,
+    "seq": 135,
     "name": "HD현대오일뱅크㈜직영 인천대교주유소",
     "address": "인천 연수구 아암대로 815 (동춘동)",
     "sido": "인천",
@@ -1841,12 +1761,12 @@
     "sigunguDetail": "연수구",
     "regionKey": "인천|연수구",
     "stationId": "A0006273",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 143,
+    "seq": 136,
     "name": "수정주유소",
     "address": "전남 진도군 진도읍 진도대로 7290",
     "sido": "전남광주",
@@ -1854,12 +1774,13 @@
     "sigunguDetail": "진도군",
     "regionKey": "전남광주|진도군",
     "stationId": "A0021472",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "전남"
   },
   {
-    "seq": 144,
+    "seq": 137,
     "name": "석곡농협죽곡지점주유소",
     "address": "전남 곡성군 죽곡면 대황강로 796",
     "sido": "전남광주",
@@ -1867,25 +1788,13 @@
     "sigunguDetail": "곡성군",
     "regionKey": "전남광주|곡성군",
     "stationId": "A0019638",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "전남"
   },
   {
-    "seq": 145,
-    "name": "회천주유소",
-    "address": "전남 보성군 회천면 남부관광로 2333",
-    "sido": "전남광주",
-    "sigungu": "보성군",
-    "sigunguDetail": "보성군",
-    "regionKey": "전남광주|보성군",
-    "stationId": null,
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 146,
+    "seq": 138,
     "name": "무등주유소",
     "address": "전남 담양군 가사문학면 장단길 12-2",
     "sido": "전남광주",
@@ -1893,12 +1802,13 @@
     "sigunguDetail": "담양군",
     "regionKey": "전남광주|담양군",
     "stationId": "A0019823",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "전남"
   },
   {
-    "seq": 147,
+    "seq": 139,
     "name": "덕천주유소",
     "address": "전남 진도군 고군면 진도대로 385",
     "sido": "전남광주",
@@ -1906,12 +1816,13 @@
     "sigunguDetail": "진도군",
     "regionKey": "전남광주|진도군",
     "stationId": "A0021486",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차",
+    "anomaly": "전남"
   },
   {
-    "seq": 148,
+    "seq": 140,
     "name": "여산주유소",
     "address": "전북 익산시 여산면 호남로 1428-10",
     "sido": "전북",
@@ -1919,12 +1830,12 @@
     "sigunguDetail": "익산시",
     "regionKey": "전북|익산시",
     "stationId": "A0018385",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 149,
+    "seq": 141,
     "name": "여산천호주유소",
     "address": "전북 익산시 여산면 가람로 174",
     "sido": "전북",
@@ -1932,12 +1843,12 @@
     "sigunguDetail": "익산시",
     "regionKey": "전북|익산시",
     "stationId": "A0018455",
-    "brand": null,
+    "brand": "PB",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 150,
+    "seq": 142,
     "name": "신태인주유소",
     "address": "전북 정읍시 신태인읍 말목장터로 990",
     "sido": "전북",
@@ -1945,12 +1856,12 @@
     "sigunguDetail": "정읍시",
     "regionKey": "전북|정읍시",
     "stationId": "A0018761",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 151,
+    "seq": 143,
     "name": "한결주유소",
     "address": "전북 정읍시 고부면 영주로 316",
     "sido": "전북",
@@ -1958,12 +1869,12 @@
     "sigunguDetail": "정읍시",
     "regionKey": "전북|정읍시",
     "stationId": "A0018979",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 152,
+    "seq": 144,
     "name": "구좌농협우도지점주유소",
     "address": "제주 제주시 우도면 우도로 147",
     "sido": "제주",
@@ -1971,25 +1882,25 @@
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0031101",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 153,
+    "seq": 145,
     "name": "서귀주유소",
-    "address": "제주특별자치도 서귀포시 중정로 122",
+    "address": "제주특별자치도 서귀포시 중정로 122 (",
     "sido": "제주",
     "sigungu": "서귀포시",
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031040",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 154,
+    "seq": 146,
     "name": "대포주유소",
     "address": "제주 서귀포시 일주서로 559 (대포동)",
     "sido": "제주",
@@ -1997,12 +1908,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031018",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 155,
+    "seq": 147,
     "name": "성산일출봉농협주유소",
     "address": "제주 서귀포시 성산읍 일주동로 4521",
     "sido": "제주",
@@ -2010,12 +1921,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0033363",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 156,
+    "seq": 148,
     "name": "토평주유소",
     "address": "제주 서귀포시 중산간동로 7801",
     "sido": "제주",
@@ -2023,12 +1934,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031088",
-    "brand": null,
+    "brand": "AL",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 157,
+    "seq": 149,
     "name": "명진주유소",
     "address": "충남 보령시 미산면 만수로 1124",
     "sido": "충남",
@@ -2036,12 +1947,12 @@
     "sigunguDetail": "보령시",
     "regionKey": "충남|보령시",
     "stationId": "A0016365",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 158,
+    "seq": 150,
     "name": "(주)성진티엘에스주유소",
     "address": "충북 진천군 덕산면 진성로 554",
     "sido": "충북",
@@ -2049,12 +1960,12 @@
     "sigunguDetail": "진천군",
     "regionKey": "충북|진천군",
     "stationId": "A0012506",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 159,
+    "seq": 151,
     "name": "단양IC주유소",
     "address": "충북 단양군 단성면 단양로 347",
     "sido": "충북",
@@ -2062,38 +1973,38 @@
     "sigunguDetail": "단양군",
     "regionKey": "충북|단양군",
     "stationId": "A0015037",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 160,
+    "seq": 152,
     "name": "㈜신화에너지 오해피주유소",
     "address": "충북 청주시 서원구 구룡산로 217",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 서원구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0012494",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "2차"
   },
   {
-    "seq": 161,
+    "seq": 153,
     "name": "옥녀봉주유소",
-    "address": "충북 청주시 청원구 북이면 충청대로 1376",
+    "address": "충북 청주시 청원구 북이면 충청대로 13",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 청원구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0017182",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "2차"
   },
   {
-    "seq": 162,
+    "seq": 154,
     "name": "철원농협주유소",
     "address": "강원 철원군 철원읍 금학로290번길 43",
     "sido": "강원",
@@ -2101,12 +2012,12 @@
     "sigunguDetail": "철원군",
     "regionKey": "강원|철원군",
     "stationId": "A0033772",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 163,
+    "seq": 155,
     "name": "다운주유소",
     "address": "강원 홍천군 홍천읍 영서로 1802",
     "sido": "강원",
@@ -2114,12 +2025,12 @@
     "sigunguDetail": "홍천군",
     "regionKey": "강원|홍천군",
     "stationId": "A0004212",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 164,
+    "seq": 156,
     "name": "그림바위주유소",
     "address": "강원 정선군 화암면 소금강로 1014",
     "sido": "강원",
@@ -2127,12 +2038,12 @@
     "sigunguDetail": "정선군",
     "regionKey": "강원|정선군",
     "stationId": "A0011302",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 165,
+    "seq": 157,
     "name": "4289주유소",
     "address": "강원 원주시 문막읍 왕건로 161",
     "sido": "강원",
@@ -2140,12 +2051,12 @@
     "sigunguDetail": "원주시",
     "regionKey": "강원|원주시",
     "stationId": "A0011073",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 166,
+    "seq": 158,
     "name": "CJ대한통운㈜ 강릉주유소",
     "address": "강원 강릉시 동해대로 3292",
     "sido": "강원",
@@ -2153,12 +2064,12 @@
     "sigunguDetail": "강릉시",
     "regionKey": "강원|강릉시",
     "stationId": "A0033436",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 167,
+    "seq": 159,
     "name": "유림주유소",
     "address": "경기 파주시 광탄면 보광로 940",
     "sido": "경기",
@@ -2166,12 +2077,12 @@
     "sigunguDetail": "파주시",
     "regionKey": "경기|파주시",
     "stationId": "A0009736",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 168,
+    "seq": 160,
     "name": "뛰뛰빵빵주유소",
     "address": "경기 이천시 호법면 이섭대천로 866",
     "sido": "경기",
@@ -2179,12 +2090,12 @@
     "sigunguDetail": "이천시",
     "regionKey": "경기|이천시",
     "stationId": "A0003624",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 169,
+    "seq": 161,
     "name": "가남주유소",
     "address": "경기 여주시 가남읍 여주남로 627",
     "sido": "경기",
@@ -2192,12 +2103,12 @@
     "sigunguDetail": "여주시",
     "regionKey": "경기|여주시",
     "stationId": "A0003845",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 170,
+    "seq": 162,
     "name": "삼죽농협주유소",
     "address": "경기 안성시 삼죽면 삼백로 9",
     "sido": "경기",
@@ -2205,12 +2116,12 @@
     "sigunguDetail": "안성시",
     "regionKey": "경기|안성시",
     "stationId": "A0003302",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 171,
+    "seq": 163,
     "name": "철산주유소",
     "address": "경기 광명시 오리로 883",
     "sido": "경기",
@@ -2218,12 +2129,12 @@
     "sigunguDetail": "광명시",
     "regionKey": "경기|광명시",
     "stationId": "A0008422",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 172,
+    "seq": 164,
     "name": "이천고속주유소",
     "address": "경기 이천시 경충대로 2940 (사음동)",
     "sido": "경기",
@@ -2231,12 +2142,12 @@
     "sigunguDetail": "이천시",
     "regionKey": "경기|이천시",
     "stationId": "A0003443",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 173,
+    "seq": 165,
     "name": "미양농협주유소",
     "address": "경기 안성시 미양면 미양로 62",
     "sido": "경기",
@@ -2244,12 +2155,12 @@
     "sigunguDetail": "안성시",
     "regionKey": "경기|안성시",
     "stationId": "A0003303",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 174,
+    "seq": 166,
     "name": "㈜현대",
     "address": "경남 밀양시 무안면 사명로 272",
     "sido": "경남",
@@ -2257,12 +2168,12 @@
     "sigunguDetail": "밀양시",
     "regionKey": "경남|밀양시",
     "stationId": "A0030585",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 175,
+    "seq": 167,
     "name": "개봉주유소",
     "address": "경남 함양군 지곡면 함양로 1808",
     "sido": "경남",
@@ -2270,12 +2181,12 @@
     "sigunguDetail": "함양군",
     "regionKey": "경남|함양군",
     "stationId": "A0029282",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 176,
+    "seq": 168,
     "name": "오일필드㈜김해부원지점",
     "address": "경남 김해시 호계로 272",
     "sido": "경남",
@@ -2283,25 +2194,12 @@
     "sigunguDetail": "김해시",
     "regionKey": "경남|김해시",
     "stationId": "A0027439",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "PB",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 177,
-    "name": "새남해농업협동조합서면주유소",
-    "address": "경남 남해군 서면 스포츠로 679",
-    "sido": "경남",
-    "sigungu": "남해군",
-    "sigunguDetail": "남해군",
-    "regionKey": "경남|남해군",
-    "stationId": "A0030154",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 178,
+    "seq": 169,
     "name": "텍사스주유소",
     "address": "경남 고성군 상리면 상정대로 1313",
     "sido": "경남",
@@ -2309,12 +2207,12 @@
     "sigunguDetail": "고성군",
     "regionKey": "경남|고성군",
     "stationId": "A0029556",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 179,
+    "seq": 170,
     "name": "대림주유소",
     "address": "경북 영천시 장수로 1396 (화산면)",
     "sido": "경북",
@@ -2322,12 +2220,12 @@
     "sigunguDetail": "영천시",
     "regionKey": "경북|영천시",
     "stationId": "A0024117",
-    "brand": null,
+    "brand": "SOIL",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 180,
+    "seq": 171,
     "name": "아리랑관광주유소",
     "address": "경북 구미시 고아읍 선산대로 948",
     "sido": "경북",
@@ -2335,12 +2233,12 @@
     "sigunguDetail": "구미시",
     "regionKey": "경북|구미시",
     "stationId": "A0026275",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 181,
+    "seq": 172,
     "name": "다인농협주유소",
     "address": "경북 의성군 다인면 서부로 2809",
     "sido": "경북",
@@ -2348,12 +2246,12 @@
     "sigunguDetail": "의성군",
     "regionKey": "경북|의성군",
     "stationId": "A0025239",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 182,
+    "seq": 173,
     "name": "황제주유소",
     "address": "경북 경산시 진량읍 황제1길 100",
     "sido": "경북",
@@ -2361,12 +2259,12 @@
     "sigunguDetail": "경산시",
     "regionKey": "경북|경산시",
     "stationId": "A0026930",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 183,
+    "seq": 174,
     "name": "산월Self주유소",
     "address": "광주 광산구 북문대로 579",
     "sido": "전남광주",
@@ -2374,12 +2272,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020205",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차",
+    "anomaly": "광주"
   },
   {
-    "seq": 184,
+    "seq": 175,
     "name": "오일필드(주)광주지점",
     "address": "광주 광산구 사암로 127 (우산동)",
     "sido": "전남광주",
@@ -2387,12 +2286,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020473",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "PB",
+    "isSelf": true,
+    "round": "3차",
+    "anomaly": "광주"
   },
   {
-    "seq": 185,
+    "seq": 176,
     "name": "(유)매월주유소",
     "address": "광주 서구 회재로 845",
     "sido": "전남광주",
@@ -2400,12 +2300,13 @@
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
     "stationId": "A0020612",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차",
+    "anomaly": "광주"
   },
   {
-    "seq": 186,
+    "seq": 177,
     "name": "골든타임주유소",
     "address": "광주 서구 상무대로1206번길 3",
     "sido": "전남광주",
@@ -2413,12 +2314,13 @@
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
     "stationId": "A0019802",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차",
+    "anomaly": "광주"
   },
   {
-    "seq": 187,
+    "seq": 178,
     "name": "흑석주유소",
     "address": "광주 광산구 사암로 415 (흑석동)",
     "sido": "전남광주",
@@ -2426,12 +2328,13 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020458",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "3차",
+    "anomaly": "광주"
   },
   {
-    "seq": 188,
+    "seq": 179,
     "name": "팔달41주유소",
     "address": "대구 북구 팔달로 41 (노원동3가)",
     "sido": "대구",
@@ -2439,25 +2342,25 @@
     "sigunguDetail": "북구",
     "regionKey": "대구|북구",
     "stationId": "A0023693",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 189,
+    "seq": 180,
     "name": "행복주유소",
-    "address": "대구광역시 군위군 군위읍 경북대로 3091",
+    "address": "대구광역시 군위군 군위읍 경북대로 309",
     "sido": "대구",
     "sigungu": "군위군",
     "sigunguDetail": "군위군",
     "regionKey": "대구|군위군",
     "stationId": "A0025085",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 190,
+    "seq": 181,
     "name": "아리랑주유소",
     "address": "대구 달서구 달서대로 696 (신당동)",
     "sido": "대구",
@@ -2465,12 +2368,12 @@
     "sigunguDetail": "달서구",
     "regionKey": "대구|달서구",
     "stationId": "A0023179",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 191,
+    "seq": 182,
     "name": "대원주유소",
     "address": "대구 동구 효동로 66 (효목동)",
     "sido": "대구",
@@ -2478,12 +2381,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대구|동구",
     "stationId": "A0022857",
-    "brand": null,
+    "brand": "GS",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 192,
+    "seq": 183,
     "name": "서대전농협주유소",
     "address": "대전 중구 계백로 1555 (유천동)",
     "sido": "대전",
@@ -2491,12 +2394,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013970",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 193,
+    "seq": 184,
     "name": "하나로주유소",
     "address": "대전 중구 대둔산로 211 (안영동)",
     "sido": "대전",
@@ -2504,12 +2407,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013587",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 194,
+    "seq": 185,
     "name": "대양석유㈜ 엑스포주유소",
     "address": "대전 유성구 대덕대로 542",
     "sido": "대전",
@@ -2517,12 +2420,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0016768",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 195,
+    "seq": 186,
     "name": "극동유화(주) 한밭주유소",
     "address": "대전 서구 문정로 3 (둔산2동)",
     "sido": "대전",
@@ -2530,12 +2433,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0016757",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 196,
+    "seq": 187,
     "name": "코끼리셀프주유소",
     "address": "대전 서구 도산로 446 (용문동)",
     "sido": "대전",
@@ -2543,12 +2446,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0014103",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 197,
+    "seq": 188,
     "name": "장림주유소",
     "address": "부산 사하구 장림로 287 (장림동)",
     "sido": "부산",
@@ -2556,12 +2459,12 @@
     "sigunguDetail": "사하구",
     "regionKey": "부산|사하구",
     "stationId": "A0027204",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 198,
+    "seq": 189,
     "name": "선암주유소",
     "address": "부산 기장군 장안읍 기장대로 1453",
     "sido": "부산",
@@ -2569,12 +2472,12 @@
     "sigunguDetail": "기장군",
     "regionKey": "부산|기장군",
     "stationId": "A0031427",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 199,
+    "seq": 190,
     "name": "㈜첼시주유소",
     "address": "부산 기장군 장안읍 정관로 1148",
     "sido": "부산",
@@ -2582,12 +2485,12 @@
     "sigunguDetail": "기장군",
     "regionKey": "부산|기장군",
     "stationId": "A0031995",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 200,
+    "seq": 191,
     "name": "(주)천일에너지 천일주유소",
     "address": "부산 기장군 신정관로 183",
     "sido": "부산",
@@ -2595,12 +2498,12 @@
     "sigunguDetail": "기장군",
     "regionKey": "부산|기장군",
     "stationId": "A0032086",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 201,
+    "seq": 192,
     "name": "동방석유(주)초량주유소",
     "address": "부산 동구 중앙대로 302 (초량동)",
     "sido": "부산",
@@ -2608,12 +2511,12 @@
     "sigunguDetail": "동구",
     "regionKey": "부산|동구",
     "stationId": "A0027353",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 202,
+    "seq": 193,
     "name": "중앙에너비스 종암지점",
     "address": "서울 성북구 종암로 58",
     "sido": "서울",
@@ -2621,12 +2524,12 @@
     "sigunguDetail": "성북구",
     "regionKey": "서울|성북구",
     "stationId": "A0009502",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 203,
+    "seq": 194,
     "name": "서정주유소",
     "address": "서울 은평구 통일로 968 (진관동)",
     "sido": "서울",
@@ -2634,12 +2537,12 @@
     "sigunguDetail": "은평구",
     "regionKey": "서울|은평구",
     "stationId": "A0000680",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 204,
+    "seq": 195,
     "name": "이케이에너지㈜ 강산주유소",
     "address": "서울 성북구 보문로 27 (보문동7가)",
     "sido": "서울",
@@ -2647,12 +2550,12 @@
     "sigunguDetail": "성북구",
     "regionKey": "서울|성북구",
     "stationId": "A0001257",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 205,
+    "seq": 196,
     "name": "이케이에너지(주) 강산제2주유소",
     "address": "서울 성북구 보국문로 52",
     "sido": "서울",
@@ -2660,25 +2563,25 @@
     "sigunguDetail": "성북구",
     "regionKey": "서울|성북구",
     "stationId": "A0009492",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 206,
+    "seq": 197,
     "name": "(주)타이거통상 월드컵주유소",
-    "address": "서울 마포구 월드컵북로 170 (성산동)",
+    "address": "서울 마포구 월드컵북로 170 (성산제2동",
     "sido": "서울",
     "sigungu": "마포구",
     "sigunguDetail": "마포구",
     "regionKey": "서울|마포구",
     "stationId": "A0000139",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 207,
+    "seq": 198,
     "name": "오션네트웍스(주) 서울식물원지점",
     "address": "서울 강서구 양천로 300",
     "sido": "서울",
@@ -2686,12 +2589,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0033659",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 208,
+    "seq": 199,
     "name": "선유도주유소",
     "address": "서울 영등포구 양평로 141 (양평동5가)",
     "sido": "서울",
@@ -2699,12 +2602,12 @@
     "sigunguDetail": "영등포구",
     "regionKey": "서울|영등포구",
     "stationId": "A0000279",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 209,
+    "seq": 200,
     "name": "행복주유소",
     "address": "세종시 부강면 시목부강로 423",
     "sido": "세종",
@@ -2712,12 +2615,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014389",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 210,
+    "seq": 201,
     "name": "그린주유소",
     "address": "세종 조치원읍 세종로 2706",
     "sido": "세종",
@@ -2725,12 +2628,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014198",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 211,
+    "seq": 202,
     "name": "세종강남농협주유소",
     "address": "세종특별자치시 금남면 성덕영곡길 15",
     "sido": "세종",
@@ -2738,12 +2641,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014461",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 212,
+    "seq": 203,
     "name": "신원self주유소",
     "address": "세종특별자치시 조치원읍 세종로 2562",
     "sido": "세종",
@@ -2751,12 +2654,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014238",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 213,
+    "seq": 204,
     "name": "흥진셀프주유소",
     "address": "세종시 조치원읍 세종로 2563",
     "sido": "세종",
@@ -2764,12 +2667,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014276",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 214,
+    "seq": 205,
     "name": "케이티엑스(주) 태화루주유소",
     "address": "울산 중구 태화로 161",
     "sido": "울산",
@@ -2777,12 +2680,12 @@
     "sigunguDetail": "중구",
     "regionKey": "울산|중구",
     "stationId": "A0031618",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 215,
+    "seq": 206,
     "name": "(주)화주유소",
     "address": "울산 중구 태화로 248",
     "sido": "울산",
@@ -2790,25 +2693,25 @@
     "sigunguDetail": "중구",
     "regionKey": "울산|중구",
     "stationId": "A0031667",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 216,
+    "seq": 207,
     "name": "세명셀프주유소",
-    "address": "울산광역시 울주군 온산읍 온산로 298",
+    "address": "울산광역시 울주군 온산읍 온산로 298 (",
     "sido": "울산",
     "sigungu": "울주군",
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0028912",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 217,
+    "seq": 208,
     "name": "덕하에너지 주식회사",
     "address": "울산 울주군 청량면 온산로 704",
     "sido": "울산",
@@ -2816,12 +2719,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031515",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 218,
+    "seq": 209,
     "name": "㈜자연에너지 계양주유소",
     "address": "인천 계양구 아나지로 344 (작전동)",
     "sido": "인천",
@@ -2829,12 +2732,12 @@
     "sigunguDetail": "계양구",
     "regionKey": "인천|계양구",
     "stationId": "A0001616",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 219,
+    "seq": 210,
     "name": "㈜북두칠성주유소",
     "address": "인천 서구 백범로 630번길 44",
     "sido": "인천",
@@ -2842,12 +2745,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0006110",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 220,
+    "seq": 211,
     "name": "비전주유소",
     "address": "인천 미추홀구 석정로 429",
     "sido": "인천",
@@ -2855,12 +2758,12 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0014138",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 221,
+    "seq": 212,
     "name": "(주)거보주유소",
     "address": "인천 계양구 아나지로 130 (효성동)",
     "sido": "인천",
@@ -2868,12 +2771,12 @@
     "sigunguDetail": "계양구",
     "regionKey": "인천|계양구",
     "stationId": "A0001599",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 222,
+    "seq": 213,
     "name": "강화남부농협주유소",
     "address": "인천 강화군 길상면 길상로 302",
     "sido": "인천",
@@ -2881,12 +2784,12 @@
     "sigunguDetail": "강화군",
     "regionKey": "인천|강화군",
     "stationId": "A0011948",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 223,
+    "seq": 214,
     "name": "용두농협주유소",
     "address": "전남 장흥군 장동면 곰치로 9",
     "sido": "전남광주",
@@ -2894,12 +2797,13 @@
     "sigunguDetail": "장흥군",
     "regionKey": "전남광주|장흥군",
     "stationId": "A0033398",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "3차",
+    "anomaly": "전남"
   },
   {
-    "seq": 224,
+    "seq": 215,
     "name": "신대림주유소",
     "address": "전남 무안군 현경면 현해로 639",
     "sido": "전남광주",
@@ -2907,12 +2811,13 @@
     "sigunguDetail": "무안군",
     "regionKey": "전남광주|무안군",
     "stationId": "A0020908",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차",
+    "anomaly": "전남"
   },
   {
-    "seq": 225,
+    "seq": 216,
     "name": "(주)태광에너지 신도시주유소",
     "address": "전남 순천시 우석로 17 (도사동)",
     "sido": "전남광주",
@@ -2920,12 +2825,13 @@
     "sigunguDetail": "순천시",
     "regionKey": "전남광주|순천시",
     "stationId": "A0022076",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차",
+    "anomaly": "전남"
   },
   {
-    "seq": 226,
+    "seq": 217,
     "name": "광활농협주유소",
     "address": "전북 김제시 광활면 광활로 470",
     "sido": "전북",
@@ -2933,12 +2839,12 @@
     "sigunguDetail": "김제시",
     "regionKey": "전북|김제시",
     "stationId": "A0019115",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 227,
+    "seq": 218,
     "name": "진봉농업협동조합주유소",
     "address": "전북 김제시 지평선로 1787",
     "sido": "전북",
@@ -2946,12 +2852,12 @@
     "sigunguDetail": "김제시",
     "regionKey": "전북|김제시",
     "stationId": "A0018685",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 228,
+    "seq": 219,
     "name": "쌍용주유소",
     "address": "전북 남원시 아영면 인월장터로 241",
     "sido": "전북",
@@ -2959,25 +2865,25 @@
     "sigunguDetail": "남원시",
     "regionKey": "전북|남원시",
     "stationId": "A0019315",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 229,
+    "seq": 220,
     "name": "해맞이주유소",
-    "address": "제주특별자치도 서귀포시 성산읍 일주동로4501",
+    "address": "제주특별자치도 서귀포시 성산읍 일주동",
     "sido": "제주",
     "sigungu": "서귀포시",
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031118",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 230,
+    "seq": 221,
     "name": "신암주유소",
     "address": "충남 예산군 신암면 추사로 203",
     "sido": "충남",
@@ -2985,64 +2891,64 @@
     "sigunguDetail": "예산군",
     "regionKey": "충남|예산군",
     "stationId": "A0015299",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 231,
+    "seq": 222,
     "name": "천안농협원성동 클린셀프주유소",
     "address": "충남 천안시 동남구 중앙로 13 (원성동)",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016111",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 232,
+    "seq": 223,
     "name": "천안농협주유소",
-    "address": "충청남도 천안시 동남구 풍세면 광풍로1540",
+    "address": "충청남도 천안시 동남구 풍세면 광풍로",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016121",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 233,
+    "seq": 224,
     "name": "천안농협경제사업장북부점",
     "address": "충남 천안시 서북구 번영로 730",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 서북구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0033148",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 234,
+    "seq": 225,
     "name": "DH천안주유소",
     "address": "충남 천안시 서북구 천안대로 1166",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 서북구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0032715",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 235,
+    "seq": 226,
     "name": "충북석유(주) 모란주유소",
     "address": "충북 음성군 삼성면 덕정로30번길 22",
     "sido": "충북",
@@ -3050,12 +2956,12 @@
     "sigunguDetail": "음성군",
     "regionKey": "충북|음성군",
     "stationId": "A0013228",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 236,
+    "seq": 227,
     "name": "부흥주유소",
     "address": "충북 괴산군 청안면 질마로 1465",
     "sido": "충북",
@@ -3063,12 +2969,12 @@
     "sigunguDetail": "괴산군",
     "regionKey": "충북|괴산군",
     "stationId": "A0016919",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 237,
+    "seq": 228,
     "name": "미래주유소",
     "address": "충북 진천군 문백면 원덕로 115",
     "sido": "충북",
@@ -3076,25 +2982,25 @@
     "sigunguDetail": "진천군",
     "regionKey": "충북|진천군",
     "stationId": "A0011964",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "3차"
   },
   {
-    "seq": 238,
+    "seq": 229,
     "name": "오창IC만남주유소(SELF)",
-    "address": "충북 청주시 청원구 오창읍 오창대로 410",
+    "address": "충북 청주시 청원구 오창읍 오창대로 41",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 청원구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0017368",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "3차"
   },
   {
-    "seq": 239,
+    "seq": 230,
     "name": "횡성농협 클린주유소",
     "address": "강원 횡성군 횡성읍 한우로 323",
     "sido": "강원",
@@ -3102,12 +3008,12 @@
     "sigunguDetail": "횡성군",
     "regionKey": "강원|횡성군",
     "stationId": "A0011160",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 240,
+    "seq": 231,
     "name": "횡성농협유현주유소",
     "address": "강원 횡성군 서원면 경강로 800",
     "sido": "강원",
@@ -3115,25 +3021,12 @@
     "sigunguDetail": "횡성군",
     "regionKey": "강원|횡성군",
     "stationId": "A0011150",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 241,
-    "name": "북삼주유소",
-    "address": "강원 동해시 효자로 636",
-    "sido": "강원",
-    "sigungu": "동해시",
-    "sigunguDetail": "동해시",
-    "regionKey": "강원|동해시",
-    "stationId": "A0010566",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 242,
+    "seq": 232,
     "name": "(주)백두가스산업",
     "address": "강원 강릉시 연곡면 동해대로 4357",
     "sido": "강원",
@@ -3141,12 +3034,12 @@
     "sigunguDetail": "강릉시",
     "regionKey": "강원|강릉시",
     "stationId": "A0011566",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 243,
+    "seq": 233,
     "name": "새춘천주유소",
     "address": "강원 춘천시 동내면 세실로 38",
     "sido": "강원",
@@ -3154,12 +3047,12 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0010326",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 244,
+    "seq": 234,
     "name": "(주)갤럭시EnS",
     "address": "강원 춘천시 동내면 세실로 20",
     "sido": "강원",
@@ -3167,38 +3060,25 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0010481",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 245,
-    "name": "덕양주유소",
-    "address": "경기 고양시 덕양구 충장로 142",
-    "sido": "경기",
-    "sigungu": "고양시",
-    "sigunguDetail": "고양시 덕양구",
-    "regionKey": "경기|고양시",
-    "stationId": "A0005181",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 246,
+    "seq": 235,
     "name": "(주)어울림주유소",
     "address": "경기 고양시 덕양구 충장로 407",
     "sido": "경기",
     "sigungu": "고양시",
-    "sigunguDetail": "고양시 덕양구",
+    "sigunguDetail": "고양시",
     "regionKey": "경기|고양시",
     "stationId": "A0032941",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 247,
+    "seq": 236,
     "name": "광신직영(랜드마크셀프)",
     "address": "경기 이천시 모가면 사실로 878",
     "sido": "경기",
@@ -3206,25 +3086,25 @@
     "sigunguDetail": "이천시",
     "regionKey": "경기|이천시",
     "stationId": "A0004155",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 248,
+    "seq": 237,
     "name": "마도알뜰주유소",
     "address": "경기 화성시 만세구 마도면 두곡서길 58",
     "sido": "경기",
     "sigungu": "화성시",
-    "sigunguDetail": "화성시 만세구",
+    "sigunguDetail": "화성시",
     "regionKey": "경기|화성시",
     "stationId": "A0009753",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 249,
+    "seq": 238,
     "name": "대야동주유소",
     "address": "경기 시흥시 복지로 68",
     "sido": "경기",
@@ -3232,38 +3112,12 @@
     "sigunguDetail": "시흥시",
     "regionKey": "경기|시흥시",
     "stationId": "A0007077",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 250,
-    "name": "(주)경기에너지 뉴타운주유소",
-    "address": "경기 안성시 안성맞춤대로 862",
-    "sido": "경기",
-    "sigungu": "안성시",
-    "sigunguDetail": "안성시",
-    "regionKey": "경기|안성시",
-    "stationId": "A0003432",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 251,
-    "name": "진남제2주유소",
-    "address": "경남 하동군 경충로 1089",
-    "sido": "경남",
-    "sigungu": "하동군",
-    "sigunguDetail": "하동군",
-    "regionKey": "경남|하동군",
-    "stationId": "A0030134",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 252,
+    "seq": 239,
     "name": "에이디에너지(주)",
     "address": "경남 김해시 김해대로 2651 (안동)",
     "sido": "경남",
@@ -3271,12 +3125,12 @@
     "sigunguDetail": "김해시",
     "regionKey": "경남|김해시",
     "stationId": "A0030597",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 253,
+    "seq": 240,
     "name": "석풍주유소",
     "address": "경남 산청군 신안면 산청대로 1169",
     "sido": "경남",
@@ -3284,38 +3138,38 @@
     "sigunguDetail": "산청군",
     "regionKey": "경남|산청군",
     "stationId": "A0029698",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 254,
+    "seq": 241,
     "name": "하늘주유소",
     "address": "경남 창원시 마산회원구 북성로 373",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산회원구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028181",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 255,
+    "seq": 242,
     "name": "대림주유소",
-    "address": "경남 창원시 의창구 팔용로 501",
+    "address": "경남 창원시 의창구 팔용로 501 (팔용동",
     "sido": "경남",
-    "sigungu": "창원시",
-    "sigunguDetail": "창원시 의창구",
-    "regionKey": "경남|창원시",
+    "sigungu": "밀양시",
+    "sigunguDetail": "밀양시",
+    "regionKey": "경남|밀양시",
     "stationId": "A0028667",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 256,
+    "seq": 243,
     "name": "㈜제이엠 제7주유소지점",
     "address": "경북 칠곡군 왜관읍 강변대로 852",
     "sido": "경북",
@@ -3323,12 +3177,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026409",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 257,
+    "seq": 244,
     "name": "만남의주유소",
     "address": "경북 칠곡군 가산면 경북대로 1883",
     "sido": "경북",
@@ -3336,12 +3190,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026114",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 258,
+    "seq": 245,
     "name": "삼일주유소",
     "address": "경북 경주시 천북면 산업로 4866",
     "sido": "경북",
@@ -3349,25 +3203,25 @@
     "sigunguDetail": "경주시",
     "regionKey": "경북|경주시",
     "stationId": "A0024185",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 259,
+    "seq": 246,
     "name": "청하Self주유소",
     "address": "경북 포항시 북구 청하면 동해대로 2405",
     "sido": "경북",
     "sigungu": "포항시",
-    "sigunguDetail": "포항시 북구",
+    "sigunguDetail": "포항시",
     "regionKey": "경북|포항시",
     "stationId": "A0024530",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 260,
+    "seq": 247,
     "name": "(주)미니에너지",
     "address": "경북 경산시 압량면 대학로 754",
     "sido": "경북",
@@ -3375,12 +3229,12 @@
     "sigunguDetail": "경산시",
     "regionKey": "경북|경산시",
     "stationId": "A0026752",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 261,
+    "seq": 248,
     "name": "(유)착한주유소",
     "address": "광주 북구 동문대로 452 (장등동)",
     "sido": "전남광주",
@@ -3388,12 +3242,13 @@
     "sigunguDetail": "북구",
     "regionKey": "전남광주|북구",
     "stationId": "A0019752",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "광주"
   },
   {
-    "seq": 262,
+    "seq": 249,
     "name": "(주)반디석유 시청점",
     "address": "광주 서구 천변좌하로 160 (치평동)",
     "sido": "전남광주",
@@ -3401,12 +3256,13 @@
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
     "stationId": "A0020586",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "4차",
+    "anomaly": "광주"
   },
   {
-    "seq": 263,
+    "seq": 250,
     "name": "(주)대원 강변주유소",
     "address": "광주 서구 천변좌하로 142 (치평동)",
     "sido": "전남광주",
@@ -3414,12 +3270,13 @@
     "sigunguDetail": "서구",
     "regionKey": "전남광주|서구",
     "stationId": "A0020372",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "광주"
   },
   {
-    "seq": 264,
+    "seq": 251,
     "name": "미니주유소",
     "address": "대구 북구 침산남로 224",
     "sido": "대구",
@@ -3427,12 +3284,12 @@
     "sigunguDetail": "북구",
     "regionKey": "대구|북구",
     "stationId": "A0033247",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 265,
+    "seq": 252,
     "name": "칠곡제일주유소",
     "address": "대구 북구 구리로 161 (국우동)",
     "sido": "대구",
@@ -3440,12 +3297,12 @@
     "sigunguDetail": "북구",
     "regionKey": "대구|북구",
     "stationId": "A0023581",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 266,
+    "seq": 253,
     "name": "신광주유소",
     "address": "대구 서구 와룡로 349 (상중이동)",
     "sido": "대구",
@@ -3453,12 +3310,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023199",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 267,
+    "seq": 254,
     "name": "㈜미니에너지 직영주유소",
     "address": "대구 동구 화랑로 484",
     "sido": "대구",
@@ -3466,12 +3323,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대구|동구",
     "stationId": "A0022810",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 268,
+    "seq": 255,
     "name": "서대구주유소",
     "address": "대구 서구 북비산로 41",
     "sido": "대구",
@@ -3479,12 +3336,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023271",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 269,
+    "seq": 256,
     "name": "주식회사 김여사네 셀프주유소",
     "address": "대전 중구 대종로 558 (선화동)",
     "sido": "대전",
@@ -3492,12 +3349,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013918",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 270,
+    "seq": 257,
     "name": "(주)농협유통 하나로주유소",
     "address": "대전 중구 대둔산로199번길 43",
     "sido": "대전",
@@ -3505,12 +3362,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013945",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 271,
+    "seq": 258,
     "name": "(주)남강 중앙로셀프주유소",
     "address": "대전 중구 중앙로 64",
     "sido": "대전",
@@ -3518,12 +3375,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013986",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 272,
+    "seq": 259,
     "name": "우리셋셀프주유소",
     "address": "대전 중구 대둔산로 150",
     "sido": "대전",
@@ -3531,12 +3388,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013856",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 273,
+    "seq": 260,
     "name": "안영IC주유소",
     "address": "대전 중구 대둔산로 188 (안영동)",
     "sido": "대전",
@@ -3544,12 +3401,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0013917",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 274,
+    "seq": 261,
     "name": "대양주유소",
     "address": "부산 부산진구 새싹로 61-1 (부암동)",
     "sido": "부산",
@@ -3557,12 +3414,12 @@
     "sigunguDetail": "부산진구",
     "regionKey": "부산|부산진구",
     "stationId": "A0027320",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 275,
+    "seq": 262,
     "name": "(주)시블링스 우리1주유소",
     "address": "부산 사상구 백양대로 701 (덕포동)",
     "sido": "부산",
@@ -3570,12 +3427,12 @@
     "sigunguDetail": "사상구",
     "regionKey": "부산|사상구",
     "stationId": "A0027266",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 276,
+    "seq": 263,
     "name": "용마주유소",
     "address": "부산 사상구 가야대로 329",
     "sido": "부산",
@@ -3583,12 +3440,12 @@
     "sigunguDetail": "사상구",
     "regionKey": "부산|사상구",
     "stationId": "A0027436",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 277,
+    "seq": 264,
     "name": "이케이에너지(주) 강서주유소",
     "address": "서울 강서구 화곡로 273 (화곡동)",
     "sido": "서울",
@@ -3596,12 +3453,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0000549",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 278,
+    "seq": 265,
     "name": "현대주유소",
     "address": "서울 양천구 남부순환로 372 (신월동)",
     "sido": "서울",
@@ -3609,12 +3466,12 @@
     "sigunguDetail": "양천구",
     "regionKey": "서울|양천구",
     "stationId": "A0001005",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 279,
+    "seq": 266,
     "name": "(주)자연에너지 남부주유소",
     "address": "서울 양천구 남부순환로 553",
     "sido": "서울",
@@ -3622,12 +3479,12 @@
     "sigunguDetail": "양천구",
     "regionKey": "서울|양천구",
     "stationId": "A0001023",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 280,
+    "seq": 267,
     "name": "동일석유(주)개나리주유소",
     "address": "서울 양천구 남부순환로 442 (신월동)",
     "sido": "서울",
@@ -3635,12 +3492,12 @@
     "sigunguDetail": "양천구",
     "regionKey": "서울|양천구",
     "stationId": "A0001015",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 281,
+    "seq": 268,
     "name": "삼호주유소",
     "address": "서울 광진구 천호대로 809 (광장동)",
     "sido": "서울",
@@ -3648,12 +3505,12 @@
     "sigunguDetail": "광진구",
     "regionKey": "서울|광진구",
     "stationId": "A0009834",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 282,
+    "seq": 269,
     "name": "(주)씨더블유창원",
     "address": "서울 관악구 과천대로 921 (남현동)",
     "sido": "서울",
@@ -3661,12 +3518,12 @@
     "sigunguDetail": "관악구",
     "regionKey": "서울|관악구",
     "stationId": "A0001157",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 283,
+    "seq": 270,
     "name": "능동주유소",
     "address": "서울 광진구 천호대로 584",
     "sido": "서울",
@@ -3674,12 +3531,12 @@
     "sigunguDetail": "광진구",
     "regionKey": "서울|광진구",
     "stationId": "A0009765",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 284,
+    "seq": 271,
     "name": "위례제일주유소",
     "address": "서울 송파구 위례서로 260",
     "sido": "서울",
@@ -3687,12 +3544,12 @@
     "sigunguDetail": "송파구",
     "regionKey": "서울|송파구",
     "stationId": "A0033424",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 285,
+    "seq": 272,
     "name": "상아주유소",
     "address": "서울 송파구 거마로 82",
     "sido": "서울",
@@ -3700,12 +3557,12 @@
     "sigunguDetail": "송파구",
     "regionKey": "서울|송파구",
     "stationId": "A0009989",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 286,
+    "seq": 273,
     "name": "세종중앙농협주유소",
     "address": "세종 연기면 잣띠길 4",
     "sido": "세종",
@@ -3713,12 +3570,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033513",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 287,
+    "seq": 274,
     "name": "충청에너지주유소",
     "address": "세종특별자치시 전의면 세종로 3894",
     "sido": "세종",
@@ -3726,12 +3583,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014189",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 288,
+    "seq": 275,
     "name": "럭키스파밸리직영주유소",
     "address": "울산 울주군 범서읍 울밀로 2844",
     "sido": "울산",
@@ -3739,12 +3596,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031594",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 289,
+    "seq": 276,
     "name": "광신직영(흥부셀프)",
     "address": "울산 남구 월평로 152",
     "sido": "울산",
@@ -3752,12 +3609,12 @@
     "sigunguDetail": "남구",
     "regionKey": "울산|남구",
     "stationId": "A0029150",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 290,
+    "seq": 277,
     "name": "주식회사 이림",
     "address": "울산 울주군 삼남면 반구대로 607",
     "sido": "울산",
@@ -3765,12 +3622,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0031976",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 291,
+    "seq": 278,
     "name": "동울산주유소",
     "address": "울산 동구 방어진순환도로 753",
     "sido": "울산",
@@ -3778,12 +3635,12 @@
     "sigunguDetail": "동구",
     "regionKey": "울산|동구",
     "stationId": "A0031647",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 292,
+    "seq": 279,
     "name": "광신석유(주) 울산대교주유소",
     "address": "울산 남구 장생포로 240 (매암동)",
     "sido": "울산",
@@ -3791,12 +3648,12 @@
     "sigunguDetail": "남구",
     "regionKey": "울산|남구",
     "stationId": "A0029092",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 293,
+    "seq": 280,
     "name": "탑주유소",
     "address": "인천 미추홀구 송림로 217 (도화동)",
     "sido": "인천",
@@ -3804,12 +3661,12 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0001425",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 294,
+    "seq": 281,
     "name": "명보주유소",
     "address": "인천 미추홀구 인하로 217 (주안동)",
     "sido": "인천",
@@ -3817,12 +3674,12 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0006156",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 295,
+    "seq": 282,
     "name": "주식회사 디오티디 인천랍스터주유소",
     "address": "인천 서구 봉수대로 1543 (금곡동)",
     "sido": "인천",
@@ -3830,12 +3687,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0008107",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 296,
+    "seq": 283,
     "name": "(주)자연에너지 금곡주유소",
     "address": "인천 서구 봉수대로 1491 (금곡동)",
     "sido": "인천",
@@ -3843,12 +3700,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0007953",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 297,
+    "seq": 284,
     "name": "서영암농협주유소",
     "address": "전남 영암군 미암면 흑석로 1569-101",
     "sido": "전남광주",
@@ -3856,12 +3713,13 @@
     "sigunguDetail": "영암군",
     "regionKey": "전남광주|영암군",
     "stationId": "A0021316",
-    "brand": null,
+    "brand": "NH",
     "isSelf": false,
-    "round": null
+    "round": "4차",
+    "anomaly": "전남"
   },
   {
-    "seq": 298,
+    "seq": 285,
     "name": "주식회사 여정 영암주유소",
     "address": "전남 영암군 삼호읍 대불로 164",
     "sido": "전남광주",
@@ -3869,12 +3727,13 @@
     "sigunguDetail": "영암군",
     "regionKey": "전남광주|영암군",
     "stationId": "A0033558",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "전남"
   },
   {
-    "seq": 299,
+    "seq": 286,
     "name": "광목주유소",
     "address": "전남 함평군 학교면 함영로 490",
     "sido": "전남광주",
@@ -3882,12 +3741,13 @@
     "sigunguDetail": "함평군",
     "regionKey": "전남광주|함평군",
     "stationId": "A0021156",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "전남"
   },
   {
-    "seq": 300,
+    "seq": 287,
     "name": "㈜대원 동신주유소",
     "address": "전남 나주시 건재로 89",
     "sido": "전남광주",
@@ -3895,12 +3755,13 @@
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
     "stationId": "A0021189",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "전남"
   },
   {
-    "seq": 301,
+    "seq": 288,
     "name": "금정에너지(주)금성주유소",
     "address": "전남 나주시 건재로 330",
     "sido": "전남광주",
@@ -3908,12 +3769,13 @@
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
     "stationId": "A0021236",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "4차",
+    "anomaly": "전남"
   },
   {
-    "seq": 302,
+    "seq": 289,
     "name": "오성주유소",
     "address": "전북 남원시 춘향로 370",
     "sido": "전북",
@@ -3921,25 +3783,12 @@
     "sigunguDetail": "남원시",
     "regionKey": "전북|남원시",
     "stationId": "A0019544",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 303,
-    "name": "(주)월락주유소",
-    "address": "전북 남원시 낙현안길 4",
-    "sido": "전북",
-    "sigungu": "남원시",
-    "sigunguDetail": "남원시",
-    "regionKey": "전북|남원시",
-    "stationId": "A0019354",
-    "brand": null,
-    "isSelf": false,
-    "round": null
-  },
-  {
-    "seq": 304,
+    "seq": 290,
     "name": "초원주유소",
     "address": "제주 서귀포시 일주서로 27 (강정동)",
     "sido": "제주",
@@ -3947,12 +3796,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0030863",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 305,
+    "seq": 291,
     "name": "하원주유소",
     "address": "제주 서귀포시 일주서로 479 (하원동)",
     "sido": "제주",
@@ -3960,12 +3809,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031029",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 306,
+    "seq": 292,
     "name": "혁신도시주유소",
     "address": "제주특별자치도 서귀포시 일주동로 9144",
     "sido": "제주",
@@ -3973,12 +3822,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0033239",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 307,
+    "seq": 293,
     "name": "동현주유소",
     "address": "충남 공주시 장기면 차령로 1851",
     "sido": "충남",
@@ -3986,12 +3835,12 @@
     "sigunguDetail": "공주시",
     "regionKey": "충남|공주시",
     "stationId": "A0014435",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 308,
+    "seq": 294,
     "name": "햇님주유소",
     "address": "충남 논산시 연산면 계백로 2435",
     "sido": "충남",
@@ -3999,12 +3848,12 @@
     "sigunguDetail": "논산시",
     "regionKey": "충남|논산시",
     "stationId": "A0016542",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 309,
+    "seq": 295,
     "name": "강경농협주유소",
     "address": "충남 논산시 강경읍 계백로 57",
     "sido": "충남",
@@ -4012,12 +3861,12 @@
     "sigunguDetail": "논산시",
     "regionKey": "충남|논산시",
     "stationId": "A0014807",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 310,
+    "seq": 296,
     "name": "계백주유소",
     "address": "충남 논산시 부적면 계백로 1428",
     "sido": "충남",
@@ -4025,12 +3874,12 @@
     "sigunguDetail": "논산시",
     "regionKey": "충남|논산시",
     "stationId": "A0016452",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 311,
+    "seq": 297,
     "name": "백두산주유소",
     "address": "충남 보령시 대해로 498 (요암동)",
     "sido": "충남",
@@ -4038,25 +3887,25 @@
     "sigunguDetail": "보령시",
     "regionKey": "충남|보령시",
     "stationId": "A0032692",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "PB",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 312,
+    "seq": 298,
     "name": "행복에너지주식회사 행복에너지2주유소",
-    "address": "충북 청주시 서원구 청남로 1937",
+    "address": "충북 청주시 서원구 청남로 1937 (미평",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 서원구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0012500",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 313,
+    "seq": 299,
     "name": "맹꽁이주유소",
     "address": "충북 괴산군 문광면 괴산로 3314",
     "sido": "충북",
@@ -4064,12 +3913,12 @@
     "sigunguDetail": "괴산군",
     "regionKey": "충북|괴산군",
     "stationId": "A0012007",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 314,
+    "seq": 300,
     "name": "두꺼비주유소",
     "address": "충북 괴산군 중부로 2974",
     "sido": "충북",
@@ -4077,25 +3926,25 @@
     "sigunguDetail": "괴산군",
     "regionKey": "충북|괴산군",
     "stationId": "A0017127",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 315,
+    "seq": 301,
     "name": "대황주유소",
     "address": "충북 제천시 봉양읍 북부로 913",
     "sido": "충북",
     "sigungu": "제천시",
     "sigunguDetail": "제천시",
     "regionKey": "충북|제천시",
-    "stationId": null,
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "stationId": "A0026263",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "4차"
   },
   {
-    "seq": 316,
+    "seq": 302,
     "name": "㈜붕붕붕주유소",
     "address": "강원 춘천시 공지로 156-3",
     "sido": "강원",
@@ -4103,12 +3952,12 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0010431",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 317,
+    "seq": 303,
     "name": "춘천주유소",
     "address": "강원 춘천시 공지로 234-1 (효자동)",
     "sido": "강원",
@@ -4116,12 +3965,12 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0010392",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 318,
+    "seq": 304,
     "name": "춘천농협주유소 엔타점",
     "address": "강원 춘천시 후석로 120",
     "sido": "강원",
@@ -4129,12 +3978,12 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0033649",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 319,
+    "seq": 305,
     "name": "(주)어하둥둥알뜰주유소",
     "address": "경기 양주시 부흥로 1300",
     "sido": "경기",
@@ -4142,12 +3991,12 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0005003",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 320,
+    "seq": 306,
     "name": "서울이엔지㈜ 일월주유소",
     "address": "경기 양주시 백석읍 부흥로 1126",
     "sido": "경기",
@@ -4155,12 +4004,12 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0004808",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 321,
+    "seq": 307,
     "name": "하나셀프주유소",
     "address": "경기 양주시 백석읍 부흥로 1024",
     "sido": "경기",
@@ -4168,12 +4017,12 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0004826",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 322,
+    "seq": 308,
     "name": "㈜원흥.양주지점 제이앤에스",
     "address": "경기 양주시 평화로 1107 (산북동)",
     "sido": "경기",
@@ -4181,12 +4030,12 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0006122",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 323,
+    "seq": 309,
     "name": "KH에너지㈜직영 대복주유소",
     "address": "경기 양주시 부흥로 1807",
     "sido": "경기",
@@ -4194,25 +4043,25 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0004417",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "PB",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 324,
+    "seq": 310,
     "name": "광신석유(주)직영 양덕주유소",
-    "address": "경남 창원시 마산회원구 삼호로 119",
+    "address": "경남 창원시 마산회원구 삼호로 119 (",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산회원구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028429",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 325,
+    "seq": 311,
     "name": "시선㈜ 경주지점",
     "address": "경북 경주시 산업로 3585",
     "sido": "경북",
@@ -4220,12 +4069,12 @@
     "sigunguDetail": "경주시",
     "regionKey": "경북|경주시",
     "stationId": "A0024102",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 326,
+    "seq": 312,
     "name": "대광셀프주유소",
     "address": "경북 칠곡군 동명면 경북대로 158",
     "sido": "경북",
@@ -4233,12 +4082,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0023664",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 327,
+    "seq": 313,
     "name": "평리주유소",
     "address": "대구 서구 서대구로 227 (평리동)",
     "sido": "대구",
@@ -4246,12 +4095,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023551",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 328,
+    "seq": 314,
     "name": "영신제2주유소",
     "address": "대구 서구 서대구로 207 (평리동)",
     "sido": "대구",
@@ -4259,12 +4108,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023330",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 329,
+    "seq": 315,
     "name": "선인에너지㈜강변주유소",
     "address": "대전 유성구 엑스포로 293",
     "sido": "대전",
@@ -4272,12 +4121,12 @@
     "sigunguDetail": "유성구",
     "regionKey": "대전|유성구",
     "stationId": "A0016846",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 330,
+    "seq": 316,
     "name": "스마트주유소",
     "address": "부산 사상구 가야대로 377",
     "sido": "부산",
@@ -4285,12 +4134,12 @@
     "sigunguDetail": "사상구",
     "regionKey": "부산|사상구",
     "stationId": "A0027502",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 331,
+    "seq": 317,
     "name": "㈜씨더블유 이엔지 금천지점",
     "address": "서울 금천구 독산로 147",
     "sido": "서울",
@@ -4298,12 +4147,12 @@
     "sigunguDetail": "금천구",
     "regionKey": "서울|금천구",
     "stationId": "A0001132",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 332,
+    "seq": 318,
     "name": "양운개발 마천로주유소",
     "address": "서울 송파구 마천로 230",
     "sido": "서울",
@@ -4311,12 +4160,12 @@
     "sigunguDetail": "송파구",
     "regionKey": "서울|송파구",
     "stationId": "A0009939",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "5차"
   },
   {
-    "seq": 333,
+    "seq": 319,
     "name": "(주)디오티디 은평유니콘주유소",
     "address": "서울 은평구 통일로 1151",
     "sido": "서울",
@@ -4324,12 +4173,12 @@
     "sigunguDetail": "은평구",
     "regionKey": "서울|은평구",
     "stationId": "A0000686",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "5차"
   },
   {
-    "seq": 334,
+    "seq": 320,
     "name": "(주)연우에너지 신관주유소",
     "address": "서울 관악구 신림로 290 (신림동)",
     "sido": "서울",
@@ -4337,25 +4186,25 @@
     "sigunguDetail": "관악구",
     "regionKey": "서울|관악구",
     "stationId": "A0009272",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 335,
+    "seq": 321,
     "name": "남목주유소",
-    "address": "울산 동구 방어진순환도로 1208",
+    "address": "울산 동구 방어진순환도로 1208 (서부동",
     "sido": "울산",
     "sigungu": "동구",
     "sigunguDetail": "동구",
     "regionKey": "울산|동구",
     "stationId": "A0031491",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 336,
+    "seq": 322,
     "name": "금광주유소",
     "address": "인천 서구 중봉대로 1593 (금곡동)",
     "sido": "인천",
@@ -4363,12 +4212,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0033724",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 337,
+    "seq": 323,
     "name": "부광셀프주유소",
     "address": "인천 서구 봉수대로 1623",
     "sido": "인천",
@@ -4376,12 +4225,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0001267",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 338,
+    "seq": 324,
     "name": "남도에너지",
     "address": "전남 화순군 화순읍 서양로 376",
     "sido": "전남광주",
@@ -4389,12 +4238,13 @@
     "sigunguDetail": "화순군",
     "regionKey": "전남광주|화순군",
     "stationId": "A0019690",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차",
+    "anomaly": "전남"
   },
   {
-    "seq": 339,
+    "seq": 325,
     "name": "(주)대원에너지 일봉지점",
     "address": "전남 나주시 왕곡면 여시물길 70",
     "sido": "전남광주",
@@ -4402,12 +4252,13 @@
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
     "stationId": "A0033669",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차",
+    "anomaly": "전남"
   },
   {
-    "seq": 340,
+    "seq": 326,
     "name": "㈜원",
     "address": "전남 나주시 동강면 장동들길 25-4",
     "sido": "전남광주",
@@ -4415,25 +4266,26 @@
     "sigunguDetail": "나주시",
     "regionKey": "전남광주|나주시",
     "stationId": "A0033781",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "5차",
+    "anomaly": "전남"
   },
   {
-    "seq": 341,
+    "seq": 327,
     "name": "(유)백제주유소",
-    "address": "전북 전주시 완산구 효자로 67-3 (효자동3가)",
+    "address": "전북 전주시 완산구 효자로 67-3 (효자",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 완산구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0018249",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 342,
+    "seq": 328,
     "name": "수도석유(주)한신주유소",
     "address": "제주 서귀포시 천제연로 77",
     "sido": "제주",
@@ -4441,12 +4293,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031139",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 343,
+    "seq": 329,
     "name": "가까운주유소",
     "address": "제주특별자치도 서귀포시 일주서로 1080",
     "sido": "제주",
@@ -4454,25 +4306,25 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0033618",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 344,
+    "seq": 330,
     "name": "유성주유소",
-    "address": "제주특별자치도 제주시 조천읍 일주동로1152",
+    "address": "제주특별자치도 제주시 조천읍 일주동로",
     "sido": "제주",
     "sigungu": "제주시",
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0031081",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 345,
+    "seq": 331,
     "name": "수산주유소",
     "address": "제주 서귀포시 성산읍 서성일로 898",
     "sido": "제주",
@@ -4480,12 +4332,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031075",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 346,
+    "seq": 332,
     "name": "우루사Self주유소",
     "address": "충남 당진시 신평면 서해로 7522",
     "sido": "충남",
@@ -4493,38 +4345,38 @@
     "sigunguDetail": "당진시",
     "regionKey": "충남|당진시",
     "stationId": "A0015265",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 347,
+    "seq": 333,
     "name": "아평주유소",
     "address": "충남 천안시 동남구 천안대로 784",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016250",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 348,
+    "seq": 334,
     "name": "진우11주유소",
     "address": "충남 천안시 동남구 쌍용대로 175",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016904",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 349,
+    "seq": 335,
     "name": "미래주유소",
     "address": "충남 논산시 연산면 계백로 1983",
     "sido": "충남",
@@ -4532,12 +4384,12 @@
     "sigunguDetail": "논산시",
     "regionKey": "충남|논산시",
     "stationId": "A0014531",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 350,
+    "seq": 336,
     "name": "충주주유소",
     "address": "충북 충주시 중원대로 3506 (봉방동)",
     "sido": "충북",
@@ -4545,25 +4397,25 @@
     "sigunguDetail": "충주시",
     "regionKey": "충북|충주시",
     "stationId": "A0013150",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 351,
+    "seq": 337,
     "name": "이포에너지㈜ 금강주유소",
     "address": "충북 청주시 서원구 청남로 2145",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 서원구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0002005",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "5차"
   },
   {
-    "seq": 352,
+    "seq": 338,
     "name": "거두주유소",
     "address": "강원도 춘천시 동내면 춘천순환로 59",
     "sido": "강원",
@@ -4571,12 +4423,12 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0009978",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 353,
+    "seq": 339,
     "name": "(주)교현 알뜰주유소",
     "address": "경기 양주시 장흥면 북한산로 863",
     "sido": "경기",
@@ -4584,51 +4436,51 @@
     "sigunguDetail": "양주시",
     "regionKey": "경기|양주시",
     "stationId": "A0005030",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 354,
+    "seq": 340,
     "name": "동부3",
-    "address": "경남 창원시 성산구 마디미로 73",
+    "address": "경남 창원시 성산구 마디미로 73 (상남",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 성산구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028707",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 355,
+    "seq": 341,
     "name": "동부2",
     "address": "경남 창원시 진해구 진해대로 732",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 진해구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028706",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 356,
+    "seq": 342,
     "name": "성주주유소",
     "address": "경남 창원시 성산구 해원로 410",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 성산구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028622",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 357,
+    "seq": 343,
     "name": "함마대로주유소",
     "address": "경남 함안군 산인면 함마대로 2035",
     "sido": "경남",
@@ -4636,12 +4488,12 @@
     "sigunguDetail": "함안군",
     "regionKey": "경남|함안군",
     "stationId": "A0028266",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 358,
+    "seq": 344,
     "name": "행복주유소",
     "address": "경북 구미시 송선로 507",
     "sido": "경북",
@@ -4649,12 +4501,12 @@
     "sigunguDetail": "구미시",
     "regionKey": "경북|구미시",
     "stationId": "A0026124",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 359,
+    "seq": 345,
     "name": "㈜송라오일뱅크 공항점",
     "address": "대구 동구 공항로 259",
     "sido": "대구",
@@ -4662,12 +4514,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대구|동구",
     "stationId": "A0022913",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 360,
+    "seq": 346,
     "name": "도마진실주유소",
     "address": "대전 서구 도산로 123",
     "sido": "대전",
@@ -4675,12 +4527,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0016604",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 361,
+    "seq": 347,
     "name": "와동셀프주유소 ㈜에스에이치에너지",
     "address": "대전 대덕구 신탄진로 386",
     "sido": "대전",
@@ -4688,12 +4540,12 @@
     "sigunguDetail": "대덕구",
     "regionKey": "대전|대덕구",
     "stationId": "A0013952",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 362,
+    "seq": 348,
     "name": "(유)용명에너지 신대전셀프주유소",
     "address": "대전 서구 도산로 213",
     "sido": "대전",
@@ -4701,12 +4553,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0016802",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 363,
+    "seq": 349,
     "name": "㈜오일마스터 킹콩주유소 대전지점",
     "address": "대전 대덕구 아리랑로 107 (읍내동)",
     "sido": "대전",
@@ -4714,12 +4566,12 @@
     "sigunguDetail": "대덕구",
     "regionKey": "대전|대덕구",
     "stationId": "A0017447",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 364,
+    "seq": 350,
     "name": "남선석유㈜ 계백셀프주유소",
     "address": "대전 서구 계백로 1327",
     "sido": "대전",
@@ -4727,12 +4579,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대전|서구",
     "stationId": "A0016445",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 365,
+    "seq": 351,
     "name": "(주)대청에너지 대청주유소",
     "address": "서울 영등포구 가마산로 328 (대림동)",
     "sido": "서울",
@@ -4740,12 +4592,12 @@
     "sigunguDetail": "영등포구",
     "regionKey": "서울|영등포구",
     "stationId": "A0000444",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 366,
+    "seq": 352,
     "name": "영등포제일셀프주유소",
     "address": "서울 영등포구 가마산로 379",
     "sido": "서울",
@@ -4753,12 +4605,12 @@
     "sigunguDetail": "영등포구",
     "regionKey": "서울|영등포구",
     "stationId": "A0000427",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 367,
+    "seq": 353,
     "name": "KH에너지㈜직영 KH외발산주유소",
     "address": "서울 강서구 방화대로 30",
     "sido": "서울",
@@ -4766,12 +4618,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0033328",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 368,
+    "seq": 354,
     "name": "유턴주유소",
     "address": "서울 강서구 남부순환로 57",
     "sido": "서울",
@@ -4779,12 +4631,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0000567",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 369,
+    "seq": 355,
     "name": "경동석유산업㈜부평SELF 주유소",
     "address": "인천 부평구 백범로 567",
     "sido": "인천",
@@ -4792,12 +4644,12 @@
     "sigunguDetail": "부평구",
     "regionKey": "인천|부평구",
     "stationId": "A0033792",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 370,
+    "seq": 356,
     "name": "차오름에너지㈜",
     "address": "인천 서구 봉수대로 1248 (왕길동)",
     "sido": "인천",
@@ -4805,12 +4657,12 @@
     "sigunguDetail": "서구",
     "regionKey": "인천|서구",
     "stationId": "A0009895",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 371,
+    "seq": 357,
     "name": "동일석유㈜주안동일주유소",
     "address": "인천 미추홀구 석정로 498",
     "sido": "인천",
@@ -4818,12 +4670,12 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0001539",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 372,
+    "seq": 358,
     "name": "도지주유소",
     "address": "인천 남동구 백범로 471",
     "sido": "인천",
@@ -4831,12 +4683,12 @@
     "sigunguDetail": "남동구",
     "regionKey": "인천|남동구",
     "stationId": "A0006214",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 373,
+    "seq": 359,
     "name": "공원주유소",
     "address": "전남 장성군 북이면 방장로 995",
     "sido": "전남광주",
@@ -4844,25 +4696,26 @@
     "sigunguDetail": "장성군",
     "regionKey": "전남광주|장성군",
     "stationId": "A0019865",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차",
+    "anomaly": "전남"
   },
   {
-    "seq": 374,
+    "seq": 360,
     "name": "명진주유소",
-    "address": "전북 전주시 덕진구 원만성로 45",
+    "address": "전북 전주시 덕진구 원만성로 45 (팔복",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 덕진구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0017926",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 375,
+    "seq": 361,
     "name": "삼화석유(주) 법환Self주유소",
     "address": "제주특별자치도 서귀포시 일주동로 9173",
     "sido": "제주",
@@ -4870,12 +4723,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0031045",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 376,
+    "seq": 362,
     "name": "삼양주유소",
     "address": "제주특별자치도 제주시 일주동로 398",
     "sido": "제주",
@@ -4883,25 +4736,25 @@
     "sigunguDetail": "제주시",
     "regionKey": "제주|제주시",
     "stationId": "A0031022",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 377,
+    "seq": 363,
     "name": "KK㈜ 천안중앙2주유소",
-    "address": "충남 천안시 서북구 쌍용대로 215",
+    "address": "충남 천안시 서북구 쌍용대로 215 (성정",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 서북구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016149",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "6차"
   },
   {
-    "seq": 378,
+    "seq": 364,
     "name": "동춘천농협주유소",
     "address": "강원 춘천시 동내면 학곡동2길 11",
     "sido": "강원",
@@ -4909,25 +4762,25 @@
     "sigunguDetail": "춘천시",
     "regionKey": "강원|춘천시",
     "stationId": "A0010489",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "NH",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 379,
+    "seq": 365,
     "name": "동부1",
-    "address": "경남 창원시 진해구 진해대로 855",
+    "address": "경남 창원시 진해구 진해대로 855 (석동",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 진해구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028578",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 380,
+    "seq": 366,
     "name": "미소가득주유소",
     "address": "경북 칠곡군 왜관읍 강변대로 830",
     "sido": "경북",
@@ -4935,12 +4788,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026112",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 381,
+    "seq": 367,
     "name": "강나루주유소",
     "address": "경북 칠곡군 왜관읍 강변대로 853",
     "sido": "경북",
@@ -4948,12 +4801,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026282",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 382,
+    "seq": 368,
     "name": "대왕석유무역㈜ 대왕주유소",
     "address": "경북 칠곡군 왜관읍 강변대로 700",
     "sido": "경북",
@@ -4961,12 +4814,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026119",
-    "brand": null,
+    "brand": "HD",
     "isSelf": false,
-    "round": null
+    "round": "7차"
   },
   {
-    "seq": 383,
+    "seq": 369,
     "name": "평동천우주유소",
     "address": "광주 광산구 동곡로 655 (송촌동)",
     "sido": "전남광주",
@@ -4974,25 +4827,27 @@
     "sigunguDetail": "광산구",
     "regionKey": "전남광주|광산구",
     "stationId": "A0020608",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "7차",
+    "anomaly": "광주"
   },
   {
-    "seq": 384,
+    "seq": 370,
     "name": "드림에너지㈜",
-    "address": "광주광역시 남구 대남대로 336",
+    "address": "광주광역시 남구 대남대로 336 (월산5",
     "sido": "전남광주",
     "sigungu": "남구",
     "sigunguDetail": "남구",
     "regionKey": "전남광주|남구",
     "stationId": "A0019692",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차",
+    "anomaly": "광주"
   },
   {
-    "seq": 385,
+    "seq": 371,
     "name": "㈜다원컴퍼니",
     "address": "대구 서구 국채보상로 122 (중리동)",
     "sido": "대구",
@@ -5000,12 +4855,12 @@
     "sigunguDetail": "서구",
     "regionKey": "대구|서구",
     "stationId": "A0023362",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 386,
+    "seq": 372,
     "name": "옥계주유소",
     "address": "대전 중구 대종로 103",
     "sido": "대전",
@@ -5013,12 +4868,12 @@
     "sigunguDetail": "중구",
     "regionKey": "대전|중구",
     "stationId": "A0003125",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 387,
+    "seq": 373,
     "name": "월드컵주유소",
     "address": "부산 기장군 일광면 기장대로 1230",
     "sido": "부산",
@@ -5026,25 +4881,25 @@
     "sigunguDetail": "기장군",
     "regionKey": "부산|기장군",
     "stationId": "A0010753",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 388,
-    "name": "신아시아드주유소 은마석유㈜",
+    "seq": 374,
+    "name": "신아시아드주유소/충전소 은마석유㈜",
     "address": "부산광역시 기장군 일광면 기장대로 996",
     "sido": "부산",
     "sigungu": "기장군",
     "sigunguDetail": "기장군",
     "regionKey": "부산|기장군",
     "stationId": "A0031821",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 389,
+    "seq": 375,
     "name": "㈜영원석유 하늘주유소",
     "address": "부산 해운대구 해운대로 1184",
     "sido": "부산",
@@ -5052,12 +4907,12 @@
     "sigunguDetail": "해운대구",
     "regionKey": "부산|해운대구",
     "stationId": "A0031410",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 390,
+    "seq": 376,
     "name": "㈜영원석유 영원주유소",
     "address": "부산 해운대구 해운대로 1178",
     "sido": "부산",
@@ -5065,12 +4920,12 @@
     "sigunguDetail": "해운대구",
     "regionKey": "부산|해운대구",
     "stationId": "A0027753",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 391,
+    "seq": 377,
     "name": "오시리아주유소",
     "address": "부산 해운대구 해운대로 1226 (송정동)",
     "sido": "부산",
@@ -5078,12 +4933,12 @@
     "sigunguDetail": "해운대구",
     "regionKey": "부산|해운대구",
     "stationId": "A0031255",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 392,
+    "seq": 378,
     "name": "경동석유산업㈜ 강서오곡SELF주유소",
     "address": "서울 강서구 벌말로 254 (오곡동)",
     "sido": "서울",
@@ -5091,12 +4946,12 @@
     "sigunguDetail": "강서구",
     "regionKey": "서울|강서구",
     "stationId": "A0032866",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 393,
+    "seq": 379,
     "name": "㈜성동에너지",
     "address": "서울 성동구 천호대로 392",
     "sido": "서울",
@@ -5104,12 +4959,12 @@
     "sigunguDetail": "성동구",
     "regionKey": "서울|성동구",
     "stationId": "A0009293",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 394,
+    "seq": 380,
     "name": "(주)서울에너지 궁동주유소",
     "address": "서울 구로구 오리로 1299 (궁동)",
     "sido": "서울",
@@ -5117,12 +4972,12 @@
     "sigunguDetail": "구로구",
     "regionKey": "서울|구로구",
     "stationId": "A0000854",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 395,
+    "seq": 381,
     "name": "구도일주유소 동천",
     "address": "서울 중랑구 동일로 654 (면목동)",
     "sido": "서울",
@@ -5130,12 +4985,12 @@
     "sigunguDetail": "중랑구",
     "regionKey": "서울|중랑구",
     "stationId": "A0009217",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 396,
+    "seq": 382,
     "name": "면목SELF주유소",
     "address": "서울 중랑구 동일로 627 (면목동)",
     "sido": "서울",
@@ -5143,12 +4998,12 @@
     "sigunguDetail": "중랑구",
     "regionKey": "서울|중랑구",
     "stationId": "A0009158",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 397,
+    "seq": 383,
     "name": "세종예운주유소",
     "address": "세종 부강면 부강외천로 301",
     "sido": "세종",
@@ -5156,38 +5011,38 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0014379",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 398,
+    "seq": 384,
     "name": "역전셀프주유소",
-    "address": "전북 전주시 덕진구 동부대로 748",
+    "address": "전북 전주시 덕진구 동부대로 748 (우",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 덕진구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0022666",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 399,
+    "seq": 385,
     "name": "행복주유소",
-    "address": "전북 전주시 덕진구 동부대로 641",
+    "address": "전북 전주시 덕진구 동부대로 641 (우아",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 덕진구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0017955",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 400,
+    "seq": 386,
     "name": "강정천주유소",
     "address": "제주 서귀포시 이어도로 634 (강정동)",
     "sido": "제주",
@@ -5195,12 +5050,12 @@
     "sigunguDetail": "서귀포시",
     "regionKey": "제주|서귀포시",
     "stationId": "A0030981",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 401,
+    "seq": 387,
     "name": "디오티디아산멍멍이주유소",
     "address": "충남 아산시 인주면 서해로 525",
     "sido": "충남",
@@ -5208,25 +5063,25 @@
     "sigunguDetail": "아산시",
     "regionKey": "충남|아산시",
     "stationId": "A0016035",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 402,
+    "seq": 388,
     "name": "영운동셀프주유소",
-    "address": "충북 청주시 상당구 단재로 118-1",
+    "address": "충북 청주시 상당구 단재로 118-1 (영운",
     "sido": "충북",
     "sigungu": "청주시",
-    "sigunguDetail": "청주시 상당구",
+    "sigunguDetail": "청주시",
     "regionKey": "충북|청주시",
     "stationId": "A0017353",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 403,
+    "seq": 389,
     "name": "금곡셀프주유소",
     "address": "충북 진천군 광혜원면 생거진천로 2377",
     "sido": "충북",
@@ -5234,12 +5089,12 @@
     "sigunguDetail": "진천군",
     "regionKey": "충북|진천군",
     "stationId": "A0012380",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "7차"
   },
   {
-    "seq": 404,
+    "seq": 390,
     "name": "회산주유소",
     "address": "강원 강릉시 관솔길 27 (회산동)",
     "sido": "강원",
@@ -5247,12 +5102,12 @@
     "sigunguDetail": "강릉시",
     "regionKey": "강원|강릉시",
     "stationId": "A0011396",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 405,
+    "seq": 391,
     "name": "솔향주유소",
     "address": "강원 강릉시 공제로437번길 1 (홍제동)",
     "sido": "강원",
@@ -5260,64 +5115,64 @@
     "sigunguDetail": "강릉시",
     "regionKey": "강원|강릉시",
     "stationId": "A0011488",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 406,
+    "seq": 392,
     "name": "(주)원흥 원당동지점",
     "address": "경기 고양시 덕양구 호국로 1113",
     "sido": "경기",
     "sigungu": "고양시",
-    "sigunguDetail": "고양시 덕양구",
+    "sigunguDetail": "고양시",
     "regionKey": "경기|고양시",
     "stationId": "A0005266",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 407,
+    "seq": 393,
     "name": "㈜너멍골",
     "address": "경기 고양시 덕양구 호국로 1259",
     "sido": "경기",
     "sigungu": "고양시",
-    "sigunguDetail": "고양시 덕양구",
+    "sigunguDetail": "고양시",
     "regionKey": "경기|고양시",
     "stationId": "A0005163",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 408,
+    "seq": 394,
     "name": "㈜승지 승일주유소",
     "address": "경기 부천시 원미구 상일로 42",
     "sido": "경기",
     "sigungu": "부천시",
-    "sigunguDetail": "부천시 원미구",
+    "sigunguDetail": "부천시",
     "regionKey": "경기|부천시",
     "stationId": "A0006954",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 409,
+    "seq": 395,
     "name": "㈜자연에너지 삼정주유소",
-    "address": "경기 부천시 오정구 중동로 447",
+    "address": "경기 부천시 오정구 중동로 447 (삼정동",
     "sido": "경기",
     "sigungu": "부천시",
-    "sigunguDetail": "부천시 오정구",
+    "sigunguDetail": "부천시",
     "regionKey": "경기|부천시",
     "stationId": "A0006107",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 410,
+    "seq": 396,
     "name": "무지내주유소",
     "address": "경기 시흥시 금오로 144 (무지내동)",
     "sido": "경기",
@@ -5325,25 +5180,25 @@
     "sigunguDetail": "시흥시",
     "regionKey": "경기|시흥시",
     "stationId": "A0009185",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 411,
+    "seq": 397,
     "name": "㈜미니E 직영주유소",
     "address": "경남 창원시 마산회원구 3.15대로 524",
     "sido": "경남",
     "sigungu": "창원시",
-    "sigunguDetail": "창원시 마산회원구",
+    "sigunguDetail": "창원시",
     "regionKey": "경남|창원시",
     "stationId": "A0028484",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 412,
+    "seq": 398,
     "name": "차탄셀프주유소",
     "address": "경남 산청군 산청읍 산청대로 2083",
     "sido": "경남",
@@ -5351,12 +5206,12 @@
     "sigunguDetail": "산청군",
     "regionKey": "경남|산청군",
     "stationId": "A0029821",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 413,
+    "seq": 399,
     "name": "화영삼방셀프주유소",
     "address": "경남 김해시 삼안로 151 (삼방동)",
     "sido": "경남",
@@ -5364,12 +5219,12 @@
     "sigunguDetail": "김해시",
     "regionKey": "경남|김해시",
     "stationId": "A0030635",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 414,
+    "seq": 400,
     "name": "행운에너지",
     "address": "경북 칠곡군 약목면 칠곡대로 504",
     "sido": "경북",
@@ -5377,12 +5232,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026102",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 415,
+    "seq": 401,
     "name": "대경제5주유소",
     "address": "경북 칠곡군 북삼읍 칠곡대로 254",
     "sido": "경북",
@@ -5390,12 +5245,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0025956",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 416,
+    "seq": 402,
     "name": "오성주유소",
     "address": "경북 칠곡군 동명면 팔공산로 152",
     "sido": "경북",
@@ -5403,12 +5258,12 @@
     "sigunguDetail": "칠곡군",
     "regionKey": "경북|칠곡군",
     "stationId": "A0026147",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 417,
+    "seq": 403,
     "name": "팔공산IC주유소",
     "address": "대구 동구 공항로 247",
     "sido": "대구",
@@ -5416,12 +5271,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대구|동구",
     "stationId": "A0022955",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 418,
+    "seq": 404,
     "name": "샬롬주유소",
     "address": "대구 달서구 달서대로 58",
     "sido": "대구",
@@ -5429,12 +5284,12 @@
     "sigunguDetail": "달서구",
     "regionKey": "대구|달서구",
     "stationId": "A0026818",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "AL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 419,
+    "seq": 405,
     "name": "내트럭(주)남대전사업소",
     "address": "대전 동구 대전로 15",
     "sido": "대전",
@@ -5442,12 +5297,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대전|동구",
     "stationId": "A0014019",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 420,
+    "seq": 406,
     "name": "용전셀프주유소",
     "address": "대전 동구 동서대로 1627",
     "sido": "대전",
@@ -5455,12 +5310,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대전|동구",
     "stationId": "A0013991",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 421,
+    "seq": 407,
     "name": "동일석유㈜대전주유소",
     "address": "대전 동구 계족로 436 (용전동)",
     "sido": "대전",
@@ -5468,12 +5323,12 @@
     "sigunguDetail": "동구",
     "regionKey": "대전|동구",
     "stationId": "A0013597",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 422,
+    "seq": 408,
     "name": "대양석유㈜ 중리주유소",
     "address": "대전 대덕구 한밭대로 1186",
     "sido": "대전",
@@ -5481,12 +5336,12 @@
     "sigunguDetail": "대덕구",
     "regionKey": "대전|대덕구",
     "stationId": "A0016492",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 423,
+    "seq": 409,
     "name": "송정역주유소",
     "address": "부산 해운대구 해운대로 1217",
     "sido": "부산",
@@ -5494,12 +5349,12 @@
     "sigunguDetail": "해운대구",
     "regionKey": "부산|해운대구",
     "stationId": "A0031310",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 424,
+    "seq": 410,
     "name": "삼양주유소",
     "address": "부산 해운대구 해운대로 1249 (송정동)",
     "sido": "부산",
@@ -5507,12 +5362,12 @@
     "sigunguDetail": "해운대구",
     "regionKey": "부산|해운대구",
     "stationId": "A0031376",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 425,
+    "seq": 411,
     "name": "이케이에너지 주식회사",
     "address": "서울 도봉구 도봉로 941 (도봉동)",
     "sido": "서울",
@@ -5520,12 +5375,12 @@
     "sigunguDetail": "도봉구",
     "regionKey": "서울|도봉구",
     "stationId": "A0009682",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 426,
+    "seq": 412,
     "name": "㈜자연에너지 고척주유소",
     "address": "서울 구로구 고척로 199 (고척동)",
     "sido": "서울",
@@ -5533,12 +5388,12 @@
     "sigunguDetail": "구로구",
     "regionKey": "서울|구로구",
     "stationId": "A0006667",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 427,
+    "seq": 413,
     "name": "SK에너지(주) 박미주유소",
     "address": "서울 금천구 시흥대로 39-7 (시흥동)",
     "sido": "서울",
@@ -5546,12 +5401,12 @@
     "sigunguDetail": "금천구",
     "regionKey": "서울|금천구",
     "stationId": "A0001146",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 428,
+    "seq": 414,
     "name": "대양석유㈜ 세종대평주유소",
     "address": "세종 종합운동장로 29",
     "sido": "세종",
@@ -5559,12 +5414,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033575",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 429,
+    "seq": 415,
     "name": "SK에너지(주) 소담self주유소",
     "address": "세종 소담로 40",
     "sido": "세종",
@@ -5572,12 +5427,12 @@
     "sigunguDetail": "세종",
     "regionKey": "세종|세종",
     "stationId": "A0033199",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 430,
+    "seq": 416,
     "name": "내트럭(주) 울산약수사업소",
     "address": "울산 북구 산업로 1515",
     "sido": "울산",
@@ -5585,12 +5440,12 @@
     "sigunguDetail": "북구",
     "regionKey": "울산|북구",
     "stationId": "A0033222",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "8차"
   },
   {
-    "seq": 431,
+    "seq": 417,
     "name": "원주유소",
     "address": "울산 울주군 두동면 두동로 832",
     "sido": "울산",
@@ -5598,12 +5453,12 @@
     "sigunguDetail": "울주군",
     "regionKey": "울산|울주군",
     "stationId": "A0022868",
-    "brand": null,
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "8차"
   },
   {
-    "seq": 432,
+    "seq": 418,
     "name": "염포무지개셀프주유소",
     "address": "울산 북구 방어진순환도로 1391",
     "sido": "울산",
@@ -5611,25 +5466,25 @@
     "sigunguDetail": "북구",
     "regionKey": "울산|북구",
     "stationId": "A0028859",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 433,
+    "seq": 419,
     "name": "한국3주유소",
-    "address": "인천 제물포구 서해대로418번길 70",
+    "address": "인천 제물포구 서해대로418번길 70 (신",
     "sido": "인천",
     "sigungu": "제물포구",
     "sigunguDetail": "제물포구",
     "regionKey": "인천|제물포구",
     "stationId": "A0001532",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 434,
+    "seq": 420,
     "name": "KH에너지㈜직영 남강주유소",
     "address": "인천 미추홀구 인주대로 43 (숭의동)",
     "sido": "인천",
@@ -5637,168 +5492,174 @@
     "sigunguDetail": "미추홀구",
     "regionKey": "인천|미추홀구",
     "stationId": "A0001484",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 435,
+    "seq": 421,
     "name": "남선석유(주) 평동그린주유소",
     "address": "전남광주통합특별시 광산구 동곡로 645",
     "sido": "전남광주",
-    "sigungu": "광산구",
-    "sigunguDetail": "광산구",
-    "regionKey": "전남광주|광산구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0020221",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 436,
+    "seq": 422,
     "name": "(주)효광 운수대통주유소",
     "address": "전남광주통합특별시 광산구 동곡로 846",
     "sido": "전남광주",
-    "sigungu": "광산구",
-    "sigunguDetail": "광산구",
-    "regionKey": "전남광주|광산구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0020678",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 437,
+    "seq": 423,
     "name": "마트몰㈜ 더믿음가득주유소",
     "address": "전남광주 북구 하남대로 777",
     "sido": "전남광주",
-    "sigungu": "북구",
-    "sigunguDetail": "북구",
-    "regionKey": "전남광주|북구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0020076",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 438,
+    "seq": 424,
     "name": "(주)아승클린주유소",
-    "address": "전남광주통합특별시 북구 우치로 170",
+    "address": "전남광주통합특별시 북구 우치로 170 (",
     "sido": "전남광주",
-    "sigungu": "북구",
-    "sigunguDetail": "북구",
-    "regionKey": "전남광주|북구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0019803",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 439,
+    "seq": 425,
     "name": "㈜아승주유소",
-    "address": "전남광주통합특별시 동구 필문대로15",
+    "address": "전남광주통합특별시 동구 필문대로153번",
     "sido": "전남광주",
-    "sigungu": "동구",
-    "sigunguDetail": "동구",
-    "regionKey": "전남광주|동구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0019694",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 440,
+    "seq": 426,
     "name": "(주)대창석유직영 지산주유소",
     "address": "전남광주통합특별시 동구 필문대로 219",
     "sido": "전남광주",
-    "sigungu": "동구",
-    "sigunguDetail": "동구",
-    "regionKey": "전남광주|동구",
+    "sigungu": "광주시",
+    "sigunguDetail": "광주시",
+    "regionKey": "전남광주|광주시",
     "stationId": "A0020645",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차",
+    "anomaly": "전남"
   },
   {
-    "seq": 441,
+    "seq": 427,
     "name": "블루그린㈜ 효자1지점",
     "address": "전북 전주시 완산구 콩쥐팥쥐로 1701",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 완산구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0018150",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "HD",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 442,
+    "seq": 428,
     "name": "(유)민들레셀프주유소",
-    "address": "전북 전주시 완산구 유연로 59",
+    "address": "전북 전주시 완산구 유연로 59 (효자동3",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 완산구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0033287",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 443,
+    "seq": 429,
     "name": "서진셀프주유소",
-    "address": "전북 전주시 완산구 유연로 48",
+    "address": "전북 전주시 완산구 유연로 48 (효자동3",
     "sido": "전북",
     "sigungu": "전주시",
-    "sigunguDetail": "전주시 완산구",
+    "sigunguDetail": "전주시",
     "regionKey": "전북|전주시",
     "stationId": "A0018008",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 444,
+    "seq": 430,
     "name": "햇님주유소",
     "address": "충남 천안시 동남구 충절로 461",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0015784",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 445,
+    "seq": 431,
     "name": "동일석유㈜천안동일주유소",
-    "address": "충남 천안시 동남구 천안대로 536",
+    "address": "충남 천안시 동남구 천안대로 536 (구성",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0016189",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "SK",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 446,
+    "seq": 432,
     "name": "(주)대륙주유소",
     "address": "충남 천안시 동남구 천안대로 782",
     "sido": "충남",
     "sigungu": "천안시",
-    "sigunguDetail": "천안시 동남구",
+    "sigunguDetail": "천안시",
     "regionKey": "충남|천안시",
     "stationId": "A0012793",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "GS",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 447,
+    "seq": 433,
     "name": "이케이에너지(주) 속리산(청주)주유소충전소",
     "address": "충북 보은군 마로면 적암길 56-18",
     "sido": "충북",
@@ -5806,12 +5667,12 @@
     "sigunguDetail": "보은군",
     "regionKey": "충북|보은군",
     "stationId": "A0012717",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "EX",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 448,
+    "seq": 434,
     "name": "신창에너지㈜황간(서울)주유소",
     "address": "충북 영동군 황간면 회포1길 65",
     "sido": "충북",
@@ -5819,12 +5680,12 @@
     "sigunguDetail": "영동군",
     "regionKey": "충북|영동군",
     "stationId": "A0012712",
-    "brand": null,
-    "isSelf": false,
-    "round": null
+    "brand": "EX",
+    "isSelf": true,
+    "round": "8차"
   },
   {
-    "seq": 449,
+    "seq": 435,
     "name": "신창에너지㈜황간(부산)주유소",
     "address": "충북 영동군 황간면 회포길 102",
     "sido": "충북",
@@ -5832,8 +5693,495 @@
     "sigunguDetail": "영동군",
     "regionKey": "충북|영동군",
     "stationId": "A0012711",
-    "brand": null,
+    "brand": "EX",
+    "isSelf": true,
+    "round": "8차"
+  },
+  {
+    "seq": 436,
+    "name": "대동강주유소",
+    "address": "강원 강릉시 남부로 67 (내곡동)",
+    "sido": "강원",
+    "sigungu": "강릉시",
+    "sigunguDetail": "강릉시",
+    "regionKey": "강원|강릉시",
+    "stationId": "A0011415",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 437,
+    "name": "(주)원흥 원흥동지점",
+    "address": "경기 고양시 덕양구 서오릉로 712 (원흥",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0005463",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 438,
+    "name": "덕양제1주유소",
+    "address": "경기 고양시 덕양구 서오릉로 832 (성사",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0000644",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 439,
+    "name": "(주)원흥 풍동지점",
+    "address": "경기 고양시 일산동구 무궁화로 299 (풍",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0005571",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 440,
+    "name": "(주)원흥 고양동지점",
+    "address": "경기 고양시 덕양구 호국로 1789",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0005555",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 441,
+    "name": "㈜보성중산주유소",
+    "address": "경기 고양시 일산동구 고양대로 834 (중",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0005525",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 442,
+    "name": "덕양제7주유소",
+    "address": "경기 고양시 일산동구 무궁화로 250 (풍",
+    "sido": "경기",
+    "sigungu": "고양시",
+    "sigunguDetail": "고양시",
+    "regionKey": "경기|고양시",
+    "stationId": "A0005436",
+    "brand": "AL",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 443,
+    "name": "무지개셀프주유소",
+    "address": "경남 김해시 호계로 282 (부원동)",
+    "sido": "경남",
+    "sigungu": "김해시",
+    "sigunguDetail": "김해시",
+    "regionKey": "경남|김해시",
+    "stationId": "A0030768",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 444,
+    "name": "(주)송라오일뱅크",
+    "address": "경북 포항시 북구 동해대로 2941",
+    "sido": "경북",
+    "sigungu": "포항시",
+    "sigunguDetail": "포항시",
+    "regionKey": "경북|포항시",
+    "stationId": "A0024681",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 445,
+    "name": "고현주유소",
+    "address": "경북 포항시 북구 청하면 동해대로 2151",
+    "sido": "경북",
+    "sigungu": "포항시",
+    "sigunguDetail": "포항시",
+    "regionKey": "경북|포항시",
+    "stationId": "A0024639",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 446,
+    "name": "행운주유소",
+    "address": "대구 중구 태평로 105 (태평로3가)",
+    "sido": "대구",
+    "sigungu": "중구",
+    "sigunguDetail": "중구",
+    "regionKey": "대구|중구",
+    "stationId": "A0023607",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 447,
+    "name": "신월주유소",
+    "address": "서울 양천구 신월로 193",
+    "sido": "서울",
+    "sigungu": "양천구",
+    "sigunguDetail": "양천구",
+    "regionKey": "서울|양천구",
+    "stationId": "A0000992",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 448,
+    "name": "㈜자연에너지 관악주유소",
+    "address": "서울 관악구 남부순환로 1520",
+    "sido": "서울",
+    "sigungu": "관악구",
+    "sigunguDetail": "관악구",
+    "regionKey": "서울|관악구",
+    "stationId": "A0001129",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 449,
+    "name": "삼미상사(주)신월IC셀프주유소",
+    "address": "서울 양천구 중앙로 331 (신월동)",
+    "sido": "서울",
+    "sigungu": "양천구",
+    "sigunguDetail": "양천구",
+    "regionKey": "서울|양천구",
+    "stationId": "A0000944",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 450,
+    "name": "봉암주유소",
+    "address": "세종시 연서면 세종로 1899",
+    "sido": "세종",
+    "sigungu": "세종",
+    "sigunguDetail": "세종",
+    "regionKey": "세종|세종",
+    "stationId": "A0016460",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 451,
+    "name": "CJ대한통운㈜ 태화강 P-OIL",
+    "address": "울산 남구 남산로 322",
+    "sido": "울산",
+    "sigungu": "남구",
+    "sigunguDetail": "남구",
+    "regionKey": "울산|남구",
+    "stationId": "A0031479",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 452,
+    "name": "동아주유소",
+    "address": "울산 중구 다운로 166",
+    "sido": "울산",
+    "sigungu": "중구",
+    "sigunguDetail": "중구",
+    "regionKey": "울산|중구",
+    "stationId": "A0031533",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 453,
+    "name": "내트럭(주)울산사업소",
+    "address": "울산 남구 산업로 100",
+    "sido": "울산",
+    "sigungu": "남구",
+    "sigunguDetail": "남구",
+    "regionKey": "울산|남구",
+    "stationId": "A0029171",
+    "brand": "SK",
     "isSelf": false,
-    "round": null
+    "round": "9차"
+  },
+  {
+    "seq": 454,
+    "name": "파란들주유소",
+    "address": "인천 서해구 봉수대로 181 (가좌동)",
+    "sido": "인천",
+    "sigungu": "서해구",
+    "sigunguDetail": "서해구",
+    "regionKey": "인천|서해구",
+    "stationId": "A0007744",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 455,
+    "name": "㈜석산에너지 민국주유소",
+    "address": "인천 서해구 봉수대로 254",
+    "sido": "인천",
+    "sigungu": "서해구",
+    "sigunguDetail": "서해구",
+    "regionKey": "인천|서해구",
+    "stationId": "A0007706",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 456,
+    "name": "태평양주유소",
+    "address": "전남광주통합특별시 광산구 송도로 92 (",
+    "sido": "전남광주",
+    "sigungu": "광산구",
+    "sigunguDetail": "광산구",
+    "regionKey": "전남광주|광산구",
+    "stationId": "A0020633",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 457,
+    "name": "시선㈜ 광주서지점",
+    "address": "전남광주통합특별시 서구 풍서좌로 83",
+    "sido": "전남광주",
+    "sigungu": "서구",
+    "sigunguDetail": "서구",
+    "regionKey": "전남광주|서구",
+    "stationId": "A0020215",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 458,
+    "name": "임곡농협주유소",
+    "address": "전남광주 광산구 고봉로 565 (산막동)",
+    "sido": "전남광주",
+    "sigungu": "광산구",
+    "sigunguDetail": "광산구",
+    "regionKey": "전남광주|광산구",
+    "stationId": "A0020479",
+    "brand": "NH",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 459,
+    "name": "㈜한영 광주남지점",
+    "address": "전남광주통합특별시 남구 대남대로 347",
+    "sido": "전남광주",
+    "sigungu": "남구",
+    "sigunguDetail": "남구",
+    "regionKey": "전남광주|남구",
+    "stationId": "A0019571",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 460,
+    "name": "(주)스마일셀프주유소",
+    "address": "전남광주통합특별시 광산구 고봉로 541",
+    "sido": "전남광주",
+    "sigungu": "광산구",
+    "sigunguDetail": "광산구",
+    "regionKey": "전남광주|광산구",
+    "stationId": "A0020463",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 461,
+    "name": "나들목광장 주식회사",
+    "address": "전남광주 장성군 장성읍 하서대로 753",
+    "sido": "전남광주",
+    "sigungu": "장성군",
+    "sigunguDetail": "장성군",
+    "regionKey": "전남광주|장성군",
+    "stationId": "A0020056",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차",
+    "anomaly": "광주"
+  },
+  {
+    "seq": 462,
+    "name": "보물단지주유소",
+    "address": "전북 완주군 봉동읍 완주로 533",
+    "sido": "전북",
+    "sigungu": "완주군",
+    "sigunguDetail": "완주군",
+    "regionKey": "전북|완주군",
+    "stationId": "A0018147",
+    "brand": "AL",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 463,
+    "name": "고래주유소",
+    "address": "전북 익산시 주현로 54",
+    "sido": "전북",
+    "sigungu": "익산시",
+    "sigunguDetail": "익산시",
+    "regionKey": "전북|익산시",
+    "stationId": "A0014550",
+    "brand": "AL",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 464,
+    "name": "순창알뜰주유소",
+    "address": "전북 순창군 순창읍 장류로 339",
+    "sido": "전북",
+    "sigungu": "순창군",
+    "sigunguDetail": "순창군",
+    "regionKey": "전북|순창군",
+    "stationId": "A0019245",
+    "brand": "AL",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 465,
+    "name": "(유)스마트주유소",
+    "address": "전북 전주시 덕진구 동부대로 786",
+    "sido": "전북",
+    "sigungu": "전주시",
+    "sigunguDetail": "전주시",
+    "regionKey": "전북|전주시",
+    "stationId": "A0022745",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 466,
+    "name": "도순주유소",
+    "address": "제주 서귀포시 일주서로 366 (도순동)",
+    "sido": "제주",
+    "sigungu": "서귀포시",
+    "sigunguDetail": "서귀포시",
+    "regionKey": "제주|서귀포시",
+    "stationId": "A0031126",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 467,
+    "name": "대성제5주유소",
+    "address": "충남 천안시 동남구 청수로 135",
+    "sido": "충남",
+    "sigungu": "천안시",
+    "sigunguDetail": "천안시",
+    "regionKey": "충남|천안시",
+    "stationId": "A0006842",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 468,
+    "name": "두정탑주유소",
+    "address": "충남 천안시 서북구 동서대로 61",
+    "sido": "충남",
+    "sigungu": "천안시",
+    "sigunguDetail": "천안시",
+    "regionKey": "충남|천안시",
+    "stationId": "A0014260",
+    "brand": "GS",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 469,
+    "name": "선우셀프주유소",
+    "address": "충북 증평군 증평읍 초평로 1742",
+    "sido": "충북",
+    "sigungu": "증평군",
+    "sigunguDetail": "증평군",
+    "regionKey": "충북|증평군",
+    "stationId": "A0012341",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 470,
+    "name": "증평self주유소",
+    "address": "충북 증평군 증평읍 삼보로 7",
+    "sido": "충북",
+    "sigungu": "증평군",
+    "sigunguDetail": "증평군",
+    "regionKey": "충북|증평군",
+    "stationId": "A0012072",
+    "brand": "HD",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 471,
+    "name": "KK㈜ KK하나주유소",
+    "address": "충북 제천시 북부로 2365",
+    "sido": "충북",
+    "sigungu": "제천시",
+    "sigunguDetail": "제천시",
+    "regionKey": "충북|제천시",
+    "stationId": "A0013498",
+    "brand": "SK",
+    "isSelf": true,
+    "round": "9차"
+  },
+  {
+    "seq": 472,
+    "name": "해찬주유소",
+    "address": "충북 증평군 증평읍 중부로 2475",
+    "sido": "충북",
+    "sigungu": "증평군",
+    "sigunguDetail": "증평군",
+    "regionKey": "충북|증평군",
+    "stationId": "A0009040",
+    "brand": "SOIL",
+    "isSelf": true,
+    "round": "9차"
   }
 ]
