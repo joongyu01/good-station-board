@@ -15,7 +15,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fetchStationDetails } from "../src/lib/opinet/api.ts";
+import { fetchStationDetails, verifyKey } from "../src/lib/opinet/api.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "data");
@@ -41,6 +41,16 @@ async function main() {
 
   const wanted = [...new Set(Object.values(mapping).map((m) => m.stationId))];
   const todo = wanted.filter((id) => !coords[id]);
+
+  // 조회를 다 돌리기 전에 키부터 확인한다. 못 쓰는 키로 381번 두드릴 이유가 없다.
+  const key = await verifyKey();
+  console.log(`[coords] 인증키 확인: ${key.ok ? "OK" : "실패"} — ${key.detail}`);
+  if (!key.ok) {
+    console.log("[coords] 유효한 키가 아니라 조회를 건너뜁니다.");
+    console.log("  오피넷 마이페이지에서 발급 승인 상태를 확인해 주세요.");
+    console.log("  https://www.opinet.co.kr/user/custapi/custApiInfo.do");
+    return;
+  }
 
   console.log(`[coords] 대상 ${wanted.length}곳, 이미 보유 ${wanted.length - todo.length}곳, 조회 ${todo.length}곳`);
   if (todo.length === 0) { console.log("[coords] 새로 받을 것이 없습니다."); return; }

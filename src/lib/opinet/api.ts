@@ -9,6 +9,8 @@
 import { katecToWgs84, type LatLng } from "../coords.ts";
 
 const DETAIL_URL = "https://www.opinet.co.kr/api/detailById.do";
+/** 무료 등급에도 들어 있는 기본 엔드포인트. 키 자체가 유효한지 가르는 데 쓴다. */
+const AVG_URL = "https://www.opinet.co.kr/api/avgAllPrice.do";
 
 export interface StationDetail {
   stationId: string;
@@ -22,6 +24,34 @@ function apiKey(): string {
   const key = process.env.OPINET_API_KEY;
   if (!key) throw new Error("OPINET_API_KEY 환경변수가 없습니다.");
   return key;
+}
+
+/**
+ * 인증키가 살아 있는지 확인한다.
+ *
+ * detailById 가 전건 빈 응답일 때, 키가 아예 안 먹는 것인지 그 엔드포인트만
+ * 등급에서 빠진 것인지 구분해야 한다. 전국 평균가는 무료 등급에도 들어 있으므로
+ * 이게 되면 키는 유효한 것이다.
+ */
+export async function verifyKey(): Promise<{ ok: boolean; detail: string }> {
+  try {
+    const res = await fetch(`${AVG_URL}?out=json&code=${apiKey()}`, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; good-station-board/1.0)" },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return { ok: false, detail: `HTTP ${res.status}` };
+
+    const raw = await res.text();
+    let json: unknown;
+    try { json = JSON.parse(raw); }
+    catch { return { ok: false, detail: `JSON 아님: ${raw.slice(0, 120)}` }; }
+
+    const list = (json as { RESULT?: { OIL?: unknown[] } })?.RESULT?.OIL ?? [];
+    if (list.length === 0) return { ok: false, detail: "평균가도 빈 응답 — 키가 아직 활성화되지 않았습니다" };
+    return { ok: true, detail: `평균가 ${list.length}종 수신 — 키는 유효합니다` };
+  } catch (e) {
+    return { ok: false, detail: e instanceof Error ? e.message : String(e) };
+  }
 }
 
 /**
