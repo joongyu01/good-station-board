@@ -25,11 +25,17 @@ export interface GeoCollection {
   features: GeoFeature[];
 }
 
+/**
+ * 신호등 색. K-Petro CI 팔레트에 맞춘 값이다.
+ *
+ * styles.css 의 --sig-* 와 같은 값을 쓴다. SVG 채우기와 인라인 style 에서
+ * 쓰려면 JS 쪽에도 실제 값이 필요해 두 곳에 둔다.
+ */
 export const SIGNAL_COLORS: Record<SignalColor, string> = {
-  green: "#16a34a",
-  yellow: "#eab308",
-  red: "#dc2626",
-  unknown: "#94a3b8",
+  green: "#6FA82E",
+  yellow: "#E3A81E",
+  red: "#C6402E",
+  unknown: "#B9BDBE",
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {

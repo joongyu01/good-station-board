@@ -9,6 +9,9 @@ import {
 } from "./lib/board.ts";
 import { FUEL_LABELS, FUEL_TYPES } from "@shared/lib/types.ts";
 
+/** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
+const LOGO = new URL("logo.png", document.baseURI).toString();
+
 const EMPTY_GEO: GeoCollection = { type: "FeatureCollection", features: [] };
 
 export default function App() {
@@ -185,11 +188,14 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <>
       <header className="topbar">
+        <span className="topbar-logo">
+          <img src={LOGO} alt="한국석유관리원" />
+        </span>
+
         <div className="brand">
           <h1>착한주유소 현황판</h1>
-          <span className="org">한국석유관리원</span>
         </div>
 
         <div className="meta">
@@ -197,8 +203,6 @@ export default function App() {
           <span className="sep">·</span>
           <span className="matched">{board.summary.matched}/{board.summary.total}곳 가격 연계</span>
         </div>
-
-        <a className="admin-link" href="#/admin" title="명단 관리">관리</a>
 
         <div className="fuel-tabs" role="tablist" aria-label="유종 선택">
           {FUEL_TYPES.map((f) => (
@@ -213,8 +217,11 @@ export default function App() {
             </button>
           ))}
         </div>
+
+        <a className="admin-link" href="#/admin" title="명단 관리">관리</a>
       </header>
 
+      <div className="page">
       <div className="summary-strip">
         {(["green", "yellow", "red", "unknown"] as const).map((k) => (
           <div key={k} className={`stat stat-${k}`}>
@@ -315,6 +322,7 @@ export default function App() {
         © 2026 Korea Petroleum Quality &amp; Distribution Authority.
         <div className="cr-sub">Developed by Joongyu Shin.</div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

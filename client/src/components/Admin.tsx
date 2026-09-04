@@ -16,6 +16,8 @@ import {
 } from "../lib/supabase.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
 
+const LOGO = new URL("logo.png", document.baseURI).toString();
+
 type Tab = "stations" | "settings" | "secrets";
 
 export default function Admin({ onExit }: { onExit: () => void }) {
@@ -77,23 +79,27 @@ function Shell({ children, onExit, right }: {
   children: React.ReactNode; onExit: () => void; right?: React.ReactNode;
 }) {
   return (
-    <div className="app admin">
+    <>
       <header className="topbar">
+        <span className="topbar-logo">
+          <img src={LOGO} alt="한국석유관리원" />
+        </span>
         <div className="brand">
           <h1>착한주유소 관리</h1>
-          <span className="org">한국석유관리원</span>
         </div>
         <div className="admin-actions">
           {right}
           <button className="btn-ghost" onClick={onExit}>현황판으로</button>
         </div>
       </header>
-      {children}
-      <div className="copyright">
-        © 2026 Korea Petroleum Quality &amp; Distribution Authority.
-        <div className="cr-sub">Developed by Joongyu Shin.</div>
+      <div className="page">
+        {children}
+        <div className="copyright">
+          © 2026 Korea Petroleum Quality &amp; Distribution Authority.
+          <div className="cr-sub">Developed by Joongyu Shin.</div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -118,6 +124,7 @@ function Gate({ onIn }: { onIn: (t: string) => void }) {
 
   return (
     <form className="gate" onSubmit={submit}>
+      <img className="gate-logo" src={LOGO} alt="한국석유관리원" />
       <h2>접근코드</h2>
       <p className="gate-sub">명단을 수정하려면 접근코드가 필요합니다.</p>
       <input
