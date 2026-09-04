@@ -44,6 +44,9 @@ const MESSAGES: Record<string, string> = {
   RANK_RANGE: "기준 순위는 1~500 사이여야 합니다.",
   FACTOR_RANGE: "노랑 배수는 1~20 사이여야 합니다.",
   NOT_CONFIGURED: "Supabase 접속 정보가 설정되지 않았습니다. public/config.js 를 확인해 주세요.",
+  ROWS_REQUIRED: "명단 데이터가 비어 있습니다.",
+  EMPTY_LIST: "CSV 에서 읽어낸 주유소가 하나도 없습니다.",
+  TOO_FEW_ROWS: "주유소가 10곳 미만입니다. 파일이 잘린 것은 아닌지 확인해 주세요.",
 };
 
 export function describeError(e: unknown): string {
@@ -112,6 +115,11 @@ export interface StationRow {
   sigungu_detail: string;
   region_key: string;
   station_id: string | null;
+  /** 폴(상표) 코드 — HD / SOIL / SK / GS / AL / NH / EX / PB */
+  brand: string | null;
+  is_self: boolean;
+  /** 선정차수 (예: "1차") */
+  round: string | null;
   lat: number | null;
   lng: number | null;
   active: boolean;
@@ -178,6 +186,13 @@ export const saveStation = (token: string, s: Partial<StationRow>) =>
 
 export const deleteStation = (token: string, seq: number) =>
   rpc("gs_station_delete", { p_token: token, p_seq: seq });
+
+/** CSV 업로드 — 명단을 통째로 갈아끼운다. 좌표는 주유소코드로 이어받는다. */
+export const replaceStations = (token: string, rows: Array<Record<string, unknown>>) =>
+  rpc<{ ok: boolean; count: number; coords_kept: number }>("gs_station_replace", {
+    p_token: token,
+    p_rows: rows,
+  });
 
 export const getConfig = (token: string) =>
   rpc<AdminConfig>("gs_config_get", { p_token: token });

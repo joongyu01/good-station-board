@@ -40,15 +40,24 @@ export interface DownloadResult {
 }
 
 /**
- * @param targetDate YYYYMMDD (START_DT = END_DT = targetDate)
+ * @param startDate YYYYMMDD
+ * @param endDate   YYYYMMDD. 생략하면 startDate 와 같은 하루치.
+ *
+ * 오피넷 다운로드 폼은 기간 조회를 지원한다. 과거치를 채울 때 하루씩
+ * 예순 번 긁는 대신 한 번에 받기 위해 범위를 열어 뒀다. 다만 서버가 어디까지
+ * 허용하는지는 응답을 봐야 안다 — 호출부가 행 수와 날짜 수를 확인해야 한다.
  */
-async function attemptDownload(targetDate: string): Promise<DownloadResult | null> {
+async function attemptDownload(
+  startDate: string,
+  endDate: string = startDate,
+): Promise<DownloadResult | null> {
   let browser: Browser | undefined;
 
   try {
     if (!existsSync(DOWNLOAD_DIR)) mkdirSync(DOWNLOAD_DIR, { recursive: true });
 
-    console.log(`[scraper] 브라우저 시작 (기준일 ${targetDate})`);
+    const span = startDate === endDate ? `기준일 ${startDate}` : `${startDate}~${endDate}`;
+    console.log(`[scraper] 브라우저 시작 (${span})`);
     browser = await chromium.launch({ headless: true, args: LAUNCH_ARGS });
 
     const context = await browser.newContext({
@@ -78,18 +87,18 @@ async function attemptDownload(targetDate: string): Promise<DownloadResult | nul
 
     if (!fnReady) throw new Error("fn_Download 로드 실패 — NetFunnel 대기열 타임아웃(300초)");
 
-    await page.evaluate((date: string) => {
+    await page.evaluate(([from, to]: [string, string]) => {
       const $ = (window as any).$;
-      $("#span_start_date_picker").val(date);
-      $("#span_end_date_picker").val(date);
-    }, targetDate);
+      $("#span_start_date_picker").val(from);
+      $("#span_end_date_picker").val(to);
+    }, [startDate, endDate] as [string, string]);
 
     const set = await page.evaluate(() => ({
       start: (document.getElementById("span_start_date_picker") as HTMLInputElement)?.value,
       end: (document.getElementById("span_end_date_picker") as HTMLInputElement)?.value,
     }));
-    if (set.start !== targetDate || set.end !== targetDate) {
-      throw new Error(`날짜 설정 실패 — 기대 ${targetDate}, 실제 ${set.start}~${set.end}`);
+    if (set.start !== startDate || set.end !== endDate) {
+      throw new Error(`날짜 설정 실패 — 기대 ${startDate}~${endDate}, 실제 ${set.start}~${set.end}`);
     }
 
     console.log("[scraper] fn_Download(6) 호출, 다운로드 대기 (최대 600초)...");
@@ -98,7 +107,7 @@ async function attemptDownload(targetDate: string): Promise<DownloadResult | nul
       page.evaluate(() => { (window as any).fn_Download(6); }),
     ]);
 
-    const filename = download.suggestedFilename() || `opinet_${targetDate}.csv`;
+    const filename = download.suggestedFilename() || `opinet_${startDate}_${endDate}.csv`;
     const savePath = path.join(DOWNLOAD_DIR, filename);
     await download.saveAs(savePath);
 
@@ -117,12 +126,13 @@ async function attemptDownload(targetDate: string): Promise<DownloadResult | nul
 
 /** 재시도를 감싼 다운로드. */
 export async function downloadOilPrice(
-  targetDate: string,
+  startDate: string,
+  endDate: string = startDate,
   attempts = 3,
 ): Promise<DownloadResult | null> {
   for (let i = 1; i <= attempts; i++) {
     console.log(`[scraper] 시도 ${i}/${attempts}`);
-    const result = await attemptDownload(targetDate);
+    const result = await attemptDownload(startDate, endDate);
     if (result) return result;
     if (i < attempts) {
       const waitMs = 30_000 * i;

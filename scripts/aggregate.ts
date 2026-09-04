@@ -25,6 +25,7 @@ import {
   type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal,
 } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
+import { emptyHistory, mergeDay, pruneTo, sampleDay, type History } from "../src/lib/history.ts";
 import type { EnrichedRow } from "./collect.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -248,6 +249,24 @@ function main() {
 
   const available = all.slice(0, KEEP_DAYS);
   writeFileSync(path.join(OUT_DIR, "index.json"), JSON.stringify({ dates: available }), "utf8");
+
+  // ── 시계열 ──────────────────────────────────────────────────────────
+  //
+  // 오늘치를 data/history.json 에 얹고 화면이 읽을 곳으로 복사한다. 과거치는
+  // `npm run backfill` 이 채운다. 여기서는 하루씩 이어붙이기만 한다.
+  const historyPath = path.join(DATA, "history.json");
+  const history: History = existsSync(historyPath)
+    ? JSON.parse(readFileSync(historyPath, "utf8")) : emptyHistory();
+
+  const ids = new Set<string>();
+  for (const s of signals) if (s.stationId) ids.add(s.stationId);
+
+  mergeDay(history, date, sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th)));
+  const droppedSeries = pruneTo(history, ids);
+  history.generatedAt = new Date().toISOString();
+
+  writeFileSync(historyPath, JSON.stringify(history), "utf8");
+  writeFileSync(path.join(OUT_DIR, "history.json"), JSON.stringify(history), "utf8");
 
   // ── 콘솔 요약 ───────────────────────────────────────────────────────
   const withIndex = signals.filter((s) => s.priceIndex).length;

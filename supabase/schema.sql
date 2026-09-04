@@ -75,6 +75,11 @@ create table if not exists gs_station (
   updated_at     timestamptz not null default now()
 );
 
+-- 폴(상표)·셀프·선정차수. 명단 CSV 가 주는 값이라 나중에 붙였다.
+alter table gs_station add column if not exists brand   text;
+alter table gs_station add column if not exists is_self boolean not null default false;
+alter table gs_station add column if not exists round   text;
+
 create index if not exists gs_station_region_idx on gs_station (sido, sigungu);
 create index if not exists gs_station_active_idx on gs_station (active);
 
@@ -309,6 +314,75 @@ end;
 $$;
 
 -- ⑤ 명단 삭제
+-- ④-b 명단 통째 교체 (CSV 업로드)
+--
+-- 관리 화면에서 명단 CSV 를 올리면 여기로 온다. 파싱과 지역 정규화는 브라우저가
+-- 한다 — src/lib/station-csv.ts 를 빌드 스크립트와 공유해야 두 경로가 어긋나지
+-- 않기 때문이다. 이 함수는 검증된 행 묶음을 받아 원자적으로 갈아끼우기만 한다.
+--
+-- 좌표는 살려 둔다. 같은 주유소코드가 이미 있으면 그 lat/lng 을 새 행에
+-- 옮겨준다. 명단을 갱신할 때마다 수백 곳을 다시 지오코딩할 이유가 없다.
+create or replace function gs_station_replace(p_token text, p_rows jsonb)
+returns json
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_count integer;
+  v_kept  integer;
+begin
+  perform gs_require_session(p_token);
+
+  if p_rows is null or jsonb_typeof(p_rows) <> 'array' then
+    raise exception 'ROWS_REQUIRED' using errcode = '22000';
+  end if;
+
+  v_count := jsonb_array_length(p_rows);
+  if v_count = 0 then
+    raise exception 'EMPTY_LIST' using errcode = '22000';
+  end if;
+
+  -- 실수로 한두 줄짜리 파일을 올려 명단이 날아가는 일을 막는다.
+  if v_count < 10 then
+    raise exception 'TOO_FEW_ROWS' using errcode = '22000';
+  end if;
+
+  -- 기존 좌표를 주유소코드로 기억해 둔다.
+  create temp table _old_coords on commit drop as
+    select station_id, lat, lng from gs_station
+    where station_id is not null and lat is not null and lng is not null;
+
+  delete from gs_station;
+
+  insert into gs_station
+    (seq, name, address, sido, sigungu, sigungu_detail, region_key,
+     station_id, brand, is_self, round, lat, lng, active, note)
+  select
+    (r->>'seq')::integer,
+    r->>'name',
+    r->>'address',
+    coalesce(r->>'sido', ''),
+    coalesce(r->>'sigungu', ''),
+    coalesce(r->>'sigungu_detail', ''),
+    coalesce(r->>'region_key', ''),
+    nullif(r->>'station_id', ''),
+    nullif(r->>'brand', ''),
+    coalesce((r->>'is_self')::boolean, false),
+    nullif(r->>'round', ''),
+    o.lat,
+    o.lng,
+    true,
+    ''
+  from jsonb_array_elements(p_rows) as r
+  left join _old_coords o on o.station_id = nullif(r->>'station_id', '');
+
+  select count(*) into v_kept from gs_station where lat is not null;
+
+  return json_build_object('ok', true, 'count', v_count, 'coords_kept', v_kept);
+end;
+$$;
+
 create or replace function gs_station_delete(p_token text, p_seq integer)
 returns json
 language plpgsql
@@ -469,6 +543,7 @@ grant execute on function gs_ping(text)             to anon, authenticated;
 grant execute on function gs_logout(text)           to anon, authenticated;
 grant execute on function gs_stations(text)         to anon, authenticated;
 grant execute on function gs_station_save(text, integer, text, text, text, text, text, text, text, double precision, double precision, boolean, text) to anon, authenticated;
+grant execute on function gs_station_replace(text, jsonb)            to anon, authenticated;
 grant execute on function gs_station_delete(text, integer)          to anon, authenticated;
 grant execute on function gs_config_get(text)                        to anon, authenticated;
 grant execute on function gs_config_save(text, integer, integer, integer) to anon, authenticated;

@@ -20,10 +20,21 @@ import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { GeoCollection, GeoFeature, RegionSummary, StationSignal } from "../lib/board.ts";
 import { SIGNAL_COLORS, formatPrice } from "../lib/board.ts";
 import { poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
+import { withBrand } from "@shared/lib/brand.ts";
 import { tileSource, visibleTiles } from "../lib/basemap.ts";
 
 const WIDTH = 720;
 const HEIGHT = 860;
+
+/**
+ * 지도와 글자 확대 배율.
+ *
+ * 지도 칸을 1.5배 넓히고(styles.css 의 .layout) 라벨 글자도 같은 비율로 키운다.
+ * 기본 확대율(tf.k)을 1.5로 두는 방법도 있었지만 그러면 전국 보기에서 남해와
+ * 강원 끝이 화면 밖으로 잘려 나간다. 잘리지 않으면서 1.5배로 보이려면 지도가
+ * 차지하는 영역 자체가 커져야 한다.
+ */
+const LABEL_SCALE = 1.5;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 16;
 /** 이 거리(px)를 넘게 끌어야 지도 이동으로 친다. 클릭 시 손떨림과 구분하기 위함. */
@@ -47,13 +58,15 @@ interface Props {
   onSelectSido: (sido: string | null) => void;
   onSelectRegion: (label: string | null) => void;
   onSelectDistrict: (district: string | null) => void;
+  /** 주유기 아이콘이나 이름표를 누르면 판매가 추이를 연다 */
+  onSelectStation?: (s: StationSignal) => void;
 }
 
 export default function KoreaMap({
   sidoGeo, sigunguGeo, districtGeo, stations,
   activeSido, activeRegion, activeDistrict,
   sidoSummary, regionSummary, districtSummary,
-  onSelectSido, onSelectRegion, onSelectDistrict,
+  onSelectSido, onSelectRegion, onSelectDistrict, onSelectStation,
 }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [tf, setTf] = useState<Transform>(IDENTITY);
@@ -217,8 +230,8 @@ export default function KoreaMap({
   const labels = useMemo(() => {
     if (isDetail) return [];
     const k = tf.k;
-    const nameFont = (view.level === "sido" ? 12.5 : 11) / k;
-    const countsFont = 10 / k;
+    const nameFont = ((view.level === "sido" ? 12.5 : 11) * LABEL_SCALE) / k;
+    const countsFont = (10 * LABEL_SCALE) / k;
 
     const entries = view.features.map((f) => {
       const s = summaryFor(f);
@@ -251,8 +264,9 @@ export default function KoreaMap({
         id: keyOf(f),
         anchor: { x: pole.x, y: pole.y },
         x: pole.x, y: pole.y,
-        w: Math.max(name.length * nameFont, countsFont * (3 * 1.15 + digits * 0.62 + 2 * 0.7)) + 11 / k,
-        h: 29 / k,
+        w: Math.max(name.length * nameFont, countsFont * (3 * 1.15 + digits * 0.62 + 2 * 0.7)) + 14 / k,
+        // 이름 + 개수 + 비율 바 3단이라 종전(29)보다 높다.
+        h: (29 * LABEL_SCALE + 9) / k,
       };
       return { chip, name, summary: s };
     });
@@ -265,21 +279,23 @@ export default function KoreaMap({
   const pins = useMemo(() => {
     if (!isDetail) return [];
     const k = tf.k;
-    const font = 11 / k;
+    const font = (11 * LABEL_SCALE) / k;
 
     const entries = detailStations.pinned.map((s) => {
       const pt = projection([s.lng!, s.lat!]);
       const anchor = { x: pt?.[0] ?? 0, y: pt?.[1] ?? 0 };
+      const label = withBrand(s.name, s.brand);
       return {
         station: s,
+        label,
         anchor,
         chip: {
           id: String(s.seq),
           anchor,
           // 이름표는 핀 오른쪽 위에서 출발한다.
-          x: anchor.x + (s.name.length * font) / 2 + 14 / k,
-          y: anchor.y - 14 / k,
-          w: s.name.length * font + 16 / k,
+          x: anchor.x + (label.length * font) / 2 + 16 / k,
+          y: anchor.y - 15 / k,
+          w: label.length * font + 16 / k,
           h: 20 / k,
         } as Chip,
         font,
@@ -454,26 +470,35 @@ export default function KoreaMap({
             );
           })}
 
-          {labels.map(({ chip, name, summary, nameFont, countsFont }) => (
-            <g key={`lb-${chip.id}`} className="region-label">
-              <rect className="rl-chip"
-                x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
-                width={chip.w} height={chip.h} rx={5 / k} />
-              <text className="rl-name" x={chip.x} y={chip.y - 5 / k}
-                style={{ fontSize: `${nameFont}px` }}>{name}</text>
-              {summary && (
-                <text className="rl-counts" x={chip.x} y={chip.y + 8 / k}
-                  style={{ fontSize: `${countsFont}px` }}>
-                  <tspan fill={SIGNAL_COLORS.green}>●</tspan>
-                  <tspan className="rl-num">{summary.green} </tspan>
-                  <tspan fill={SIGNAL_COLORS.yellow}>●</tspan>
-                  <tspan className="rl-num">{summary.yellow} </tspan>
-                  <tspan fill={SIGNAL_COLORS.red}>●</tspan>
-                  <tspan className="rl-num">{summary.red}</tspan>
-                </text>
-              )}
-            </g>
-          ))}
+          {labels.map(({ chip, name, summary, nameFont, countsFont }) => {
+            const barW = chip.w - 10 / k;
+            const barH = 6 / k;
+            const barY = chip.y + chip.h / 2 - barH - 4 / k;
+            return (
+              <g key={`lb-${chip.id}`} className="region-label">
+                <rect className="rl-chip"
+                  x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
+                  width={chip.w} height={chip.h} rx={5 / k} />
+                <text className="rl-name" x={chip.x} y={chip.y - chip.h / 2 + nameFont * 0.85}
+                  style={{ fontSize: `${nameFont}px` }}>{name}</text>
+                {summary && (
+                  <text className="rl-counts" x={chip.x} y={chip.y + 1 / k}
+                    style={{ fontSize: `${countsFont}px` }}>
+                    <tspan fill={SIGNAL_COLORS.red}>●</tspan>
+                    <tspan className="rl-num">{summary.red} </tspan>
+                    <tspan fill={SIGNAL_COLORS.yellow}>●</tspan>
+                    <tspan className="rl-num">{summary.yellow} </tspan>
+                    <tspan fill={SIGNAL_COLORS.green}>●</tspan>
+                    <tspan className="rl-num">{summary.green}</tspan>
+                  </text>
+                )}
+                {/* 신호등 비율 바 — 왼쪽부터 빨강·노랑·초록이 개수 비율만큼 차지한다. */}
+                {summary && <SignalBar
+                  x={chip.x - barW / 2} y={barY} w={barW} h={barH} r={barH / 2}
+                  red={summary.red} yellow={summary.yellow} green={summary.green} />}
+              </g>
+            );
+          })}
 
           {/* 주유소 핀 — 상세 단계에서만 */}
           {pins.map(({ chip, anchor }) => (
@@ -481,29 +506,33 @@ export default function KoreaMap({
               x1={anchor.x} y1={anchor.y} x2={chip.x} y2={chip.y + chip.h / 2} />
           ))}
 
-          {pins.map(({ station, anchor, chip, font }) => {
+          {pins.map(({ station, label, anchor, chip, font }) => {
             const color = SIGNAL_COLORS[station.signal];
-            const tip = `${station.name} · 휘발유 ${formatPrice(station.prices.gasoline)}`
+            const tip = `${label} · 휘발유 ${formatPrice(station.prices.gasoline)}`
               + ` / 경유 ${formatPrice(station.prices.diesel)}`
               + (station.priceIndex == null ? "" : ` · 계수 ${station.priceIndex.coefficient.toFixed(3)}`)
               + (station.regionRank == null ? "" : ` · 시·도 ${station.regionRank}위`);
+            const open = () => {
+              if (suppressClick.current) { suppressClick.current = false; return; }
+              onSelectStation?.(station);
+            };
             return (
-              <g key={`pin-${station.seq}`} className="pin">
+              <g key={`pin-${station.seq}`} className="pin" onClick={open}>
                 <rect className="pin-chip"
                   x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
                   width={chip.w} height={chip.h} rx={4 / k}
                   stroke={color} />
                 <text className="pin-name" x={chip.x} y={chip.y}
                   style={{ fontSize: `${font}px` }} fill={color}>
-                  {station.name}
+                  {label}
                 </text>
-                <circle className="pin-dot" cx={anchor.x} cy={anchor.y} r={6 / k} fill={color} />
+                <PumpIcon x={anchor.x} y={anchor.y} size={22 / k} color={color} />
                 <circle
-                  cx={anchor.x} cy={anchor.y} r={11 / k}
+                  cx={anchor.x} cy={anchor.y - 9 / k} r={14 / k}
                   fill="transparent" className="pin-hit"
                   onMouseMove={(e) => {
                     const rect = svgRef.current!.getBoundingClientRect();
-                    setHover({ x: e.clientX - rect.left, y: e.clientY - rect.top, text: tip });
+                    setHover({ x: e.clientX - rect.left, y: e.clientY - rect.top, text: `${tip} · 누르면 추이` });
                   }}
                 >
                   <title>{tip}</title>
@@ -558,4 +587,108 @@ export default function KoreaMap({
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
+}
+
+/**
+ * 지역 신호등 비율 바.
+ *
+ * 왼쪽부터 빨강·노랑·초록이 주유소 개수 비율만큼 폭을 나눠 갖는다.
+ * 예) 빨강 3 · 노랑 2 · 초록 4 → 3:2:4
+ *
+ * 개수가 0인 색은 아예 그리지 않는다. 폭 0짜리 사각형을 남기면 둥근 모서리
+ * 때문에 얇은 선으로 보여 "조금 있다"고 오해하게 된다.
+ */
+function SignalBar({
+  x, y, w, h, r, red, yellow, green,
+}: {
+  x: number; y: number; w: number; h: number; r: number;
+  red: number; yellow: number; green: number;
+}) {
+  const total = red + yellow + green;
+  if (total <= 0 || w <= 0) return null;
+
+  const parts: Array<{ n: number; color: string }> = [
+    { n: red, color: SIGNAL_COLORS.red },
+    { n: yellow, color: SIGNAL_COLORS.yellow },
+    { n: green, color: SIGNAL_COLORS.green },
+  ].filter((p) => p.n > 0);
+
+  let at = 0;
+  return (
+    <g className="rl-bar" clipPath={undefined}>
+      <rect x={x} y={y} width={w} height={h} rx={r} className="rl-bar-bg" />
+      {parts.map((p, i) => {
+        const seg = (p.n / total) * w;
+        const sx = x + at;
+        at += seg;
+        // 양끝만 둥글게. 가운데 조각까지 둥글면 사이가 벌어져 보인다.
+        const first = i === 0;
+        const last = i === parts.length - 1;
+        return (
+          <path
+            key={p.color}
+            d={roundedSegment(sx, y, seg, h, r, first, last)}
+            fill={p.color}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+/** 좌우 모서리를 선택적으로 둥글린 사각형 path. */
+function roundedSegment(
+  x: number, y: number, w: number, h: number, r: number,
+  roundLeft: boolean, roundRight: boolean,
+): string {
+  const rr = Math.min(r, w / 2, h / 2);
+  const l = roundLeft ? rr : 0;
+  const rt = roundRight ? rr : 0;
+  return [
+    `M${x + l},${y}`,
+    `H${x + w - rt}`,
+    rt ? `A${rt},${rt} 0 0 1 ${x + w},${y + rt}` : "",
+    `V${y + h - rt}`,
+    rt ? `A${rt},${rt} 0 0 1 ${x + w - rt},${y + h}` : "",
+    `H${x + l}`,
+    l ? `A${l},${l} 0 0 1 ${x},${y + h - l}` : "",
+    `V${y + l}`,
+    l ? `A${l},${l} 0 0 1 ${x + l},${y}` : "",
+    "Z",
+  ].filter(Boolean).join(" ");
+}
+
+/**
+ * 주유기 아이콘 핀.
+ *
+ * 원형 점 대신 주유기 모양을 쓴다. 지도 위에서 "여기가 주유소"라는 게 색만으로
+ * 읽히지 않아서다. 색은 신호등 그대로다.
+ *
+ * (x, y)가 주유소의 실제 좌표이고 아이콘은 그 위에 선다 — 지도 핀의 관례대로
+ * 뾰족한 끝이 좌표를 가리킨다.
+ */
+function PumpIcon({ x, y, size, color }: { x: number; y: number; size: number; color: string }) {
+  // 24×24 좌표계로 그린 뒤 통째로 옮기고 줄인다.
+  const s = size / 24;
+  return (
+    <g
+      className="pin-pump"
+      transform={`translate(${x - size / 2},${y - size}) scale(${s})`}
+      style={{ color }}
+    >
+      {/* 바닥 그림자 — 좌표 지점을 짚어준다 */}
+      <ellipse cx={12} cy={23} rx={4.5} ry={1.6} fill="rgba(0,0,0,.22)" />
+      {/* 본체 */}
+      <rect x={3} y={3} width={11} height={19} rx={2} fill={color} stroke="#fff" strokeWidth={1.4} />
+      {/* 표시창 */}
+      <rect x={5.4} y={5.6} width={6.2} height={4.6} rx={1} fill="#fff" opacity={0.92} />
+      {/* 급유 호스와 노즐 */}
+      <path
+        d="M14 8 h2.6 a1.6 1.6 0 0 1 1.6 1.6 V16 a1.7 1.7 0 0 0 1.7 1.7 a1.7 1.7 0 0 0 1.7 -1.7 V10.4"
+        fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round"
+        style={{ paintOrder: "stroke" }}
+      />
+      <circle cx={21.6} cy={8.4} r={1.5} fill={color} stroke="#fff" strokeWidth={1} />
+    </g>
+  );
 }

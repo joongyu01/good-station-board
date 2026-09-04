@@ -8,13 +8,15 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   describeError, login, logout, loadToken, ping,
-  listStations, saveStation, deleteStation,
+  listStations, saveStation, deleteStation, replaceStations,
   getConfig, saveConfig, changeCode,
   listSecrets, saveSecret, deleteSecret,
   supabaseConfig,
   type AdminConfig, type SecretRow, type StationRow,
 } from "../lib/supabase.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
+import { parseStationCsv } from "@shared/lib/station-csv.ts";
+import { BRAND_LABELS, type BrandCode } from "@shared/lib/brand.ts";
 
 const LOGO = new URL("logo.png", document.baseURI).toString();
 
@@ -202,6 +204,7 @@ function Stations({ token, onExpire }: { token: string; onExpire: () => void }) 
         <input className="search" value={q} onChange={(e) => setQ(e.target.value)}
           placeholder="상호·주소·지역 검색" aria-label="검색" />
         <span className="admin-count">{filtered.length} / {rows.length}곳</span>
+        <CsvUpload token={token} onDone={reload} onError={setErr} />
         <button className="btn" onClick={() => setEdit({ ...EMPTY })}>+ 주유소 추가</button>
       </div>
 
@@ -212,7 +215,8 @@ function Stations({ token, onExpire }: { token: string; onExpire: () => void }) 
         <div className="admin-msg">
           <p>명단이 비어 있습니다.</p>
           <p className="muted">
-            기존 449곳을 옮기려면 <code>npm run supabase:seed</code> 를 실행하세요.
+            위의 <strong>CSV 올리기</strong> 로 명단 파일을 넣거나,
+            저장소에서 <code>npm run supabase:seed</code> 를 실행하세요.
           </p>
         </div>
       )}
@@ -226,6 +230,7 @@ function Stations({ token, onExpire }: { token: string; onExpire: () => void }) 
               <th>주소</th>
               <th>지역</th>
               <th>주유소코드</th>
+              <th>폴</th>
               <th>상태</th>
               <th></th>
             </tr>
@@ -238,6 +243,9 @@ function Stations({ token, onExpire }: { token: string; onExpire: () => void }) 
                 <td className="addr">{r.address}</td>
                 <td className="muted">{r.sido} {r.sigungu}</td>
                 <td className="mono">{r.station_id ?? <span className="muted">—</span>}</td>
+                <td className="muted" title={r.brand ? BRAND_LABELS[r.brand as BrandCode] ?? "" : ""}>
+                  {r.brand ?? "—"}{r.is_self ? " · 셀프" : ""}
+                </td>
                 <td>{r.active ? "운영" : <span className="muted">제외</span>}</td>
                 <td className="row-actions">
                   <button className="btn-ghost" onClick={() => setEdit(r)}>수정</button>
@@ -454,5 +462,170 @@ function Secrets({ token, onExpire }: { token: string; onExpire: () => void }) {
 
       {err && <p className="admin-err">{err}</p>}
     </section>
+  );
+}
+
+// ── CSV 업로드 ───────────────────────────────────────────────────────
+//
+// 파싱은 브라우저에서 한다. 빌드 스크립트(`npm run normalize`)와 같은
+// src/lib/station-csv.ts 를 쓰기 때문에 화면에서 올린 명단과 저장소에서 만든
+// 명단이 항상 같은 규칙으로 정규화된다.
+//
+// 올리기 전에 무엇이 바뀌는지 먼저 보여준다. 명단을 통째로 갈아끼우는
+// 동작이라 되돌리기가 어렵다.
+interface Preview {
+  fileName: string;
+  rows: Array<Record<string, unknown>>;
+  total: number;
+  withId: number;
+  brands: Array<[string, number]>;
+  failures: Array<{ line: number; name: string; reason: string }>;
+  unknownBrands: Array<[string, number]>;
+}
+
+function CsvUpload({ token, onDone, onError }: {
+  token: string;
+  onDone: () => void;
+  onError: (m: string | null) => void;
+}) {
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState<string | null>(null);
+
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    // 같은 파일을 두 번 고를 수 있어야 한다. 값을 비우지 않으면 change 가 안 뜬다.
+    e.target.value = "";
+    if (!file) return;
+
+    onError(null);
+    setDone(null);
+
+    // 엑셀에서 저장한 CSV 는 BOM 이 붙은 UTF-8 이거나 EUC-KR 이다. 먼저 UTF-8 로
+    // 읽어 보고 대체문자(U+FFFD)가 섞이면 EUC-KR 로 다시 읽는다.
+    const buf = await file.arrayBuffer();
+    let text = new TextDecoder("utf-8").decode(buf);
+    if (text.includes("\uFFFD")) {
+      try { text = new TextDecoder("euc-kr").decode(buf); } catch { /* 그대로 간다 */ }
+    }
+
+    const parsed = parseStationCsv(text);
+    if (parsed.stations.length === 0) {
+      onError(
+        parsed.failures[0]?.reason
+          ?? "CSV 에서 주유소를 하나도 읽지 못했습니다. 헤더에 `상호`·`주소` 열이 있는지 확인해 주세요.",
+      );
+      return;
+    }
+
+    const brands = new Map<string, number>();
+    for (const s of parsed.stations) {
+      const b = s.brand ?? "미상";
+      brands.set(b, (brands.get(b) ?? 0) + 1);
+    }
+
+    setPreview({
+      fileName: file.name,
+      rows: parsed.stations.map((s) => ({
+        seq: s.seq,
+        name: s.name,
+        address: s.address,
+        sido: s.sido,
+        sigungu: s.sigungu,
+        sigungu_detail: s.sigunguDetail,
+        region_key: s.regionKey,
+        station_id: s.stationId ?? "",
+        brand: s.brand ?? "",
+        is_self: s.isSelf,
+        round: s.round ?? "",
+      })),
+      total: parsed.stations.length,
+      withId: parsed.stations.filter((s) => s.stationId).length,
+      brands: [...brands.entries()].sort((a, b) => b[1] - a[1]),
+      failures: parsed.failures.slice(0, 20),
+      unknownBrands: [...parsed.unknownBrands.entries()],
+    });
+  }
+
+  async function commit() {
+    if (!preview) return;
+    setBusy(true);
+    onError(null);
+    try {
+      const r = await replaceStations(token, preview.rows);
+      setDone(`${r.count}곳으로 교체했습니다. 기존 좌표 ${r.coords_kept}곳을 이어받았습니다.`);
+      setPreview(null);
+      onDone();
+    } catch (e) {
+      onError(describeError(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <label className="btn btn-file">
+        CSV 올리기
+        <input type="file" accept=".csv,text/csv" onChange={pick} hidden />
+      </label>
+
+      {done && <span className="admin-ok">{done}</span>}
+
+      {preview && (
+        <div className="modal-back" onClick={() => setPreview(null)}>
+          <div className="modal modal-wide" onClick={(e) => e.stopPropagation()}>
+            <h3>명단 교체 확인</h3>
+            <p className="csv-file">
+              <code>{preview.fileName}</code>
+            </p>
+
+            <dl className="csv-stat">
+              <div><dt>읽어낸 주유소</dt><dd><strong>{preview.total}</strong>곳</dd></div>
+              <div><dt>오피넷 주유소코드</dt><dd>{preview.withId}곳</dd></div>
+              <div><dt>건너뛴 행</dt><dd>{preview.failures.length ? `${preview.failures.length}건` : "없음"}</dd></div>
+            </dl>
+
+            <p className="csv-brands">
+              {preview.brands.map(([b, n]) => (
+                <span key={b} title={BRAND_LABELS[b as BrandCode] ?? b}>
+                  {b} <strong>{n}</strong>
+                </span>
+              ))}
+            </p>
+
+            {preview.unknownBrands.length > 0 && (
+              <p className="csv-warn">
+                해석하지 못한 상표 표기: {preview.unknownBrands.map(([b, n]) => `${b}(${n})`).join(", ")}
+                <br />폴 코드 없이 등록됩니다.
+              </p>
+            )}
+
+            {preview.failures.length > 0 && (
+              <div className="csv-fails">
+                <strong>건너뛴 행</strong>
+                <ul>
+                  {preview.failures.map((f) => (
+                    <li key={f.line}>{f.line}행 {f.name} — {f.reason}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <p className="csv-warn">
+              기존 명단을 <strong>전부 지우고</strong> 이 파일로 바꿉니다.
+              주유소코드가 같은 곳은 좌표를 이어받습니다.
+            </p>
+
+            <div className="modal-actions">
+              <button type="button" className="btn-ghost" onClick={() => setPreview(null)}>취소</button>
+              <button type="button" className="btn" onClick={commit} disabled={busy}>
+                {busy ? "교체 중…" : `${preview.total}곳으로 교체`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

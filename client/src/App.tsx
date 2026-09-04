@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
+import PriceChart from "./components/PriceChart.tsx";
 import {
   dataUrl, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel,
@@ -28,6 +29,8 @@ export default function App() {
   const [districtGeo, setDistrictGeo] = useState<GeoCollection>(EMPTY_GEO);
   const [error, setError] = useState<string | null>(null);
 
+  /** 판매가 추이 창을 띄운 주유소. null 이면 닫힘 */
+  const [chartOf, setChartOf] = useState<StationSignal | null>(null);
   const [activeSido, setActiveSido] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [activeDistrict, setActiveDistrict] = useState<string | null>(null);
@@ -152,15 +155,16 @@ export default function App() {
       };
     }
 
-    // 전국 보기 — 지역 시세보다 비싼 곳부터. 현황판에서 먼저 봐야 할 대상이다.
-    const reds = stations.filter((s) => s.signal === "red");
-    const worst = [...reds].sort((a, b) => (b.regionRank ?? 0) - (a.regionRank ?? 0)).slice(0, 30);
+    // 전국 보기 — 명단 전체를 계수 오름차순으로. 위쪽이 상위권이다.
+    const all = [...stations].sort(
+      (a, b) => (a.priceIndex?.coefficient ?? Infinity) - (b.priceIndex?.coefficient ?? Infinity),
+    );
     return {
-      title: "점검 우선 대상",
-      subtitle: `시·도 순위 기준에 미달한 착한주유소 ${reds.length}곳 중 순위가 낮은 ${worst.length}곳`,
-      stations: worst,
+      title: "전국 착한주유소 리스트",
+      subtitle: `${all.length}곳 · 계수가 낮은 순 (1.000 이하가 상위권)`,
+      stations: all,
       showRegion: true,
-      empty: "기준에 미달한 착한주유소가 없습니다.",
+      empty: "표시할 착한주유소가 없습니다.",
     };
   }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations]);
 
@@ -271,12 +275,13 @@ export default function App() {
             onSelectSido={setActiveSido}
             onSelectRegion={setActiveRegion}
             onSelectDistrict={setActiveDistrict}
+            onSelectStation={setChartOf}
           />
 
           <p className="map-hint">
             {!activeSido && "시·도를 누르면 시·군·구 지도로 내려갑니다. 착한주유소가 없는 지역은 표시하지 않고 외곽선만 그립니다."}
             {activeSido && !activeRegion && "시·군·구를 누르면 실제 지도 위에 주유소 핀이 찍힙니다. 휠로 확대, 끌어서 이동."}
-            {activeSido && activeRegion && "핀 색은 그 주유소의 신호등입니다. 휠로 확대, 끌어서 이동."}
+            {activeSido && activeRegion && "주유기 아이콘 색이 그 주유소의 신호등입니다. 누르면 판매가 추이가 열립니다. 휠로 확대, 끌어서 이동."}
           </p>
         </section>
 
@@ -290,6 +295,7 @@ export default function App() {
               stations={panel.stations}
               showRegion={panel.showRegion}
               emptyText={panel.empty}
+              onSelect={setChartOf}
             />
           </div>
         </section>
@@ -299,6 +305,8 @@ export default function App() {
         <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 휘발유+경유 합계의 시·도 순위로 판정</span>
         <span className="mono">생성 {new Date(board.generatedAt).toLocaleString("ko-KR")}</span>
       </footer>
+
+      {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}
 
       {/* kpetrosafety 와 동일한 표기를 유지한다 */}
       <div className="copyright">
