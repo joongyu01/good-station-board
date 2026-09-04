@@ -5,9 +5,8 @@ import StationTable from "./components/StationTable.tsx";
 import {
   dataUrl, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel,
-  type BoardData, type FuelType, type GeoCollection, type RegionSummary, type StationSignal,
+  type BoardData, type GeoCollection, type RegionSummary, type StationSignal,
 } from "./lib/board.ts";
-import { FUEL_LABELS, FUEL_TYPES } from "@shared/lib/types.ts";
 
 /** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
 const LOGO = new URL("logo.png", document.baseURI).toString();
@@ -29,7 +28,6 @@ export default function App() {
   const [districtGeo, setDistrictGeo] = useState<GeoCollection>(EMPTY_GEO);
   const [error, setError] = useState<string | null>(null);
 
-  const [fuel, setFuel] = useState<FuelType>("gasoline");
   const [activeSido, setActiveSido] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [activeDistrict, setActiveDistrict] = useState<string | null>(null);
@@ -48,10 +46,9 @@ export default function App() {
       .catch((e) => setError(String(e)));
   }, []);
 
-  const stations = useMemo(
-    () => board?.stations.filter((s) => s.fuelType === fuel) ?? [],
-    [board, fuel],
-  );
+  // 판정은 주유소 단위다. 유종별로 쪼개지 않는다 — 점수가 휘발유+경유 합계
+  // 하나이므로 신호등도 주유소당 하나뿐이다.
+  const stations = useMemo(() => board?.stations ?? [], [board]);
 
   const byRegion = useMemo(() => groupByRegion(stations), [stations]);
 
@@ -204,20 +201,6 @@ export default function App() {
           <span className="matched">{board.summary.matched}/{board.summary.total}곳 가격 연계</span>
         </div>
 
-        <div className="fuel-tabs" role="tablist" aria-label="유종 선택">
-          {FUEL_TYPES.map((f) => (
-            <button
-              key={f}
-              role="tab"
-              aria-selected={fuel === f}
-              className={fuel === f ? "is-active" : ""}
-              onClick={() => setFuel(f)}
-            >
-              {FUEL_LABELS[f]}
-            </button>
-          ))}
-        </div>
-
         <a className="admin-link" href="#/admin" title="명단 관리">관리</a>
       </header>
 
@@ -231,7 +214,7 @@ export default function App() {
           </div>
         ))}
         <div className="stat stat-note">
-<strong>시·도 순위</strong> 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
+<strong>휘발유+경유 합산</strong> 시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
         </div>
       </div>
 
@@ -313,7 +296,7 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 전국 주유소 대비 시·군·구 최저가로 판정</span>
+        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 휘발유+경유 합계의 시·도 순위로 판정</span>
         <span className="mono">생성 {new Date(board.generatedAt).toLocaleString("ko-KR")}</span>
       </footer>
 

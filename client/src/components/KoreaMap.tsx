@@ -18,7 +18,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { GeoCollection, GeoFeature, RegionSummary, StationSignal } from "../lib/board.ts";
-import { SIGNAL_COLORS, formatPrice, formatDiff } from "../lib/board.ts";
+import { SIGNAL_COLORS, formatPrice } from "../lib/board.ts";
 import { poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
 import { tileSource, visibleTiles } from "../lib/basemap.ts";
 
@@ -483,8 +483,10 @@ export default function KoreaMap({
 
           {pins.map(({ station, anchor, chip, font }) => {
             const color = SIGNAL_COLORS[station.signal];
-            const tip = `${station.name} · ${formatPrice(station.price)}`
-              + (station.diff == null ? "" : ` (지역평균 ${formatDiff(station.diff)}원)`);
+            const tip = `${station.name} · 휘발유 ${formatPrice(station.prices.gasoline)}`
+              + ` / 경유 ${formatPrice(station.prices.diesel)}`
+              + (station.priceIndex == null ? "" : ` · 계수 ${station.priceIndex.coefficient.toFixed(3)}`)
+              + (station.regionRank == null ? "" : ` · 시·도 ${station.regionRank}위`);
             return (
               <g key={`pin-${station.seq}`} className="pin">
                 <rect className="pin-chip"

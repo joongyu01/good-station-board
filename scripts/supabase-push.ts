@@ -3,8 +3,9 @@
  *
  *   client/public/data/latest.json → gs_daily
  *
- * 착한주유소 449곳 × 4유종 = 하루 1,796행만 올린다. 전국 1만 건 원본은 올리지
- * 않는다 — 매일 넣으면 연 370만 행이라 무료 한도(500MB)를 넘긴다.
+ * 착한주유소 449곳 = 하루 449행만 올린다. 판정 단위가 주유소이므로 유종별로
+ * 쪼개지 않는다. 전국 1만 건 원본은 올리지 않는다 — 매일 넣으면 연 370만
+ * 행이라 무료 한도(500MB)를 넘긴다.
  *
  * service_role 키가 필요하다. 없으면 조용히 건너뛴다. 현황판은 정적 JSON 으로
  * 이미 배포되므로 이 단계가 빠져도 화면은 정상이다.
@@ -41,10 +42,12 @@ async function main() {
   const rows: DailyRow[] = board.stations.map((s) => ({
     trade_date: tradeDate,
     seq: s.seq,
-    fuel_type: s.fuelType,
-    price: s.price,
-    region_min: s.regionMin,
-    region_mean: s.regionMean,
+    gasoline: s.prices.gasoline,
+    diesel: s.prices.diesel,
+    sum_price: s.sum,
+    coefficient: s.priceIndex?.coefficient ?? null,
+    region_min_sum: s.regionMinSum,
+    region_mean_sum: s.regionMeanSum,
     gap_from_min: s.gapFromMin == null ? null : Math.round(s.gapFromMin),
     signal: s.signal,
     region_rank: s.regionRank,
@@ -54,10 +57,9 @@ async function main() {
   console.log(`[push] 기준일 ${tradeDate} — ${rows.length}행 적재 중…`);
   const n = await upsertDaily(rows);
 
-  const g = rows.filter((r) => r.fuel_type === "gasoline");
-  const count = (sig: string) => g.filter((r) => r.signal === sig).length;
+  const count = (sig: string) => rows.filter((r) => r.signal === sig).length;
   console.log(`[push] 완료 — ${n}행`);
-  console.log(`  휘발유: 최저가 ${count("green")} / 근접 ${count("yellow")} / 미달 ${count("red")} / 미상 ${count("unknown")}`);
+  console.log(`  상위권 ${count("green")} / 근접 ${count("yellow")} / 미달 ${count("red")} / 미상 ${count("unknown")}`);
 }
 
 main().catch((e) => { console.error("[push] 예외:", e); process.exit(1); });

@@ -81,20 +81,46 @@ create index if not exists gs_station_active_idx on gs_station (active);
 -- 일별 판정 결과 — **착한주유소 것만** 넣는다.
 --
 -- 전국 1만 건을 매일 넣으면 연 370만 행이라 무료 한도(500MB)를 넘는다.
--- 원본은 GitHub Actions 안에서만 쓰고 버리고, 여기에는 449곳 × 4유종만 남긴다.
+-- 원본은 GitHub Actions 안에서만 쓰고 버리고, 여기에는 449곳만 남긴다.
+--
+-- 한 주유소에 한 행이다. 점수(계수)가 휘발유+경유 합계 하나로 나오므로
+-- 판정도 유종별로 쪼개지 않는다.
+
+-- 유종별로 행을 쌓던 옛 구조는 지우지 않고 이름만 바꿔 보관한다.
+-- 열 구성이 달라 같은 테이블에 섞을 수 없다.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'gs_daily' and column_name = 'fuel_type'
+  ) then
+    alter table gs_daily rename to gs_daily_by_fuel;
+    alter index if exists gs_daily_date_idx   rename to gs_daily_by_fuel_date_idx;
+    alter index if exists gs_daily_signal_idx rename to gs_daily_by_fuel_signal_idx;
+    alter table gs_daily_by_fuel rename constraint gs_daily_signal to gs_daily_by_fuel_signal;
+  end if;
+end $$;
+
 create table if not exists gs_daily (
-  trade_date  date        not null,
-  seq         integer     not null,
-  fuel_type   text        not null,
-  price       integer,
-  region_min  integer,
-  region_mean numeric(10,2),
-  gap_from_min integer,
-  signal      text        not null default 'unknown',
-  region_rank integer,
-  region_n    integer     not null default 0,
-  created_at  timestamptz not null default now(),
-  primary key (trade_date, seq, fuel_type),
+  trade_date      date        not null,
+  seq             integer     not null,
+  -- 유종별 판매가. 판정 근거로 함께 보관한다.
+  gasoline        integer,
+  diesel          integer,
+  -- 휘발유+경유 합계. 둘 중 하나라도 없으면 null 이고 판정도 '미상'이 된다.
+  sum_price       integer,
+  -- 그 시·도의 최저 휘발유가+최저 경유가를 1.000 으로 둔 계수
+  coefficient     numeric(6,3),
+  -- 그 시·도에서 실제로 가장 싼 합계 / 평균 합계
+  region_min_sum  integer,
+  region_mean_sum numeric(10,2),
+  gap_from_min    integer,
+  signal          text        not null default 'unknown',
+  -- 합계 기준 시·도 순위와 모집단 크기 (휘발유·경유를 모두 파는 주유소 수)
+  region_rank     integer,
+  region_n        integer     not null default 0,
+  created_at      timestamptz not null default now(),
+  primary key (trade_date, seq),
   constraint gs_daily_signal check (signal in ('green', 'yellow', 'red', 'unknown'))
 );
 
@@ -116,6 +142,7 @@ alter table gs_config  enable row level security;
 alter table gs_secret  enable row level security;
 alter table gs_station enable row level security;
 alter table gs_daily   enable row level security;
+alter table if exists gs_daily_by_fuel enable row level security;
 alter table gs_session enable row level security;
 
 -- ═══════════════════ 내부 헬퍼 ═══════════════════

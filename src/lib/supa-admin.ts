@@ -145,10 +145,12 @@ export async function fetchSecret(name: string): Promise<string | null> {
 export interface DailyRow {
   trade_date: string;   // YYYY-MM-DD
   seq: number;
-  fuel_type: string;
-  price: number | null;
-  region_min: number | null;
-  region_mean: number | null;
+  gasoline: number | null;
+  diesel: number | null;
+  sum_price: number | null;
+  coefficient: number | null;
+  region_min_sum: number | null;
+  region_mean_sum: number | null;
   gap_from_min: number | null;
   signal: string;
   region_rank: number | null;
@@ -156,7 +158,7 @@ export interface DailyRow {
 }
 
 /**
- * 일별 판정 결과를 넣는다. 같은 (날짜, 주유소, 유종) 이면 덮어쓴다.
+ * 일별 판정 결과를 넣는다. 같은 (날짜, 주유소) 이면 덮어쓴다.
  * 한 번에 다 보내면 요청이 너무 커져 잘라서 보낸다.
  */
 export async function upsertDaily(rows: DailyRow[], chunk = 500): Promise<number> {
@@ -167,7 +169,7 @@ export async function upsertDaily(rows: DailyRow[], chunk = 500): Promise<number
   let done = 0;
   for (let i = 0; i < rows.length; i += chunk) {
     const part = rows.slice(i, i + chunk);
-    const res = await fetch(`${URL_}/rest/v1/gs_daily?on_conflict=trade_date,seq,fuel_type`, {
+    const res = await fetch(`${URL_}/rest/v1/gs_daily?on_conflict=trade_date,seq`, {
       method: "POST",
       headers: headers({ Prefer: "resolution=merge-duplicates,return=minimal" }),
       body: JSON.stringify(part),

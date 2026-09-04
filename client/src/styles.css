@@ -86,17 +86,9 @@ button { font: inherit; }
 .meta .sep { margin: 0 7px; opacity: .45; }
 .meta .matched { font-variant-numeric: tabular-nums; }
 
-.fuel-tabs {
-  margin-left: auto; display: flex; gap: 2px;
-  background: rgba(255, 255, 255, .1); border-radius: 9px; padding: 3px;
-}
-.fuel-tabs button {
-  border: 0; background: transparent; color: rgba(255, 255, 255, .72);
-  padding: 6px 13px; border-radius: 7px; cursor: pointer;
-  font-size: 12.5px; font-weight: 600;
-}
-.fuel-tabs button:hover { color: #fff; }
-.fuel-tabs button.is-active { background: var(--green); color: #26380D; }
+/* 유종 탭이 있던 자리. 판정이 주유소 단위(휘발유+경유 합산)로 바뀌면서
+   전환할 것이 없어져 없앴고, 오른쪽 끝으로 미는 역할만 관리 버튼이 이어받았다. */
+.topbar > .admin-link { margin-left: auto; }
 
 .admin-link {
   padding: 6px 13px; border-radius: 8px;

@@ -1,10 +1,13 @@
 /**
- * 4단계 — 시군구 통계 산출 및 신호등 판정
+ * 4단계 — 시·도 통계 산출 및 신호등 판정
  *
  *   data/raw/{date}.json + good-stations + station-mapping + station-coords
  *     → client/public/data/board-{date}.json
  *     → client/public/data/latest.json      (현황판이 읽는 파일)
  *     → client/public/data/index.json       (보유 날짜 목록)
+ *
+ * 판정 단위는 **주유소 1곳**이다. 점수가 휘발유+경유 합계 하나로 나오므로
+ * 유종별로 신호등을 따로 매기지 않는다.
  *
  * 실행:
  *   npm run aggregate           가장 최근 수집분
@@ -14,10 +17,13 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  computeZ, toSignal, describe, rankOf, greenRankWith, priceIndexOf,
+  toSignal, describe, rankOf, greenRankWith, priceIndexOf,
   DEFAULT_THRESHOLDS, type Thresholds,
 } from "../src/lib/signal.ts";
-import { FUEL_TYPES, type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal } from "../src/lib/types.ts";
+import {
+  FUEL_TYPES,
+  type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal,
+} from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
 import type { EnrichedRow } from "./collect.ts";
 
@@ -78,13 +84,34 @@ function main() {
 
   console.log(`[aggregate] 기준일 ${date} — 전국 ${raw.rows.length}건`);
 
-  // ── 시·도 × 유종 통계 ───────────────────────────────────────────────
+  // ── 시·도 통계 ──────────────────────────────────────────────────────
   //
   // 비교 모집단은 시·도다. 시·군·구로 쪼개면 주유소가 두세 곳뿐인 곳이 생겨
   // "관내 1위"가 아무 의미도 없어진다. 시·도는 가장 작은 세종도 64곳이라
   // 순위가 뜻을 갖는다.
+  //
+  // 유종별 통계는 계수의 기준선(최저 휘발유가 + 최저 경유가)을 뽑는 데 쓰고,
+  // 순위는 합계("sum") 통계로 낸다.
   const stats = new Map<string, RegionStat>();
   const sortedPrices = new Map<string, number[]>();
+
+  function put(sido: string, kind: RegionStat["fuelType"], values: number[]) {
+    const d = describe(values);
+    sortedPrices.set(`${sido}|${kind}`, d.sorted);
+    stats.set(`${sido}|${kind}`, {
+      regionKey: sido,
+      sido,
+      sigungu: "",
+      fuelType: kind,
+      n: d.n,
+      mean: Math.round(d.mean * 100) / 100,
+      stdev: Math.round(d.stdev * 100) / 100,
+      min: d.min,
+      max: d.max,
+      fallback: false,
+      basisKey: sido,
+    });
+  }
 
   for (const fuel of FUEL_TYPES) {
     const buckets = new Map<string, number[]>();
@@ -94,25 +121,22 @@ function main() {
       const arr = buckets.get(r.sido);
       if (arr) arr.push(p); else buckets.set(r.sido, [p]);
     }
-    for (const [sido, values] of buckets) {
-      const d = describe(values);
-      sortedPrices.set(`${sido}|${fuel}`, d.sorted);
-      stats.set(`${sido}|${fuel}`, {
-        regionKey: sido,
-        sido,
-        sigungu: "",
-        fuelType: fuel,
-        n: d.n,
-        mean: Math.round(d.mean * 100) / 100,
-        stdev: Math.round(d.stdev * 100) / 100,
-        min: d.min,
-        max: d.max,
-        fallback: false,
-        basisKey: sido,
-      });
-    }
+    for (const [sido, values] of buckets) put(sido, fuel, values);
   }
-  console.log(`[aggregate] 시·도 통계 ${stats.size}건 (${FUEL_TYPES.length}개 유종 × 시·도)`);
+
+  // 합계 모집단 — 휘발유와 경유를 **모두** 파는 주유소만. 한 유종만 파는 곳은
+  // 합계가 없으니 순위표에 끼워 넣을 수 없다.
+  const sumBuckets = new Map<string, number[]>();
+  for (const r of raw.rows) {
+    const g = r.gasoline;
+    const d = r.diesel;
+    if (g == null || g <= 0 || d == null || d <= 0) continue;
+    const arr = sumBuckets.get(r.sido);
+    if (arr) arr.push(g + d); else sumBuckets.set(r.sido, [g + d]);
+  }
+  for (const [sido, values] of sumBuckets) put(sido, "sum", values);
+
+  console.log(`[aggregate] 시·도 통계 ${stats.size}건 (유종 ${FUEL_TYPES.length}종 + 합계)`);
 
   // ── 착한주유소 가격 조회 ────────────────────────────────────────────
   const priceById = new Map<string, EnrichedRow>();
@@ -144,75 +168,63 @@ function main() {
     const district =
       detailParts.length > 1 && detailParts[0] === effSigungu ? detailParts[1] : null;
 
-    // 신호등 기준 순위. 서울·경기는 10위, 그 밖의 시·도는 5위 이내가 초록.
+    // 신호등 기준 순위. 서울·경기는 10위, 그 밖의 시·도는 5위 이내가 상위권.
     const greenRank = greenRankWith(effSido, th);
 
-    // 휘발유+경유 합산 지수 — 유종 루프 밖에서 한 번만 계산한다.
+    const prices = {} as Record<FuelType, number | null>;
+    for (const fuel of FUEL_TYPES) prices[fuel] = row?.[fuel] ?? null;
+
+    // 휘발유+경유 합산 지수 — 계수의 기준선은 유종별 최저가의 합이다.
     const idx = priceIndexOf(
-      row?.gasoline ?? null,
-      row?.diesel ?? null,
+      prices.gasoline,
+      prices.diesel,
       sortedPrices.get(`${effSido}|gasoline`)?.[0] ?? null,
       sortedPrices.get(`${effSido}|diesel`)?.[0] ?? null,
     );
 
-    for (const fuel of FUEL_TYPES) {
-      const price = row?.[fuel] ?? null;
-      const stat = stats.get(`${effSido}|${fuel}`);
-      const sorted = sortedPrices.get(`${effSido}|${fuel}`) ?? [];
+    // 순위는 실제 합계 분포에서 낸다.
+    const sumStat = stats.get(`${effSido}|sum`);
+    const sumSorted = sortedPrices.get(`${effSido}|sum`) ?? [];
+    const sum =
+      prices.gasoline != null && prices.diesel != null ? prices.gasoline + prices.diesel : null;
 
-      let z: number | null = null;
-      let diff: number | null = null;
-      let rank: number | null = null;
-      let gap: number | null = null;
+    const rank = sum != null && sumSorted.length > 0 ? rankOf(sum, sumSorted) : null;
+    const regionMinSum = sumSorted.length > 0 ? sumSorted[0] : null;
+    const gap = sum != null && regionMinSum != null ? sum - regionMinSum : null;
 
-      if (price != null && stat) {
-        z = computeZ(price, stat);
-        diff = Math.round((price - stat.mean) * 10) / 10;
-        rank = rankOf(price, sorted);
-        gap = sorted.length > 0 ? price - sorted[0] : null;
-      }
-
-      signals.push({
-        seq: g.seq,
-        stationId,
-        name: g.name,
-        sido: effSido,
-        sigungu: effSigungu,
-        regionKey: effKey,
-        district,
-        lat: coord?.lat ?? null,
-        lng: coord?.lng ?? null,
-        fuelType: fuel,
-        price,
-        regionMean: stat?.mean ?? null,
-        regionMin: sorted.length > 0 ? sorted[0] : null,
-        gapFromMin: gap,
-        diff,
-        zScore: z == null ? null : Math.round(z * 1000) / 1000,
-        signal: toSignal(rank, greenRank, th.rankYellowFactor),
-        isRegionLowest: price != null && sorted.length > 0 && price === sorted[0],
-        regionRank: rank,
-        regionN: stat?.n ?? 0,
-        greenRank,
-        priceIndex: idx,
-        lowSample: false,
-      });
-    }
+    signals.push({
+      seq: g.seq,
+      stationId,
+      name: g.name,
+      sido: effSido,
+      sigungu: effSigungu,
+      regionKey: effKey,
+      district,
+      lat: coord?.lat ?? null,
+      lng: coord?.lng ?? null,
+      prices,
+      sum,
+      priceIndex: idx,
+      regionMinSum,
+      regionMeanSum: sumStat?.mean ?? null,
+      gapFromMin: gap,
+      regionRank: rank,
+      regionN: sumStat?.n ?? 0,
+      greenRank,
+      isRegionLowest: sum != null && regionMinSum != null && sum === regionMinSum,
+      signal: toSignal(rank, greenRank, th.rankYellowFactor, sumStat?.n ?? 0),
+    });
   }
 
   // ── 요약 ────────────────────────────────────────────────────────────
-  const byFuel: BoardData["summary"]["byFuel"] = {};
-  for (const fuel of FUEL_TYPES) {
-    const subset = signals.filter((s) => s.fuelType === fuel);
-    byFuel[fuel] = {
-      green: subset.filter((s) => s.signal === "green").length,
-      yellow: subset.filter((s) => s.signal === "yellow").length,
-      red: subset.filter((s) => s.signal === "red").length,
-      unknown: subset.filter((s) => s.signal === "unknown").length,
-    };
-  }
+  const counts = {
+    green: signals.filter((s) => s.signal === "green").length,
+    yellow: signals.filter((s) => s.signal === "yellow").length,
+    red: signals.filter((s) => s.signal === "red").length,
+    unknown: signals.filter((s) => s.signal === "unknown").length,
+  };
 
-  // 시·도 통계는 전부 실어도 32건뿐이다.
+  // 시·도 통계는 전부 실어도 50건이 안 된다.
   const regions: RegionStat[] = [...stats.values()];
 
   const board: BoardData = {
@@ -220,7 +232,7 @@ function main() {
     generatedAt: new Date().toISOString(),
     stations: signals,
     regions,
-    summary: { total: good.length, matched: matchedCount, byFuel },
+    summary: { total: good.length, matched: matchedCount, counts },
   };
 
   mkdirSync(OUT_DIR, { recursive: true });
@@ -242,13 +254,12 @@ function main() {
   writeFileSync(path.join(OUT_DIR, "index.json"), JSON.stringify({ dates: available }), "utf8");
 
   // ── 콘솔 요약 ───────────────────────────────────────────────────────
-  const g = byFuel.gasoline;
-  const withIndex = signals.filter((s) => s.fuelType === "gasoline" && s.priceIndex).length;
+  const withIndex = signals.filter((s) => s.priceIndex).length;
   console.log(`[aggregate] 완료 — 기준일 ${date}`);
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
-  console.log(`  휘발유 신호등: 초록 ${g.green} / 노랑 ${g.yellow} / 빨강 ${g.red} / 미상 ${g.unknown}`);
-  console.log(`  합산 지수 산출: ${withIndex}곳 (휘발유·경유 둘 다 파는 곳)`);
-  console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 초록, 노랑은 ${th.rankYellowFactor}배까지`);
+  console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
+  console.log(`  합산 계수 산출: ${withIndex}곳 (휘발유·경유 둘 다 파는 곳)`);
+  console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }
 
