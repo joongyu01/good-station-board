@@ -60,16 +60,17 @@ jobs:
         if: steps.collect.outcome == 'success'
         run: npm run match
 
-      # 좌표 보강. 등록된 키만 쓰고 없으면 건너뛴다.
+      # 좌표 보강.
       #
-      # 브이월드를 먼저 돌린다. 주소만 있으면 되므로 주유소코드가 없는 곳도
-      # 채울 수 있고, 오피넷 detailById 보다 커버리지가 넓다.
-      - name: 주유소 좌표 보강 (브이월드)
-        if: steps.collect.outcome == 'success' && env.VWORLD_API_KEY != ''
-        continue-on-error: true
-        run: npm run coords:vworld
-
-      # 오피넷은 주유소코드로 정확한 값을 준다. 키가 살아 있으면 함께 돌린다.
+      # 브이월드는 여기서 돌리지 않는다. GitHub 러너(미국 IP)에서 호출하면
+      # fetch failed / 502 로 전건 실패한다 — 446건 전부 그랬다. 국내에서는
+      # 정상 응답하므로 해외 IP 차단으로 보인다.
+      #
+      # 애초에 좌표는 고정값이라 매일 받을 이유가 없다. 국내에서 한 번
+      # `npm run coords:vworld` 로 채워 커밋하면 그 파일을 계속 쓴다.
+      #
+      # 오피넷은 주유소코드로 정확한 값을 준다. 키가 살아 있으면 여기서 돌린다.
+      # 일일 한도(일반 API 300건)가 있어 한 번에 250건씩 끊어 받는다.
       - name: 주유소 좌표 보강 (오피넷)
         if: steps.collect.outcome == 'success' && env.OPINET_API_KEY != ''
         continue-on-error: true
