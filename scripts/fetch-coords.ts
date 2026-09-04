@@ -45,8 +45,8 @@ async function main() {
   console.log(`[coords] 대상 ${wanted.length}곳, 이미 보유 ${wanted.length - todo.length}곳, 조회 ${todo.length}곳`);
   if (todo.length === 0) { console.log("[coords] 새로 받을 것이 없습니다."); return; }
 
-  const details = await fetchStationDetails(todo, 4, (done, total) => {
-    if (done % 25 === 0 || done === total) console.log(`  ${done}/${total}`);
+  const { details, failures, samples } = await fetchStationDetails(todo, 4, (done, total) => {
+    if (done % 50 === 0 || done === total) console.log(`  ${done}/${total}`);
   });
 
   let ok = 0;
@@ -60,6 +60,24 @@ async function main() {
 
   console.log(`[coords] 완료 — 신규 ${ok}곳, 좌표 없음/변환 실패 ${noCoord}곳, 조회 실패 ${todo.length - details.size}곳`);
   console.log(`  data/station-coords.json (누적 ${Object.keys(coords).length}곳)`);
+
+  // ── 실패했다면 왜 실패했는지 밝힌다 ──────────────────────────────────
+  //
+  // 오피넷은 인증키가 틀려도 HTTP 200 에 빈 배열을 돌려준다. 그래서 사유를
+  // 구분해 두지 않으면 "그냥 안 된다"밖에 알 수 없다.
+  if (failures.size > 0) {
+    console.log("\n[coords] 실패 사유:");
+    for (const [kind, n] of failures) console.log(`  ${kind.padEnd(8)} ${n}건`);
+    for (const s of samples) {
+      console.log(`  예) ${s.id}: ${JSON.stringify(s.failure)}`);
+    }
+    if (failures.get("empty") === todo.length) {
+      console.log("\n  전건이 빈 응답입니다. 인증키 문제일 가능성이 큽니다.");
+      console.log("  · 오피넷에서 발급 승인이 끝났는지 (신청 직후에는 바로 안 될 수 있음)");
+      console.log("  · 주유소 상세(detailById)가 발급받은 등급에 포함되는지");
+      console.log("  확인해 주세요. https://www.opinet.co.kr/user/custapi/custApiInfo.do");
+    }
+  }
 }
 
 main().catch((e) => { console.error("[coords] 예외:", e); process.exit(1); });
