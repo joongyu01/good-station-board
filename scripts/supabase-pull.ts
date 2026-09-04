@@ -40,6 +40,33 @@ async function main() {
   }
 
   const active = rows.filter((r) => r.active);
+
+  // ── 오래된 명단이 새 명단을 덮어쓰지 않게 막는다 ─────────────────────
+  //
+  // gs_station 은 관리 화면이 관리하는 원본이고 저장소 파일은 그 사본이다.
+  // 그런데 저장소 쪽 명단만 먼저 갈아끼우고 Supabase 를 갱신하지 않으면,
+  // 다음 수집에서 여기가 옛 명단을 도로 덮어써 배포까지 되돌아간다.
+  // 실제로 472곳으로 바꾼 뒤 첫 실행에서 449곳으로 돌아갔다.
+  //
+  // 판별 기준은 폴(상표) 정보다. 새 명단 CSV 는 모든 행에 상표를 싣는다.
+  // Supabase 쪽에 상표가 하나도 없는데 저장소 파일에는 있다면, 아직 새
+  // 명단으로 갱신되지 않은 것이다. 그때는 덮어쓰지 않고 넘어간다.
+  const localPath = path.join(DATA, "good-stations.json");
+  if (existsSync(localPath)) {
+    const local: GoodStation[] = JSON.parse(readFileSync(localPath, "utf8"));
+    const localHasBrand = local.some((s) => s.brand);
+    const remoteHasBrand = active.some((r) => r.brand);
+    if (localHasBrand && !remoteHasBrand) {
+      console.warn(
+        `::warning::Supabase 명단(${active.length}곳)에 폴 정보가 없습니다. ` +
+        `저장소 명단(${local.length}곳)을 그대로 씁니다.`,
+      );
+      console.warn("  관리 화면(#/admin)에서 명단 CSV 를 올리거나 `npm run supabase:seed` 를 실행하세요.");
+      console.warn("  그때까지 명단·수기매핑은 저장소 파일이 기준입니다.");
+      return;
+    }
+  }
+
   const stations: GoodStation[] = active.map((r) => ({
     seq: r.seq,
     name: r.name,

@@ -51,6 +51,7 @@ jobs:
       # 명단·임계값·오피넷 키를 Supabase 에서 내려받는다. 미설정이면 저장소에
       # 커밋된 파일을 그대로 쓴다. 실패해도 파이프라인을 세우지 않는다.
       - name: Supabase 에서 명단·설정 내려받기
+        if: ${{ !inputs.skip_collect }}
         continue-on-error: true
         run: npm run supabase:pull
 
