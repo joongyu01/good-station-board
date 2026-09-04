@@ -22,7 +22,9 @@ import {
 } from "../src/lib/signal.ts";
 import {
   FUEL_TYPES,
-  type BoardData, type FuelType, type GoodStation, type RegionStat, type StationSignal,
+  VIEW_MODES,
+  type BoardData, type FuelMetric, type FuelType, type GoodStation,
+  type RegionStat, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
 import { emptyHistory, mergeDay, pruneTo, sampleDay, type History } from "../src/lib/history.ts";
@@ -174,18 +176,44 @@ function main() {
     const prices = {} as Record<FuelType, number | null>;
     for (const fuel of FUEL_TYPES) prices[fuel] = row?.[fuel] ?? null;
 
-    // 순위와 계수 모두 합계 분포에서 낸다.
-    const sumStat = stats.get(`${effSido}|sum`);
-    const sumSorted = sortedPrices.get(`${effSido}|sum`) ?? [];
     const sum =
       prices.gasoline != null && prices.diesel != null ? prices.gasoline + prices.diesel : null;
 
-    // 계수 1.000 = 초록불 커트라인. 상위권이면 1 이하로 떨어진다.
-    const idx = coefficientOf(sum, greenBaseOf(sumSorted, greenRank));
+    /**
+     * 한 기준의 성적을 낸다.
+     *
+     * 세 기준(합산/휘발유/경유)이 순위·계수·신호등을 똑같은 방식으로 구한다.
+     * 다른 것은 어느 분포에서 보느냐뿐이라 한 함수로 묶는다.
+     */
+    function metricFor(kind: ViewMode, value: number | null): FuelMetric {
+      const statKey = kind === "sum" ? "sum" : kind;
+      const stat = stats.get(`${effSido}|${statKey}`);
+      const sorted = sortedPrices.get(`${effSido}|${statKey}`) ?? [];
+      const n = stat?.n ?? 0;
 
-    const rank = sum != null && sumSorted.length > 0 ? rankOf(sum, sumSorted) : null;
-    const regionMinSum = sumSorted.length > 0 ? sumSorted[0] : null;
-    const gap = sum != null && regionMinSum != null ? sum - regionMinSum : null;
+      const rank = value != null && sorted.length > 0 ? rankOf(value, sorted) : null;
+      const regionMin = sorted.length > 0 ? sorted[0] : null;
+      const idx = coefficientOf(value, greenBaseOf(sorted, greenRank));
+
+      return {
+        price: value,
+        regionRank: rank,
+        regionN: n,
+        regionMin,
+        regionMean: stat?.mean ?? null,
+        greenBase: idx?.regionBase ?? null,
+        coefficient: idx?.coefficient ?? null,
+        gapFromMin: value != null && regionMin != null ? value - regionMin : null,
+        isRegionLowest: value != null && regionMin != null && value === regionMin,
+        signal: toSignal(rank, greenRank, th.rankYellowFactor, n),
+      };
+    }
+
+    const metrics = {} as Record<ViewMode, FuelMetric>;
+    for (const mode of VIEW_MODES) {
+      metrics[mode] = metricFor(mode, mode === "sum" ? sum : prices[mode]);
+    }
+    const m = metrics.sum;
 
     signals.push({
       seq: g.seq,
@@ -200,16 +228,21 @@ function main() {
       lat: coord?.lat ?? null,
       lng: coord?.lng ?? null,
       prices,
+      metrics,
+
+      // 합산 기준을 펼쳐 둔 값
       sum,
-      priceIndex: idx,
-      regionMinSum,
-      regionMeanSum: sumStat?.mean ?? null,
-      gapFromMin: gap,
-      regionRank: rank,
-      regionN: sumStat?.n ?? 0,
+      priceIndex: m.coefficient != null && m.greenBase != null && sum != null
+        ? { sum, regionBase: m.greenBase, coefficient: m.coefficient }
+        : null,
+      regionMinSum: m.regionMin,
+      regionMeanSum: m.regionMean,
+      gapFromMin: m.gapFromMin,
+      regionRank: m.regionRank,
+      regionN: m.regionN,
       greenRank,
-      isRegionLowest: sum != null && regionMinSum != null && sum === regionMinSum,
-      signal: toSignal(rank, greenRank, th.rankYellowFactor, sumStat?.n ?? 0),
+      isRegionLowest: m.isRegionLowest,
+      signal: m.signal,
     });
   }
 

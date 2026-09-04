@@ -4,10 +4,11 @@ import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
+import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import {
-  dataUrl, formatDate, groupByRegion, summarize,
-  SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel,
-  type BoardData, type GeoCollection, type RegionSummary, type StationSignal,
+  applyMode, dataUrl, formatDate, groupByRegion, summarize,
+  SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
+  type BoardData, type GeoCollection, type RegionSummary, type StationSignal, type ViewMode,
 } from "./lib/board.ts";
 
 /** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
@@ -32,6 +33,12 @@ export default function App() {
 
   /** 판매가 추이 창을 띄운 주유소. null 이면 닫힘 */
   const [chartOf, setChartOf] = useState<StationSignal | null>(null);
+  /** 판정 기준 — 통합(휘발유+경유) / 휘발유 / 경유 */
+  const [mode, setMode] = useState<ViewMode>("sum");
+  /** 표 정렬. null 이면 화면마다 정해둔 기본 순서를 그대로 쓴다. */
+  const [sort, setSort] = useState<SortState | null>(null);
+  /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
+  const [resetSignal, setResetSignal] = useState(0);
   const [activeSido, setActiveSido] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [activeDistrict, setActiveDistrict] = useState<string | null>(null);
@@ -50,9 +57,15 @@ export default function App() {
       .catch((e) => setError(String(e)));
   }, []);
 
-  // 판정은 주유소 단위다. 유종별로 쪼개지 않는다 — 점수가 휘발유+경유 합계
-  // 하나이므로 신호등도 주유소당 하나뿐이다.
-  const stations = useMemo(() => board?.stations ?? [], [board]);
+  // 판정은 주유소 단위다. 한 주유소에 신호등 하나.
+  //
+  // 다만 기준은 셋이다 — 휘발유+경유 합산이 기본이고, 유종 하나만 놓고 볼 수도
+  // 있다. 세 기준의 성적은 집계 단계가 미리 다 계산해 두었고, 여기서는 고른
+  // 것을 최상위로 끌어올리기만 한다.
+  const stations = useMemo(
+    () => applyMode(board?.stations ?? [], mode),
+    [board, mode],
+  );
 
   const byRegion = useMemo(() => groupByRegion(stations), [stations]);
 
@@ -123,6 +136,7 @@ export default function App() {
         subtitle: `${activeRegion} · 착한주유소 ${list.length}곳`,
         stations: [...list].sort((a, b) => (a.regionRank ?? 1e9) - (b.regionRank ?? 1e9)),
         showRegion: false,
+        scope: `${activeRegion} ${activeDistrict}`,
         empty: "이 구에는 착한주유소가 없습니다.",
       };
     }
@@ -141,6 +155,7 @@ export default function App() {
           + (hasDistricts ? " · 지도에서 구를 누르면 더 좁혀집니다" : ""),
         stations: [...list].sort((a, b) => (a.regionRank ?? 1e9) - (b.regionRank ?? 1e9)),
         showRegion: (f?.properties.units?.length ?? 1) > 1,
+        scope: `${sidoLabel(activeSido)} ${activeRegion}`,
         empty: "이 지역에는 착한주유소가 없습니다.",
       };
     }
@@ -152,6 +167,7 @@ export default function App() {
         subtitle: `착한주유소 ${list.length}곳 · 지도에서 시·군·구를 누르면 좁혀집니다`,
         stations: [...list].sort((a, b) => (b.regionRank ?? -1) - (a.regionRank ?? -1)),
         showRegion: true,
+        scope: sidoLabel(activeSido),
         empty: "이 시·도에는 착한주유소가 없습니다.",
       };
     }
@@ -162,14 +178,31 @@ export default function App() {
     );
     return {
       title: "전국 착한주유소 리스트",
-      subtitle: `${all.length}곳 · 계수가 낮은 순 (1.000 이하가 상위권)`,
+      subtitle: `${all.length}곳 · ${VIEW_MODE_LABELS[mode]} 계수가 낮은 순 (1.000 이하가 상위권)`,
       stations: all,
       showRegion: true,
+      scope: "전국",
       empty: "표시할 착한주유소가 없습니다.",
     };
-  }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations]);
+  }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations, mode]);
 
   const totals = useMemo(() => summarize(stations, "전국", ""), [stations]);
+
+  /** 기관 로고를 누르면 처음 화면으로 — 드릴다운·확대·정렬을 모두 되돌린다. */
+  function resetAll() {
+    setActiveSido(null);
+    setActiveRegion(null);
+    setActiveDistrict(null);
+    setChartOf(null);
+    setSort(null);
+    setMode("sum");
+    // 이미 전국 보기면 드릴다운 상태가 안 바뀌어 지도가 스스로 초기화하지
+    // 않는다. 확대만 걸려 있는 경우를 위해 따로 신호를 준다.
+    setResetSignal((n) => n + 1);
+  }
+
+  /** 표에 보이는 순서 그대로. CSV 도 이 배열을 쓴다. */
+  const rows = useMemo(() => sortStations(panel.stations, sort), [panel.stations, sort]);
 
   if (hash.startsWith("#/admin")) {
     return <Admin onExit={() => { window.location.hash = ""; }} />;
@@ -192,9 +225,14 @@ export default function App() {
   return (
     <>
       <header className="topbar">
-        <span className="topbar-logo">
-          <img src={LOGO} alt="한국석유관리원" />
-        </span>
+        <button
+          type="button"
+          className="topbar-logo"
+          onClick={resetAll}
+          title="처음 화면으로 (드릴다운·확대·정렬 초기화)"
+        >
+          <img src={LOGO} alt="한국석유관리원 — 처음 화면으로" />
+        </button>
 
         <div className="brand">
           <h1>착한주유소 현황판</h1>
@@ -204,6 +242,23 @@ export default function App() {
           <span className="date">{formatDate(board.date)} 판매가 기준</span>
           <span className="sep">·</span>
           <span className="matched">{board.summary.matched}/{board.summary.total}곳 가격 연계</span>
+        </div>
+
+        <div className="mode-tabs" role="tablist" aria-label="판정 기준">
+          {VIEW_MODES.map((m) => (
+            <button
+              key={m}
+              role="tab"
+              aria-selected={mode === m}
+              className={mode === m ? "is-active" : ""}
+              title={m === "sum"
+                ? "휘발유+경유 합계로 판정"
+                : `${VIEW_MODE_LABELS[m]} 가격만으로 판정`}
+              onClick={() => setMode(m)}
+            >
+              {VIEW_MODE_LABELS[m]}
+            </button>
+          ))}
         </div>
 
         <a className="admin-link" href="#/admin" title="명단 관리">관리</a>
@@ -219,7 +274,8 @@ export default function App() {
           </div>
         ))}
         <div className="stat stat-note">
-<strong>휘발유+경유 합산</strong> 시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
+          <strong>{mode === "sum" ? "휘발유+경유 합산" : `${VIEW_MODE_LABELS[mode]} 단독`}</strong>
+          {" "}시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
         </div>
       </div>
 
@@ -277,6 +333,7 @@ export default function App() {
             onSelectRegion={setActiveRegion}
             onSelectDistrict={setActiveDistrict}
             onSelectStation={setChartOf}
+            resetSignal={resetSignal}
           />
 
           <p className="map-hint">
@@ -287,22 +344,36 @@ export default function App() {
         </>}
         right={<>
           <div className="panel-head">
-            <h2>{panel.title}</h2>
-            <p className="panel-sub">{panel.subtitle}</p>
+            <div className="panel-title">
+              <h2>{panel.title}</h2>
+              <p className="panel-sub">{panel.subtitle}</p>
+            </div>
+            <button
+              type="button"
+              className="btn-csv"
+              disabled={rows.length === 0}
+              title="지금 보이는 목록을 보이는 순서 그대로 내려받습니다"
+              onClick={() => downloadCsv(rows, csvName(`${panel.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
+            >
+              CSV 내려받기
+            </button>
           </div>
           <div className="panel-body">
             <StationTable
-              stations={panel.stations}
+              stations={rows}
               showRegion={panel.showRegion}
               emptyText={panel.empty}
               onSelect={setChartOf}
+              sort={sort}
+              onSort={setSort}
+              mode={mode}
             />
           </div>
         </>}
       />
 
       <footer className="foot">
-        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · 휘발유+경유 합계의 시·도 순위로 판정</span>
+        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · {mode === "sum" ? "휘발유+경유 합계" : VIEW_MODE_LABELS[mode]}의 시·도 순위로 판정</span>
         <span className="mono">생성 {new Date(board.generatedAt).toLocaleString("ko-KR")}</span>
       </footer>
 

@@ -44,13 +44,26 @@ const PIN_ICON = 26;
 
 /** 이름표에 넣을 상호 최대 글자 수. 넘으면 줄인다 — 전체 이름은 목록과 툴팁에 있다. */
 const PIN_NAME_MAX = 12;
+/**
+ * 기본 확대율.
+ *
+ * 1로 두면 전국 보기에서 지도 둘레에 빈 여백이 넓게 남는다. 1.5배가 기본이면
+ * 한반도가 화면을 채우고 시·도 라벨도 그만큼 커진다. 잘려 나가는 것은 바다뿐이다.
+ */
+const DEFAULT_ZOOM = 1.5;
+
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 16;
 /** 이 거리(px)를 넘게 끌어야 지도 이동으로 친다. 클릭 시 손떨림과 구분하기 위함. */
 const DRAG_THRESHOLD = 5;
 
 interface Transform { k: number; x: number; y: number }
-const IDENTITY: Transform = { k: 1, x: 0, y: 0 };
+/** 기본 확대율을 화면 중심에 건 상태. 이것이 '초기화' 위치다. */
+const IDENTITY: Transform = {
+  k: DEFAULT_ZOOM,
+  x: (WIDTH / 2) * (1 - DEFAULT_ZOOM),
+  y: (HEIGHT / 2) * (1 - DEFAULT_ZOOM),
+};
 
 interface Props {
   sidoGeo: GeoCollection;
@@ -69,13 +82,20 @@ interface Props {
   onSelectDistrict: (district: string | null) => void;
   /** 주유기 아이콘이나 이름표를 누르면 판매가 추이를 연다 */
   onSelectStation?: (s: StationSignal) => void;
+  /**
+   * 값이 바뀌면 확대·이동을 되돌린다.
+   *
+   * 로고를 눌러 초기화할 때 쓴다. 이미 전국 보기라면 드릴다운 상태가 그대로라
+   * 아래 초기화 effect 가 돌지 않아서, 확대만 걸린 경우를 되돌릴 방법이 없었다.
+   */
+  resetSignal?: number;
 }
 
 export default function KoreaMap({
   sidoGeo, sigunguGeo, districtGeo, stations,
   activeSido, activeRegion, activeDistrict,
   sidoSummary, regionSummary, districtSummary,
-  onSelectSido, onSelectRegion, onSelectDistrict, onSelectStation,
+  onSelectSido, onSelectRegion, onSelectDistrict, onSelectStation, resetSignal,
 }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [tf, setTf] = useState<Transform>(IDENTITY);
@@ -149,6 +169,19 @@ export default function KoreaMap({
       sidoSummary, regionSummary, districtSummary]);
 
   const isDetail = view.level === "detail";
+
+  /**
+   * 지금 화면에 보이는 SVG 좌표 범위.
+   *
+   * 라벨을 밀어낼 때 경계로 쓴다. SVG 상자(720×860)를 그대로 쓰면 확대율이
+   * 1이 아닐 때 라벨이 화면 밖으로 밀려난다.
+   */
+  const viewBounds = useMemo(() => ({
+    x0: -tf.x / tf.k,
+    y0: -tf.y / tf.k,
+    x1: (WIDTH - tf.x) / tf.k,
+    y1: (HEIGHT - tf.y) / tf.k,
+  }), [tf]);
 
   /**
    * 투영은 배경(상위 행정구역)에 맞춘다.
@@ -268,21 +301,49 @@ export default function KoreaMap({
       }
 
       const pole = poleOfInaccessibility(bestRing);
-      const digits = s ? String(s.green).length + String(s.yellow).length + String(s.red).length : 3;
+
+      // 칩은 세 줄이다 — 이름 / 개수 / 비율 바.
+      //
+      // 종전에는 각 줄의 y를 눈대중으로 박아 뒀는데, 글자가 커지자 이름과
+      // 개수가 서로 겹쳤다. 줄 높이를 실제 글자 크기에서 구해 위에서부터
+      // 차곡차곡 쌓는다.
+      const padY = 4 / k;
+      const nameH = nameFont * 1.18;
+      const countsH = countsFont * 1.18;
+      const barH = 6 / k;
+      const gap = 2.5 / k;
+      const h = padY * 2 + nameH + gap + countsH + gap + barH;
+
+      const countsText = s ? `●${s.red} ●${s.yellow} ●${s.green}` : "";
+      const w = Math.max(textWidth(name, nameFont), textWidth(countsText, countsFont)) + 14 / k;
+
       const chip: Chip = {
         id: keyOf(f),
         anchor: { x: pole.x, y: pole.y },
         x: pole.x, y: pole.y,
-        w: Math.max(name.length * nameFont, countsFont * (3 * 1.15 + digits * 0.62 + 2 * 0.7)) + 14 / k,
-        // 이름 + 개수 + 비율 바 3단이라 종전(29)보다 높다.
-        h: (29 * LABEL_SCALE + 9) / k,
+        w, h,
       };
-      return { chip, name, summary: s };
+
+      // 칩 위쪽 모서리 기준 각 줄의 위치. 렌더에서 그대로 쓴다.
+      const rows = {
+        name: -h / 2 + padY + nameH / 2,
+        counts: -h / 2 + padY + nameH + gap + countsH / 2,
+        bar: -h / 2 + padY + nameH + gap + countsH + gap,
+        barH,
+        barW: w - 12 / k,
+        nameFont,
+        countsFont,
+      };
+
+      return { chip, name, summary: s, rows };
     });
 
-    const byId = new Map(relaxChips(entries.map((e) => e.chip), { w: WIDTH, h: HEIGHT }).map((c) => [c.id, c]));
-    return entries.map((e) => ({ ...e, chip: byId.get(e.chip.id) ?? e.chip, nameFont, countsFont }));
-  }, [view, projection, tf.k, isDetail, sidoSummary, regionSummary, districtSummary]);
+    // 넉넉히 밀어낸다. 시·도 라벨은 3단이라 조금만 겹쳐도 글자가 읽히지 않는다.
+    const byId = new Map(
+      relaxChips(entries.map((e) => e.chip), viewBounds, 240, 5 / k).map((c) => [c.id, c]),
+    );
+    return entries.map((e) => ({ ...e, chip: byId.get(e.chip.id) ?? e.chip, rows: e.rows }));
+  }, [view, projection, tf.k, isDetail, viewBounds, sidoSummary, regionSummary, districtSummary]);
 
   /** 주유소 핀 라벨 — 이름표가 서로 겹치지 않게 밀어낸다. */
   const pins = useMemo(() => {
@@ -320,12 +381,16 @@ export default function KoreaMap({
       };
     });
 
-    const byId = new Map(relaxChips(entries.map((e) => e.chip), { w: WIDTH, h: HEIGHT }, 120).map((c) => [c.id, c]));
+    const byId = new Map(
+      relaxChips(entries.map((e) => e.chip), viewBounds, 160, 3 / k).map((c) => [c.id, c]),
+    );
     return entries.map((e) => ({ ...e, chip: byId.get(e.chip.id) ?? e.chip }));
-  }, [isDetail, detailStations, projection, tf.k]);
+  }, [isDetail, detailStations, projection, tf.k, viewBounds]);
 
   // 드릴다운 단계가 바뀌면 확대/이동을 초기화한다.
-  useEffect(() => { setTf(IDENTITY); }, [activeSido, activeRegion, activeDistrict, view.level]);
+  useEffect(() => {
+    setTf(IDENTITY);
+  }, [activeSido, activeRegion, activeDistrict, view.level, resetSignal]);
 
   // 휠 확대. React onWheel은 passive라 preventDefault가 먹지 않아 직접 붙인다.
   useEffect(() => {
@@ -488,35 +553,31 @@ export default function KoreaMap({
             );
           })}
 
-          {labels.map(({ chip, name, summary, nameFont, countsFont }) => {
-            const barW = chip.w - 10 / k;
-            const barH = 6 / k;
-            const barY = chip.y + chip.h / 2 - barH - 4 / k;
-            return (
-              <g key={`lb-${chip.id}`} className="region-label">
-                <rect className="rl-chip"
-                  x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
-                  width={chip.w} height={chip.h} rx={5 / k} />
-                <text className="rl-name" x={chip.x} y={chip.y - chip.h / 2 + nameFont * 0.85}
-                  style={{ fontSize: `${nameFont}px` }}>{name}</text>
-                {summary && (
-                  <text className="rl-counts" x={chip.x} y={chip.y + 1 / k}
-                    style={{ fontSize: `${countsFont}px` }}>
-                    <tspan fill={SIGNAL_COLORS.red}>●</tspan>
-                    <tspan className="rl-num">{summary.red} </tspan>
-                    <tspan fill={SIGNAL_COLORS.yellow}>●</tspan>
-                    <tspan className="rl-num">{summary.yellow} </tspan>
-                    <tspan fill={SIGNAL_COLORS.green}>●</tspan>
-                    <tspan className="rl-num">{summary.green}</tspan>
-                  </text>
-                )}
-                {/* 신호등 비율 바 — 왼쪽부터 빨강·노랑·초록이 개수 비율만큼 차지한다. */}
-                {summary && <SignalBar
-                  x={chip.x - barW / 2} y={barY} w={barW} h={barH} r={barH / 2}
-                  red={summary.red} yellow={summary.yellow} green={summary.green} />}
-              </g>
-            );
-          })}
+          {labels.map(({ chip, name, summary, rows }) => (
+            <g key={`lb-${chip.id}`} className="region-label">
+              <rect className="rl-chip"
+                x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
+                width={chip.w} height={chip.h} rx={5 / k} />
+              <text className="rl-name" x={chip.x} y={chip.y + rows.name}
+                style={{ fontSize: `${rows.nameFont}px` }}>{name}</text>
+              {summary && (
+                <text className="rl-counts" x={chip.x} y={chip.y + rows.counts}
+                  style={{ fontSize: `${rows.countsFont}px` }}>
+                  <tspan fill={SIGNAL_COLORS.red}>●</tspan>
+                  <tspan className="rl-num">{summary.red} </tspan>
+                  <tspan fill={SIGNAL_COLORS.yellow}>●</tspan>
+                  <tspan className="rl-num">{summary.yellow} </tspan>
+                  <tspan fill={SIGNAL_COLORS.green}>●</tspan>
+                  <tspan className="rl-num">{summary.green}</tspan>
+                </text>
+              )}
+              {/* 신호등 비율 바 — 왼쪽부터 빨강·노랑·초록이 개수 비율만큼 차지한다. */}
+              {summary && <SignalBar
+                x={chip.x - rows.barW / 2} y={chip.y + rows.bar}
+                w={rows.barW} h={rows.barH} r={rows.barH / 2}
+                red={summary.red} yellow={summary.yellow} green={summary.green} />}
+            </g>
+          ))}
 
           {/* 주유소 핀 — 상세 단계에서만 */}
           {pins.map(({ chip, anchor, iconH }) => (
@@ -565,11 +626,13 @@ export default function KoreaMap({
         <button onClick={() => zoomBy(1.5)} aria-label="확대" title="확대">＋</button>
         <button onClick={() => zoomBy(1 / 1.5)} aria-label="축소" title="축소">－</button>
         <button onClick={() => setTf(IDENTITY)}
-          disabled={k === 1 && tf.x === 0 && tf.y === 0}
+          disabled={k === IDENTITY.k && tf.x === IDENTITY.x && tf.y === IDENTITY.y}
           aria-label="초기화" title="초기화">⟲</button>
       </div>
 
-      {k > 1 && <div className="map-zoom-level">{k.toFixed(1)}×</div>}
+      {Math.abs(k - DEFAULT_ZOOM) > 0.01 && (
+        <div className="map-zoom-level">{k.toFixed(1)}×</div>
+      )}
 
       {isDetail && (
         <div className="map-credit">
@@ -725,6 +788,9 @@ function pinLabel(name: string, brand: BrandCode | null): string {
  */
 function textWidth(text: string, font: number): number {
   let units = 0;
-  for (const ch of text) units += /[㄰-㆏가-힯]/.test(ch) ? 1 : 0.56;
+  for (const ch of text) {
+    // 한글과 도형 문자(● 등)는 한 칸, 나머지는 절반 남짓.
+    units += /[㄰-㆏가-힯■-◿]/.test(ch) ? 1 : 0.56;
+  }
   return units * font;
 }

@@ -1,8 +1,40 @@
 /** 현황판이 쓰는 데이터 로딩과 지역 집계 헬퍼. */
-import type { BoardData, FuelType, SignalColor, StationSignal } from "@shared/lib/types.ts";
+import type { BoardData, FuelType, SignalColor, StationSignal, ViewMode } from "@shared/lib/types.ts";
 import { SIDO_LABELS } from "@shared/lib/region.ts";
+import { VIEW_MODES, VIEW_MODE_LABELS } from "@shared/lib/types.ts";
 
-export type { BoardData, FuelType, SignalColor, StationSignal };
+export type { BoardData, FuelType, SignalColor, StationSignal, ViewMode };
+export { VIEW_MODES, VIEW_MODE_LABELS };
+
+/**
+ * 고른 기준(통합/휘발유/경유)의 성적을 최상위 필드로 끌어올린다.
+ *
+ * 지도·표·요약이 모두 `signal`·`regionRank`·`priceIndex` 를 본다. 기준마다
+ * 그것들을 갈아 끼워 주면 아래 코드는 손대지 않아도 된다.
+ */
+export function applyMode(stations: StationSignal[], mode: ViewMode): StationSignal[] {
+  if (mode === "sum") return stations;
+  return stations.map((s) => {
+    // 브라우저가 옛 latest.json 을 캐시하고 있으면 metrics 가 없다.
+    // 화면이 통째로 죽는 대신 합산 기준 그대로 보여준다.
+    const m = s.metrics?.[mode];
+    if (!m) return s;
+    return {
+      ...s,
+      sum: m.price,
+      priceIndex: m.coefficient != null && m.greenBase != null && m.price != null
+        ? { sum: m.price, regionBase: m.greenBase, coefficient: m.coefficient }
+        : null,
+      regionMinSum: m.regionMin,
+      regionMeanSum: m.regionMean,
+      gapFromMin: m.gapFromMin,
+      regionRank: m.regionRank,
+      regionN: m.regionN,
+      isRegionLowest: m.isRegionLowest,
+      signal: m.signal,
+    };
+  });
+}
 
 /** 지도 폴리곤 1개. 여러 현행 시·군·구를 대표할 수 있다. */
 export interface GeoFeature {

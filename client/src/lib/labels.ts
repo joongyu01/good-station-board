@@ -114,9 +114,17 @@ export interface Chip {
  * 완벽한 배치를 찾는 대신 몇 차례 밀어내기를 반복한다. 지도 라벨은 조금
  * 어긋나도 지시선이 있으면 읽히고, 완전 해를 찾느라 화면이 굳는 것보다 낫다.
  */
-export function relaxChips(chips: Chip[], bounds: { w: number; h: number }, iterations = 60): Chip[] {
+export interface ChipBounds {
+  x0: number; y0: number; x1: number; y1: number;
+}
+
+export function relaxChips(
+  chips: Chip[],
+  bounds: ChipBounds,
+  iterations = 60,
+  pad = 2,
+): Chip[] {
   const out = chips.map((c) => ({ ...c }));
-  const pad = 2;
 
   for (let iter = 0; iter < iterations; iter++) {
     let moved = false;
@@ -146,9 +154,13 @@ export function relaxChips(chips: Chip[], bounds: { w: number; h: number }, iter
     }
 
     // 화면 밖으로 나가지 않게 잡아둔다.
+    //
+    // 경계는 SVG 상자가 아니라 **지금 보이는 범위**다. 확대·이동을 하면 둘이
+    // 달라지는데, SVG 상자로 잡으면 기본 확대율이 1이 아닐 때 라벨이 화면
+    // 밖으로 밀려난다.
     for (const c of out) {
-      c.x = Math.min(bounds.w - c.w / 2 - 2, Math.max(c.w / 2 + 2, c.x));
-      c.y = Math.min(bounds.h - c.h / 2 - 2, Math.max(c.h / 2 + 2, c.y));
+      c.x = Math.min(bounds.x1 - c.w / 2 - 2, Math.max(bounds.x0 + c.w / 2 + 2, c.x));
+      c.y = Math.min(bounds.y1 - c.h / 2 - 2, Math.max(bounds.y0 + c.h / 2 + 2, c.y));
     }
 
     if (!moved) break;

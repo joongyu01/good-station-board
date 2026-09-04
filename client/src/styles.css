@@ -72,10 +72,14 @@ button { font: inherit; }
   padding: 0 18px; min-height: 56px;
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
 }
+/* 로고는 '처음 화면으로' 버튼이다. 생김새는 그대로 두고 커서만 바꾼다. */
 .topbar-logo {
   height: 30px; background: #fff; border-radius: 6px;
   padding: 4px 9px; display: flex; align-items: center; flex-shrink: 0;
+  border: 0; cursor: pointer;
 }
+.topbar-logo:hover { box-shadow: 0 0 0 2px rgba(141, 198, 63, .55); }
+.topbar-logo:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .topbar-logo img { height: 100%; display: block; }
 
 .brand { display: flex; align-items: baseline; gap: 9px; }
@@ -86,9 +90,18 @@ button { font: inherit; }
 .meta .sep { margin: 0 7px; opacity: .45; }
 .meta .matched { font-variant-numeric: tabular-nums; }
 
-/* 유종 탭이 있던 자리. 판정이 주유소 단위(휘발유+경유 합산)로 바뀌면서
-   전환할 것이 없어져 없앴고, 오른쪽 끝으로 미는 역할만 관리 버튼이 이어받았다. */
-.topbar > .admin-link { margin-left: auto; }
+/* 판정 기준 전환 — 통합 / 휘발유 / 경유 */
+.mode-tabs {
+  margin-left: auto; display: flex; gap: 2px;
+  background: rgba(255, 255, 255, .1); border-radius: 9px; padding: 3px;
+}
+.mode-tabs button {
+  border: 0; background: transparent; color: rgba(255, 255, 255, .72);
+  padding: 6px 14px; border-radius: 7px; cursor: pointer;
+  font-size: 12.5px; font-weight: 700;
+}
+.mode-tabs button:hover { color: #fff; }
+.mode-tabs button.is-active { background: var(--green); color: #26380D; }
 
 .admin-link {
   padding: 6px 13px; border-radius: 8px;
@@ -547,3 +560,32 @@ button { font: inherit; }
 .pin-pump { pointer-events: none; }
 .pin:hover .pin-chip { stroke: var(--green-deep); stroke-width: 1.6; }
 .pin:hover .pin-pump { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .35)); }
+
+
+/* ── 표 정렬 헤더 ───────────────────────────────────────── */
+.station-table th { padding: 0; }
+.th-sort {
+  width: 100%; display: flex; align-items: center; gap: 4px;
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-weight: 700; color: var(--ink-soft);
+  padding: 9px 10px; white-space: nowrap;
+}
+.station-table th.num .th-sort { justify-content: flex-end; }
+.station-table th.col-sig .th-sort { padding-left: 12px; padding-right: 2px; }
+.th-sort:hover { color: var(--ink); background: rgba(141, 198, 63, .12); }
+.th-sort.is-active { color: var(--green-deep); }
+/* 정렬 안 된 열의 화살표는 흐리게. 누를 수 있다는 것만 알리면 된다. */
+.th-arrow { font-size: 9px; opacity: .35; }
+.th-sort:hover .th-arrow { opacity: .7; }
+.th-sort.is-active .th-arrow { opacity: 1; }
+
+/* ── CSV 내려받기 ───────────────────────────────────────── */
+.panel-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; }
+.panel-title { min-width: 0; flex: 1; }
+.btn-csv {
+  flex: none; border: 1px solid var(--line); background: var(--card);
+  color: var(--green-deep); border-radius: 8px; cursor: pointer;
+  padding: 6px 12px; font-size: 12.5px; font-weight: 700;
+}
+.btn-csv:hover:not(:disabled) { background: var(--good-bg); border-color: var(--green); }
+.btn-csv:disabled { opacity: .45; cursor: default; }

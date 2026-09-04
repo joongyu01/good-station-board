@@ -89,11 +89,50 @@ export interface RegionStat {
 
 export type SignalColor = "green" | "yellow" | "red" | "unknown";
 
+/** 판정 기준 — 휘발유+경유 합산, 또는 한 유종만. */
+export type ViewMode = "sum" | "gasoline" | "diesel";
+
+export const VIEW_MODES: ViewMode[] = ["sum", "gasoline", "diesel"];
+
+export const VIEW_MODE_LABELS: Record<ViewMode, string> = {
+  sum: "통합",
+  gasoline: "휘발유",
+  diesel: "경유",
+};
+
+/**
+ * 한 기준(합산/휘발유/경유)에서 본 주유소 1곳의 성적.
+ *
+ * 세 기준을 미리 다 계산해 싣는다. 화면에서 기준을 바꿀 때마다 전국 분포를
+ * 다시 세울 수는 없기 때문이다.
+ */
+export interface FuelMetric {
+  /** 판매가. 합산 기준이면 휘발유+경유 합계 */
+  price: number | null;
+  /** 시·도 내 순위 (1 = 최저). 신호등은 이 값으로 정한다 */
+  regionRank: number | null;
+  /** 그 시·도에서 이 기준으로 비교 가능한 주유소 수 */
+  regionN: number;
+  /** 그 시·도의 실제 최저값 */
+  regionMin: number | null;
+  /** 그 시·도의 평균 */
+  regionMean: number | null;
+  /** 상위권 커트라인 — 계수 1.000 이 되는 값 */
+  greenBase: number | null;
+  /** price / greenBase. 1.000 이하가 상위권 */
+  coefficient: number | null;
+  /** 지역 최저와의 차 (원/L) */
+  gapFromMin: number | null;
+  isRegionLowest: boolean;
+  signal: SignalColor;
+}
+
 /**
  * 착한주유소 **1곳**의 판정 결과.
  *
- * 유종별로 따로 판정하지 않는다. 점수(계수)가 휘발유+경유를 합친 값이므로
- * 신호등도 주유소 단위로 하나만 나온다. 유종별 판매가는 근거로 함께 싣는다.
+ * 유종별로 신호등을 따로 매기지 않는다 — 기본은 휘발유+경유를 합친 하나다.
+ * 다만 화면에서 기준을 바꿔 볼 수 있게 세 기준(합산/휘발유/경유)의 성적을
+ * `metrics` 에 모두 싣는다. 최상위 필드는 그중 합산 기준을 펼쳐 둔 것이다.
  */
 export interface StationSignal {
   seq: number;
@@ -116,26 +155,22 @@ export interface StationSignal {
   lng: number | null;
   /** 유종별 판매가 (원/L). 취급하지 않으면 null */
   prices: Record<FuelType, number | null>;
+  /** 세 기준의 성적. 화면이 고른 기준을 꺼내 쓴다. */
+  metrics: Record<ViewMode, FuelMetric>;
+
+  // ── 아래는 metrics.sum 을 펼쳐 둔 값이다. 기본 화면이 합산 기준이라
+  //    매번 metrics.sum 을 거치지 않도록 남겨 둔다. ──
   /** 휘발유+경유 합계. 둘 중 하나라도 없으면 null */
   sum: number | null;
-  /** 합산 가격지수. 신호등의 근거다. */
+  /** 합산 가격지수 */
   priceIndex: PriceIndex | null;
-  /** 그 시·도에서 실제로 가장 싼 합계 */
   regionMinSum: number | null;
-  /** 그 시·도의 평균 합계 */
   regionMeanSum: number | null;
-  /** 지역 최저 합계와의 차 (원/L) */
   gapFromMin: number | null;
-  /**
-   * 시·도 내 합계 순위 (1 = 최저). **신호등은 이 값으로 정한다.**
-   * 서울·경기는 10위 이내, 그 밖의 시·도는 5위 이내가 초록.
-   */
   regionRank: number | null;
-  /** 그 시·도에서 휘발유·경유를 **모두** 파는 주유소 수 */
   regionN: number;
   /** 초록 기준 순위. 화면에 "10위 이내" 처럼 근거를 보여주는 데 쓴다 */
   greenRank: number;
-  /** 시·도 내 합계 최저면 true */
   isRegionLowest: boolean;
   signal: SignalColor;
 }
