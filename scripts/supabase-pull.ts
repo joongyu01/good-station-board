@@ -103,22 +103,24 @@ async function main() {
     console.log(`[pull] 임계값 — 근접 +${cfg.gap_yellow}원 / 표본 ${cfg.min_sample} / 비교 ${cfg.min_compare}`);
   }
 
-  // ── 오피넷 키 ───────────────────────────────────────────────────────
+  // ── 외부 API 키 ─────────────────────────────────────────────────────
   //
   // 관리 화면에서 등록한 키를 뒤따르는 단계가 쓸 수 있게 넘긴다.
-  // GitHub 시크릿이 아니라 Supabase 에서 온 값이므로 로그에 자동 마스킹되지
-  // 않는다. add-mask 로 직접 가려준다.
-  const opinet = await fetchSecret("OPINET_API_KEY");
-  if (opinet) {
-    if (process.env.GITHUB_ENV) {
-      console.log(`::add-mask::${opinet}`);
-      appendFileSync(process.env.GITHUB_ENV, `OPINET_API_KEY=${opinet}\n`);
-      console.log("[pull] OPINET_API_KEY 를 Supabase 에서 가져왔습니다.");
-    } else {
-      console.log("[pull] OPINET_API_KEY 가 Supabase 에 있습니다 (로컬에서는 환경변수로 직접 넣어주세요).");
+  // GitHub 시크릿이 아니라 Supabase 에서 온 값이라 로그에 자동 마스킹되지
+  // 않으므로 add-mask 로 직접 가려준다.
+  for (const name of ["OPINET_API_KEY", "VWORLD_API_KEY"]) {
+    const value = (await fetchSecret(name))?.trim();
+    if (!value) {
+      if (mode() === "service") console.log(`[pull] ${name} 미등록`);
+      continue;
     }
-  } else if (mode() === "service") {
-    console.log("[pull] OPINET_API_KEY 미등록 — 좌표 보강을 건너뜁니다.");
+    if (process.env.GITHUB_ENV) {
+      console.log(`::add-mask::${value}`);
+      appendFileSync(process.env.GITHUB_ENV, `${name}=${value}\n`);
+      console.log(`[pull] ${name} 를 Supabase 에서 가져왔습니다.`);
+    } else {
+      console.log(`[pull] ${name} 가 Supabase 에 있습니다 (로컬에서는 환경변수로 직접 넣어주세요).`);
+    }
   }
 }
 
