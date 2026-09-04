@@ -19,7 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { GeoCollection, GeoFeature, RegionSummary, StationSignal } from "../lib/board.ts";
 import { SIGNAL_COLORS, formatPrice } from "../lib/board.ts";
-import { poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
+import { placePinLabels, poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
 import { withBrand, type BrandCode } from "@shared/lib/brand.ts";
 import { tileSource, visibleTiles } from "../lib/basemap.ts";
 
@@ -36,8 +36,14 @@ const HEIGHT = 860;
  */
 const LABEL_SCALE = 1.5;
 
-/** 주유소 핀 이름표 글자 크기(SVG 단위). 지역 라벨과 달리 확대율을 곱하지 않는다. */
-const PIN_FONT = 10.5;
+/**
+ * 주유소 핀 이름표 글자 크기(SVG 단위). 지역 라벨과 달리 LABEL_SCALE 을 곱하지 않는다.
+ *
+ * 아이콘을 두 배로 키우자 이름표만 작게 남아 짝이 맞지 않았다. 같이 키운다.
+ * 알약의 높이·여백·점 크기는 모두 이 값에서 끌어낸다 — 따로 박아 두면 한쪽만
+ * 바꿨을 때 글자가 알약 밖으로 삐져나온다.
+ */
+const PIN_FONT = 21;
 
 /**
  * 주유기 아이콘 높이(SVG 단위). 꼬리 끝이 주유소 좌표를 짚는다.
@@ -355,18 +361,20 @@ export default function KoreaMap({
     if (!isDetail) return [];
     const k = tf.k;
 
-    // 핀 글자는 지역 라벨보다 작다. LABEL_SCALE 을 그대로 곱했더니 화면에서
-    // 25px 짜리 글씨가 되어 지도를 덮었다.
     const font = PIN_FONT / k;
-    const chipH = 19 / k;
     const iconH = PIN_ICON / k;
+
+    // 알약 치수는 글자 크기에서 끌어낸다. [여백][점][사이][글자][여백]
+    const chipH = font * 1.75;
+    const padX = font * 0.5;
+    const dotR = font * 0.3;
+    const gapX = font * 0.34;
 
     const entries = detailStations.pinned.map((s) => {
       const pt = projection([s.lng!, s.lat!]);
       const anchor = { x: pt?.[0] ?? 0, y: pt?.[1] ?? 0 };
       const label = pinLabel(s.name, s.brand);
-      // 점 + 여백 + 글자 + 여백
-      const w = textWidth(label, font) + 22 / k;
+      const w = padX * 2 + dotR * 2 + gapX + textWidth(label, font);
       return {
         station: s,
         label,
@@ -383,13 +391,34 @@ export default function KoreaMap({
         } as Chip,
         font,
         iconH,
+        dotR,
+        dotX: -w / 2 + padX + dotR,
+        textX: -w / 2 + padX + dotR * 2 + gapX,
       };
     });
 
-    const byId = new Map(
-      relaxChips(entries.map((e) => e.chip), viewBounds, 160, 3 / k).map((c) => [c.id, c]),
+    // 아이콘은 주유소 좌표에 못 박혀 있다. 이름표는 그 둘레의 후보 자리 중
+    // 아이콘과 다른 이름표를 피하는 곳에 앉힌다.
+    const icons = entries.map((e) => ({
+      x: e.anchor.x,
+      y: e.anchor.y - iconH / 2,
+      // 아이콘은 24×30 비율이라 폭은 높이의 0.8배다.
+      w: iconH * 0.8,
+      h: iconH,
+    }));
+
+    const placed = placePinLabels(
+      entries.map((e) => ({ id: e.chip.id, anchor: e.anchor, w: e.chip.w, h: e.chip.h })),
+      icons,
+      viewBounds,
+      { w: iconH * 0.8, h: iconH },
+      4 / k,
     );
-    return entries.map((e) => ({ ...e, chip: byId.get(e.chip.id) ?? e.chip }));
+
+    return entries.map((e, i) => ({
+      ...e,
+      chip: { ...e.chip, x: placed[i].x, y: placed[i].y },
+    }));
   }, [isDetail, detailStations, projection, tf.k, viewBounds]);
 
   // 드릴다운 단계가 바뀌면 확대/이동을 초기화한다.
@@ -585,12 +614,15 @@ export default function KoreaMap({
           ))}
 
           {/* 주유소 핀 — 상세 단계에서만 */}
+          {/* 지시선 — 아이콘 한가운데에서 이름표 한가운데로 긋는다.
+              이름표가 위·옆·아래 어디에 앉든 맞는다. 양 끝은 뒤에 그려지는
+              아이콘과 알약이 덮어 가려주므로 이어지는 구간만 보인다. */}
           {pins.map(({ chip, anchor, iconH }) => (
             <line key={`pl-${chip.id}`} className="pin-leader"
-              x1={anchor.x} y1={anchor.y - iconH} x2={chip.x} y2={chip.y + chip.h / 2} />
+              x1={anchor.x} y1={anchor.y - iconH / 2} x2={chip.x} y2={chip.y} />
           ))}
 
-          {pins.map(({ station, label, anchor, chip, font, iconH }) => {
+          {pins.map(({ station, label, anchor, chip, font, iconH, dotR, dotX, textX }) => {
             const color = SIGNAL_COLORS[station.signal];
             const full = withBrand(station.name, station.brand);
             const tip = `${full} · 휘발유 ${formatPrice(station.prices.gasoline)}`
@@ -611,8 +643,8 @@ export default function KoreaMap({
                   x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
                   width={chip.w} height={chip.h} rx={chip.h / 2} />
                 <circle className="pin-chip-dot"
-                  cx={chip.x - chip.w / 2 + 9 / k} cy={chip.y} r={3.4 / k} fill={color} />
-                <text className="pin-name" x={chip.x - chip.w / 2 + 16 / k} y={chip.y}
+                  cx={chip.x + dotX} cy={chip.y} r={dotR} fill={color} />
+                <text className="pin-name" x={chip.x + textX} y={chip.y}
                   style={{ fontSize: `${font}px` }}>
                   {label}
                 </text>

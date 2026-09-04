@@ -118,11 +118,22 @@ export interface ChipBounds {
   x0: number; y0: number; x1: number; y1: number;
 }
 
+/** 비켜 가야 하는 고정 사각형. 스스로는 움직이지 않는다. */
+export interface Obstacle {
+  x: number; y: number; w: number; h: number;
+}
+
+/**
+ * @param obstacles 칩이 덮으면 안 되는 고정 도형. 주유기 아이콘이 여기 들어간다.
+ *   칩끼리만 밀어내면 이름표가 남의 아이콘 위에 내려앉는다 — 이름표를 키우고
+ *   강릉시처럼 주유소가 몰린 곳에서 실제로 그랬다.
+ */
 export function relaxChips(
   chips: Chip[],
   bounds: ChipBounds,
   iterations = 60,
   pad = 2,
+  obstacles: Obstacle[] = [],
 ): Chip[] {
   const out = chips.map((c) => ({ ...c }));
 
@@ -153,6 +164,20 @@ export function relaxChips(
       }
     }
 
+    // 고정 도형은 밀리지 않는다. 칩만 비켜난다.
+    for (const c of out) {
+      for (const o of obstacles) {
+        const dx = o.x - c.x;
+        const dy = o.y - c.y;
+        const overlapX = (c.w + o.w) / 2 + pad - Math.abs(dx);
+        const overlapY = (c.h + o.h) / 2 + pad - Math.abs(dy);
+        if (overlapX <= 0 || overlapY <= 0) continue;
+        moved = true;
+        if (overlapY < overlapX) c.y -= overlapY * (dy < 0 ? -1 : 1);
+        else c.x -= overlapX * (dx < 0 ? -1 : 1);
+      }
+    }
+
     // 화면 밖으로 나가지 않게 잡아둔다.
     //
     // 경계는 SVG 상자가 아니라 **지금 보이는 범위**다. 확대·이동을 하면 둘이
@@ -167,4 +192,89 @@ export function relaxChips(
   }
 
   return out;
+}
+
+/**
+ * 핀 이름표 자리 잡기 — 후보 위치 중에서 고른다.
+ *
+ * 서로 밀어내는 방식(relaxChips)은 이름표가 작을 때는 잘 듣지만, 커지고 나서
+ * 주유소가 몰린 곳(강릉시 6곳)에서는 수렴하지 않았다. 밀어낸 이름표가 다른
+ * 아이콘 위에 내려앉고, 그것을 다시 밀면 또 다른 것과 부딪히기를 되풀이한다.
+ *
+ * 그래서 아이콘 둘레의 정해진 자리 몇 곳을 후보로 두고, **이미 놓인 이름표와
+ * 모든 아이콘을 피하는 첫 자리**를 고른다. 어느 자리도 깨끗하지 않으면 겹치는
+ * 넓이가 가장 작은 자리를 쓴다. 자리는 유한하니 반드시 끝난다.
+ *
+ * 위쪽부터 차례로 놓는다. 순서가 고정돼야 화면을 다시 그려도 이름표가 춤추지 않는다.
+ */
+export interface PinLabel {
+  id: string;
+  anchor: { x: number; y: number };
+  w: number;
+  h: number;
+}
+
+export interface PlacedLabel extends PinLabel {
+  x: number;
+  y: number;
+}
+
+function overlapArea(a: Obstacle, b: Obstacle): number {
+  const x = Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2);
+  const y = Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2);
+  return x > 0 && y > 0 ? x * y : 0;
+}
+
+export function placePinLabels(
+  labels: PinLabel[],
+  icons: Obstacle[],
+  bounds: ChipBounds,
+  icon: { w: number; h: number },
+  gap: number,
+): PlacedLabel[] {
+  // 위에서 아래로, 같은 높이면 왼쪽부터. 그려지는 순서와 무관하게 자리가 고정된다.
+  const order = [...labels].sort(
+    (a, b) => a.anchor.y - b.anchor.y || a.anchor.x - b.anchor.x,
+  );
+
+  const placed: PlacedLabel[] = [];
+
+  for (const l of order) {
+    const dx = l.w / 2 + icon.w / 2 + gap;
+    const up = icon.h + l.h / 2 + gap;
+    const down = l.h / 2 + gap;
+
+    // 아이콘 바로 위를 가장 먼저 본다. 그다음 옆, 아래, 그리고 한 칸 더 멀리.
+    const candidates: Array<[number, number]> = [
+      [0, -up],
+      [dx, -icon.h / 2], [-dx, -icon.h / 2],
+      [0, down],
+      [dx, -up], [-dx, -up],
+      [dx, down], [-dx, down],
+      [0, -up - l.h - gap],
+      [0, down + l.h + gap],
+      [dx, -up - l.h - gap], [-dx, -up - l.h - gap],
+    ];
+
+    let best: { x: number; y: number; cost: number } | null = null;
+
+    for (const [ox, oy] of candidates) {
+      const x = Math.min(bounds.x1 - l.w / 2 - 2, Math.max(bounds.x0 + l.w / 2 + 2, l.anchor.x + ox));
+      const y = Math.min(bounds.y1 - l.h / 2 - 2, Math.max(bounds.y0 + l.h / 2 + 2, l.anchor.y + oy));
+      const box = { x, y, w: l.w, h: l.h };
+
+      let cost = 0;
+      for (const ic of icons) cost += overlapArea(box, ic);
+      for (const p of placed) cost += overlapArea(box, { x: p.x, y: p.y, w: p.w, h: p.h });
+
+      if (cost === 0) { best = { x, y, cost }; break; }
+      if (!best || cost < best.cost) best = { x, y, cost };
+    }
+
+    placed.push({ ...l, x: best!.x, y: best!.y });
+  }
+
+  // 넘겨받은 순서대로 돌려준다. 호출부가 id 로 다시 찾지 않아도 되게.
+  const byId = new Map(placed.map((p) => [p.id, p]));
+  return labels.map((l) => byId.get(l.id)!);
 }
