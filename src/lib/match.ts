@@ -89,6 +89,7 @@ export function similarity(a: string, b: string): number {
 }
 
 export type MatchMethod =
+  | "csv"           // 명단 CSV 의 `번호` 열에 오피넷 주유소코드가 들어 있음
   | "address"       // 도로명 + 건물번호 정확 일치 (같은 시군구)
   | "address-sido"  // 도로명 + 건물번호 정확 일치 (같은 시·도, 시군구 불일치)
   | "name-exact"    // 상호 완전 일치 (같은 시군구, 후보 1개)
@@ -98,6 +99,7 @@ export type MatchMethod =
   | "unmatched";
 
 export const METHOD_SCORE: Record<MatchMethod, number> = {
+  csv: 100,
   address: 100,
   "address-sido": 95,
   "name-exact": 85,

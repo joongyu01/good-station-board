@@ -112,24 +112,46 @@ export function toSignal(
 }
 
 /**
- * 휘발유+경유 합산 가격지수.
+ * 초록불 기준선 — 그 시·도에서 상위권 커트라인에 해당하는 합계.
  *
- * 그 시·도의 최저 휘발유가 + 최저 경유가를 1.000 으로 두고 비례 환산한다.
- * 기준선은 서로 다른 주유소의 최저가를 더한 값이라 실제로 그 값에 파는 곳은
- * 없을 수 있다. 환산 기준일 뿐이다.
+ * 서울·경기는 10위, 그 밖은 5위 자리의 합계다. 이 값이 계수 1.000 이 된다.
+ * 모집단이 기준 순위보다 작으면 마지막 값을 쓴다.
  */
-export function priceIndexOf(
-  gasoline: number | null,
-  diesel: number | null,
-  regionMinGasoline: number | null,
-  regionMinDiesel: number | null,
+export function greenBaseOf(sortedSums: number[], greenRank: number): number | null {
+  if (sortedSums.length === 0) return null;
+  const i = Math.min(greenRank, sortedSums.length) - 1;
+  return sortedSums[i];
+}
+
+/**
+ * 휘발유+경유 합산 계수.
+ *
+ * **초록불 커트라인을 1.000 으로 둔다.** 그 시·도에서 상위 N위(서울·경기 10,
+ * 그 외 5) 주유소의 합계가 기준선이고, 각 주유소의 합계를 그 비율로 환산한다.
+ *
+ *   계수 ≤ 1.000  →  상위권 (초록)
+ *   계수  > 1.000  →  기준선보다 비쌈
+ *
+ * 예전에는 지역 최저가를 1.000 으로 뒀는데, 그러면 어떤 주유소도 1 미만이
+ * 될 수 없어 "기준을 통과했는가"를 계수만 보고 알 수 없었다. 지금은 1.000 이
+ * 곧 합격선이라 계수 하나로 판정 근거가 읽힌다.
+ */
+export function coefficientOf(
+  sum: number | null,
+  greenBase: number | null,
 ): { sum: number; regionBase: number; coefficient: number } | null {
-  if (gasoline == null || diesel == null) return null;
-  if (regionMinGasoline == null || regionMinDiesel == null) return null;
-  const regionBase = regionMinGasoline + regionMinDiesel;
-  if (!(regionBase > 0)) return null;
-  const sum = gasoline + diesel;
-  return { sum, regionBase, coefficient: Math.round((sum / regionBase) * 1000) / 1000 };
+  if (sum == null || greenBase == null || !(greenBase > 0)) return null;
+
+  // 소수 셋째 자리에서 반올림하되 1.000 을 넘어서 반올림되지는 않게 한다.
+  //
+  // 커트라인보다 1원 비싼 주유소가 3553/3552 = 1.000282 → 1.000 으로 찍히면
+  // 화면에서 "계수 1.000인데 근접"이 되어 판정 근거가 어긋나 보인다. 1.000 은
+  // 합격선이라는 뜻이므로 이 값은 커트라인 이하일 때만 나와야 한다.
+  let coefficient = Math.round((sum / greenBase) * 1000) / 1000;
+  if (sum > greenBase && coefficient <= 1) coefficient = 1.001;
+  if (sum < greenBase && coefficient >= 1) coefficient = 0.999;
+
+  return { sum, regionBase: greenBase, coefficient };
 }
 
 /** 오름차순 목록에서 순위(1 = 최저)를 구한다. 동가는 같은 순위. */

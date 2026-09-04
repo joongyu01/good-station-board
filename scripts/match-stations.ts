@@ -1,12 +1,13 @@
 /**
- * 3단계 — 착한주유소 449건 ↔ Opinet 주유소 코드 매칭
+ * 3단계 — 착한주유소 명단 ↔ Opinet 주유소 코드 매칭
  *
  *   data/good-stations.json + data/station-index.json
  *     → data/station-mapping.json   (확정 매핑)
  *     → data/match-report.md        (수기 확인 대상)
  *
  * 매칭 순서 (앞에서 확정되면 뒤는 보지 않는다)
- *   1. manual        data/manual-mapping.json 에 사람이 적어둔 값 — 무조건 우선
+ *   1. csv           명단 CSV 의 `번호` 열 — 발급기관이 준 코드라 가장 믿을 만하다
+ *   2. manual        data/manual-mapping.json 에 사람이 적어둔 값 (코드가 빈 행만)
  *   2. address       같은 시군구 + 도로명 + 건물번호 일치
  *   2-b. address-sido 시·도 + 도로명 + 건물번호 일치 — 시군구 개편 구제
  *   3. name-exact    같은 시군구 + 상호 완전 일치 (후보가 정확히 1개일 때만)
@@ -91,7 +92,21 @@ function main() {
   const resolved: Resolved[] = [];
 
   for (const s of good) {
-    // 1. 수기 지정
+    // 1. 명단 CSV 가 이미 주유소코드를 들고 있는 경우.
+    //
+    // 발급기관이 직접 부여한 값이라 상호·주소로 추정하는 어떤 방법보다 정확하고,
+    // 수기 지정보다도 앞에 둔다. 수기 매핑은 seq 로 거는데 명단을 갈아끼우면 seq
+    // 가 통째로 밀려 엉뚱한 주유소를 가리키기 때문이다. 실제로 449곳 명단을
+    // 472곳으로 바꿨을 때 옛 파일이 446건을 잘못 덮어썼다.
+    //
+    // 오피넷 전국 목록에 없는 코드는 그대로 둔다(폐업·가격 미신고 가능).
+    // 코드가 틀린 게 아니라 그날 가격이 없는 것이다.
+    if (s.stationId) {
+      resolved.push({ seq: s.seq, stationId: s.stationId, method: "csv", score: 100 });
+      continue;
+    }
+
+    // 2. 수기 지정 — 코드가 비어 있는 행에만 적용된다.
     const manualId = manual[String(s.seq)];
     if (manualId) {
       resolved.push({ seq: s.seq, stationId: manualId, method: "manual", score: 100 });
@@ -203,6 +218,7 @@ function main() {
   out.push("| 방법 | 건수 | 설명 |");
   out.push("|---|---:|---|");
   const desc: Record<string, string> = {
+    csv: "명단 CSV 의 주유소코드",
     manual: "사람이 직접 지정",
     address: "도로명 + 건물번호 일치",
     "address-sido": "시·도 + 도로명 + 건물번호 일치 (시군구 개편 구제)",

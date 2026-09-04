@@ -48,7 +48,11 @@ async function main() {
     sigungu: r.sigungu,
     sigunguDetail: r.sigungu_detail || r.sigungu,
     regionKey: r.region_key,
-    stationId: null, // 매칭 단계가 채운다
+    // 명단 CSV 가 준 오피넷 주유소코드. 없으면 매칭 단계가 채운다.
+    stationId: r.station_id ?? null,
+    brand: (r.brand as GoodStation["brand"]) ?? null,
+    isSelf: r.is_self ?? false,
+    round: r.round ?? null,
   }));
 
   writeFileSync(

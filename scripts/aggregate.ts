@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  toSignal, describe, rankOf, greenRankWith, priceIndexOf,
+  toSignal, describe, rankOf, greenRankWith, greenBaseOf, coefficientOf,
   DEFAULT_THRESHOLDS, type Thresholds,
 } from "../src/lib/signal.ts";
 import {
@@ -90,8 +90,7 @@ function main() {
   // "관내 1위"가 아무 의미도 없어진다. 시·도는 가장 작은 세종도 64곳이라
   // 순위가 뜻을 갖는다.
   //
-  // 유종별 통계는 계수의 기준선(최저 휘발유가 + 최저 경유가)을 뽑는 데 쓰고,
-  // 순위는 합계("sum") 통계로 낸다.
+  // 유종별 통계는 화면 표시용이고, 순위와 계수는 모두 합계("sum") 분포에서 낸다.
   const stats = new Map<string, RegionStat>();
   const sortedPrices = new Map<string, number[]>();
 
@@ -174,19 +173,14 @@ function main() {
     const prices = {} as Record<FuelType, number | null>;
     for (const fuel of FUEL_TYPES) prices[fuel] = row?.[fuel] ?? null;
 
-    // 휘발유+경유 합산 지수 — 계수의 기준선은 유종별 최저가의 합이다.
-    const idx = priceIndexOf(
-      prices.gasoline,
-      prices.diesel,
-      sortedPrices.get(`${effSido}|gasoline`)?.[0] ?? null,
-      sortedPrices.get(`${effSido}|diesel`)?.[0] ?? null,
-    );
-
-    // 순위는 실제 합계 분포에서 낸다.
+    // 순위와 계수 모두 합계 분포에서 낸다.
     const sumStat = stats.get(`${effSido}|sum`);
     const sumSorted = sortedPrices.get(`${effSido}|sum`) ?? [];
     const sum =
       prices.gasoline != null && prices.diesel != null ? prices.gasoline + prices.diesel : null;
+
+    // 계수 1.000 = 초록불 커트라인. 상위권이면 1 이하로 떨어진다.
+    const idx = coefficientOf(sum, greenBaseOf(sumSorted, greenRank));
 
     const rank = sum != null && sumSorted.length > 0 ? rankOf(sum, sumSorted) : null;
     const regionMinSum = sumSorted.length > 0 ? sumSorted[0] : null;
@@ -196,6 +190,8 @@ function main() {
       seq: g.seq,
       stationId,
       name: g.name,
+      brand: g.brand ?? null,
+      isSelf: g.isSelf ?? false,
       sido: effSido,
       sigungu: effSigungu,
       regionKey: effKey,
@@ -258,7 +254,7 @@ function main() {
   console.log(`[aggregate] 완료 — 기준일 ${date}`);
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
-  console.log(`  합산 계수 산출: ${withIndex}곳 (휘발유·경유 둘 다 파는 곳)`);
+  console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }

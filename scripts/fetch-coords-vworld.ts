@@ -283,6 +283,24 @@ async function main() {
     if (ok % 50 === 0) console.log(`  ${ok}곳 확보`);
   }
 
+  // ── 수기 보정 ───────────────────────────────────────────────────────
+  //
+  // 지오코더가 끝내 못 찾는 주소가 남는다. 건물번호가 실재하지 않거나(정읍
+  // 소성로 639) 명단이 한 칸 어긋난(양주 부흥로 1807 → 실제 1809) 경우다.
+  // 그런 건만 파일로 적어두고 마지막에 덮어쓴다. 매번 다시 찾게 두면 실행할
+  // 때마다 같은 두 곳이 빈다.
+  const manualPath = path.join(DATA, "manual-coords.json");
+  let manualApplied = 0;
+  if (existsSync(manualPath)) {
+    const manual: Record<string, { lat?: number; lng?: number }> =
+      JSON.parse(readFileSync(manualPath, "utf8"));
+    for (const [id, v] of Object.entries(manual)) {
+      if (id.startsWith("_") || v?.lat == null || v?.lng == null) continue;
+      coords[id] = { lat: v.lat, lng: v.lng, src: "manual" };
+      manualApplied++;
+    }
+  }
+
   writeFileSync(coordsPath, JSON.stringify(coords, null, 0), "utf8");
 
   const total = good.filter((g) => mapping[String(g.seq)]).length;
@@ -294,6 +312,7 @@ async function main() {
   console.log(`  주소를 못 찾음        ${notFound}곳`);
   console.log(`  지역 밖이라 기각      ${outside}곳`);
   console.log(`  조회 실패            ${failed}곳`);
+  if (manualApplied) console.log(`  수기 보정 적용        ${manualApplied}곳 (data/manual-coords.json)`);
   if (noId) console.log(`  주유소코드 미매칭     ${noId}곳`);
   console.log(`\n  좌표 보유 ${have} / 대상 ${total}곳 (${((have / total) * 100).toFixed(1)}%)`);
   console.log(`  data/station-coords.json`);

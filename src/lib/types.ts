@@ -1,3 +1,5 @@
+import type { BrandCode } from "./brand.ts";
+
 /** Opinet 다운로드 CSV가 제공하는 유종. 파싱은 4종 모두 한다. */
 export type FuelType = "gasoline" | "diesel" | "kerosene" | "premiumGasoline";
 
@@ -20,7 +22,7 @@ export const FUEL_LABELS: Record<FuelType, string> = {
 /** 통계 단위 — 유종별, 그리고 휘발유+경유 합계. */
 export type StatKind = FuelType | "sum";
 
-/** 착한주유소 명단 1건 (adress.csv 정규화 결과) */
+/** 착한주유소 명단 1건 (명단 CSV 정규화 결과) */
 export interface GoodStation {
   /** 명단 내 고유번호. 상호가 중복되므로 이름을 키로 쓰면 안 된다. */
   seq: number;
@@ -30,8 +32,18 @@ export interface GoodStation {
   sigungu: string;
   sigunguDetail: string;
   regionKey: string;
-  /** Opinet 주유소 코드. 매칭 전에는 null. */
+  /**
+   * Opinet 주유소 코드.
+   *
+   * 명단 CSV 의 `번호` 열에 이미 들어 있다. 비어 있는 행만 매칭 단계가 채운다.
+   */
   stationId: string | null;
+  /** 폴(상표) 코드. 화면에는 `대경주유소(HD)` 처럼 붙는다. */
+  brand: BrandCode | null;
+  /** 셀프 주유소 여부 */
+  isSelf: boolean;
+  /** 선정차수 (예: "1차") */
+  round: string | null;
   /** 매칭 근거 — auto(주소) / auto(상호+지역) / manual / unmatched */
   matchMethod?: string;
   matchScore?: number;
@@ -87,6 +99,9 @@ export interface StationSignal {
   seq: number;
   stationId: string | null;
   name: string;
+  /** 폴(상표) 코드. 화면에는 상호 뒤 괄호로 붙는다. */
+  brand: BrandCode | null;
+  isSelf: boolean;
   sido: string;
   sigungu: string;
   regionKey: string;
@@ -126,23 +141,22 @@ export interface StationSignal {
 }
 
 /**
- * 휘발유+경유 합산 가격지수.
+ * 휘발유+경유 합산 계수.
  *
- * 그 시·도의 최저 휘발유가와 최저 경유가를 더한 값을 1.000 으로 두고, 각
- * 주유소의 두 유종 합계를 비례로 환산한다.
- *   예) 지역 최저 1800(휘)+1700(경) = 3500 → 계수 1.000
- *       어느 주유소 1850+1750 = 3600      → 계수 1.029
+ * 그 시·도의 **초록불 커트라인**(서울·경기 10위, 그 밖 5위 자리의 합계)을
+ * 1.000 으로 두고 각 주유소의 합계를 비례 환산한다.
+ *   예) 경기 10위 합계 3,600원 → 계수 1.000
+ *       어느 주유소 3,528원      → 계수 0.980  (상위권)
+ *       어느 주유소 3,744원      → 계수 1.040  (미달)
  *
- * 기준선이 되는 3500 은 서로 다른 주유소의 최저가를 더한 값이라 실제로 그
- * 값에 파는 곳은 없을 수 있다. 어디까지나 환산 기준이다. 실제 최저 합계는
- * StationSignal.regionMinSum 에 따로 싣는다.
+ * 1.000 이 합격선이라 계수만 보고 판정 근거를 읽을 수 있다.
  */
 export interface PriceIndex {
   /** 휘발유 + 경유 합계 (원/L) */
   sum: number;
-  /** 그 시·도의 최저 휘발유가 + 최저 경유가 */
+  /** 그 시·도의 초록불 커트라인 합계 */
   regionBase: number;
-  /** sum / regionBase. 1.000 이 지역 최저 수준 */
+  /** sum / regionBase. 1.000 이하면 상위권 */
   coefficient: number;
 }
 

@@ -93,6 +93,11 @@ export interface StationRow {
   sigungu_detail: string;
   region_key: string;
   station_id: string | null;
+  /** 폴(상표) 코드 — HD / SOIL / SK / GS / AL / NH / EX / PB */
+  brand: string | null;
+  is_self: boolean;
+  /** 선정차수 (예: "1차") */
+  round: string | null;
   lat: number | null;
   lng: number | null;
   active: boolean;
