@@ -1,15 +1,18 @@
 /**
  * 주유소 1곳의 판매가·계수 추이.
  *
- * 목록의 상호나 지도의 주유기 아이콘을 누르면 열린다. 왼쪽 축은 휘발유·경유
- * 판매가(원/L), 오른쪽 축은 합산 계수다. 계수는 빨간 선으로 그린다.
+ * 목록의 상호나 지도의 주유기 아이콘을 누르면 열린다. 왼쪽에 그래프 둘, 오른쪽에
+ * 날짜별 가격 기록표를 나란히 놓는다.
  *
- * 축을 둘로 나눈 이유는 단위가 다르기 때문이다. 판매가는 1,700~2,000 대이고
- * 계수는 0.94~1.15 라 한 축에 얹으면 계수 선이 바닥에 붙어 아무 변화도
- * 안 보인다.
+ * 그래프를 둘로 나눈 이유는 단위가 다르기 때문이다. 판매가는 1,700~2,000 대이고
+ * 계수는 0.94~1.15 다. 한 그림에 이중축으로 얹으면 두 눈금을 번갈아 읽어야 하고,
+ * 어느 선이 어느 축인지 매번 확인해야 한다. 칸을 분리하면 각자 자기 축만 갖는다.
  *
- * 계수 1.000 은 그날 그 시·도의 초록불 커트라인이다. 그 선을 점선으로 깔아
- * 두면 언제 기준을 넘나들었는지가 한눈에 읽힌다.
+ * 두 그래프는 같은 x 눈금을 쓰고 좌우 여백도 같아서 세로로 정확히 포개진다.
+ * 그래서 날짜 라벨은 아래쪽 그래프에만 붙인다.
+ *
+ * 계수 1.000 은 그날 그 시·도의 상위권 커트라인이다. 그 선을 점선으로 깔아 두면
+ * 언제 기준을 넘나들었는지가 한눈에 읽힌다.
  */
 import { useEffect, useMemo, useState } from "react";
 import type { History, StationSeries } from "@shared/lib/history.ts";
@@ -17,12 +20,17 @@ import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/
 import { withBrand } from "@shared/lib/brand.ts";
 
 const W = 720;
-const H = 340;
-const PAD = { top: 18, right: 58, bottom: 34, left: 56 };
+/** 판매가 그래프 높이. 날짜 라벨이 없어 아래 여백이 좁다. */
+const H_PRICE = 250;
+/** 계수 그래프 높이. 값의 폭이 좁아 판매가보다 낮아도 읽힌다. */
+const H_COEF = 165;
+const PAD = { top: 16, right: 16, bottom: 10, left: 58 };
+/** 날짜 라벨이 들어가는 아래 여백 — 계수 그래프에만 적용한다. */
+const PAD_BOTTOM_AXIS = 30;
 
-const COLOR_GASOLINE = "#2F6FB5";
+/** 휘발유는 노란색. 경유의 초록과 계수의 빨강과 겹치지 않는다. */
+const COLOR_GASOLINE = "#E3A81E";
 const COLOR_DIESEL = "#5B9A3E";
-/** 계수는 빨간색으로 — 요구사항 그대로다. */
 const COLOR_COEF = "#C6402E";
 
 /** 여러 창에서 같은 파일을 다시 받지 않도록 모듈 수준에 한 번만 담아 둔다. */
@@ -85,22 +93,25 @@ export default function PriceChart({ station, onClose }: Props) {
     // 가격축 — 위아래로 조금 띄운다. 딱 맞추면 선이 테두리에 닿는다.
     const pMin = prices.length ? Math.min(...prices) : 0;
     const pMax = prices.length ? Math.max(...prices) : 1;
-    const pPad = Math.max(10, (pMax - pMin) * 0.18);
+    const pPad = Math.max(10, (pMax - pMin) * 0.15);
     const p0 = pMin - pPad;
     const p1 = pMax + pPad;
 
     // 계수축 — 1.000 을 반드시 포함시킨다. 커트라인이 화면 밖이면 점선이 안 보인다.
     const cMin = Math.min(1, ...(coefs.length ? coefs : [1]));
     const cMax = Math.max(1, ...(coefs.length ? coefs : [1]));
-    const cPad = Math.max(0.01, (cMax - cMin) * 0.2);
+    const cPad = Math.max(0.008, (cMax - cMin) * 0.2);
     const c0 = cMin - cPad;
     const c1 = cMax + cPad;
 
     const innerW = W - PAD.left - PAD.right;
-    const innerH = H - PAD.top - PAD.bottom;
-    const x = (k: number) => PAD.left + (idx.length === 1 ? innerW / 2 : (k / (idx.length - 1)) * innerW);
-    const yP = (v: number) => PAD.top + innerH - ((v - p0) / (p1 - p0)) * innerH;
-    const yC = (v: number) => PAD.top + innerH - ((v - c0) / (c1 - c0)) * innerH;
+    const priceH = H_PRICE - PAD.top - PAD.bottom;
+    const coefH = H_COEF - PAD.top - PAD_BOTTOM_AXIS;
+
+    const x = (k: number) =>
+      PAD.left + (idx.length === 1 ? innerW / 2 : (k / (idx.length - 1)) * innerW);
+    const yP = (v: number) => PAD.top + priceH - ((v - p0) / (p1 - p0)) * priceH;
+    const yC = (v: number) => PAD.top + coefH - ((v - c0) / (c1 - c0)) * coefH;
 
     /**
      * null 이 섞인 계열을 끊어진 선분들로 만든다.
@@ -132,23 +143,20 @@ export default function PriceChart({ station, onClose }: Props) {
         values[idx[a]] != null && values[idx[b]] != null
         && gapDays(dates[idx[a]], dates[idx[b]]) <= 1;
       idx.forEach((i, k) => {
-        if (values[i] == null) return;
+        const v = values[i];
+        if (v == null) return;
         const back = k > 0 && linked(k - 1, k);
         const fwd = k < idx.length - 1 && linked(k, k + 1);
-        if (!back && !fwd) out.push({ x: x(k), y: y(v0(values[i])) });
+        if (!back && !fwd) out.push({ x: x(k), y: y(v) });
       });
       return out;
-      function v0(v: number | null) { return v as number; }
     }
 
-    // x축 눈금 — 6개 안팎으로 솎는다. 65일치 날짜를 다 쓰면 글자가 겹친다.
+    // x축 눈금 — 6개 안팎으로 솎는다. 66일치 날짜를 다 쓰면 글자가 겹친다.
     const step = Math.max(1, Math.ceil(idx.length / 6));
     const ticks = idx
       .map((i, k) => ({ k, date: dates[i] }))
       .filter(({ k }) => k % step === 0 || k === idx.length - 1);
-
-    const priceTicks = niceTicks(p0, p1, 4);
-    const coefTicks = niceTicks(c0, c1, 4);
 
     const last = idx.at(-1)!;
 
@@ -156,11 +164,20 @@ export default function PriceChart({ station, onClose }: Props) {
       idx, x, yP, yC,
       gasoline: line(series.g, yP), diesel: line(series.d, yP), coef: line(series.c, yC),
       gasolineDots: dots(series.g, yP), dieselDots: dots(series.d, yP), coefDots: dots(series.c, yC),
-      ticks, priceTicks, coefTicks,
+      ticks,
+      priceTicks: niceTicks(p0, p1, 4),
+      coefTicks: niceTicks(c0, c1, 3),
+      priceGridY: (v: number) => yP(v),
       cutoffY: c0 <= 1 && 1 <= c1 ? yC(1) : null,
-      innerW, innerH,
+      priceH, coefH,
       from: dates[idx[0]], to: dates[last],
       latest: { g: series.g[last], d: series.d[last], c: series.c[last] },
+      // 오른쪽 기록표 — 날짜 오름차순. 요청하신 `구분, 휘발유, 경유` 그대로.
+      rows: idx.map((i) => ({
+        date: dates[i],
+        g: series.g[i],
+        d: series.d[i],
+      })),
     };
   }, [history, series]);
 
@@ -204,69 +221,110 @@ export default function PriceChart({ station, onClose }: Props) {
           )}
 
           {chart && (
-            <>
-              <svg viewBox={`0 0 ${W} ${H}`} className="chart-svg" role="img"
-                aria-label={`${station.name} 휘발유·경유 판매가와 계수 추이`}>
-                {/* 가로 눈금선 + 가격축 */}
-                {chart.priceTicks.map((v) => (
-                  <g key={`p${v}`}>
-                    <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
-                      y1={chart.yP(v)} y2={chart.yP(v)} />
-                    <text className="ch-axis" x={PAD.left - 8} y={chart.yP(v)}
-                      textAnchor="end" dominantBaseline="middle">{Math.round(v).toLocaleString("ko-KR")}</text>
-                  </g>
-                ))}
+            <div className="chart-split">
+              <div className="chart-graphs">
+                {/* ── 판매가 ─────────────────────────────────── */}
+                <section className="chart-panel">
+                  <h4 className="chart-panel-title">판매가 <span>원/L</span></h4>
+                  <svg viewBox={`0 0 ${W} ${H_PRICE}`} className="chart-svg" role="img"
+                    aria-label={`${station.name} 휘발유·경유 판매가 추이`}>
+                    {chart.priceTicks.map((v) => (
+                      <g key={`p${v}`}>
+                        <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
+                          y1={chart.yP(v)} y2={chart.yP(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={chart.yP(v)}
+                          textAnchor="end" dominantBaseline="middle">
+                          {Math.round(v).toLocaleString("ko-KR")}
+                        </text>
+                      </g>
+                    ))}
 
-                {/* 계수축 */}
-                {chart.coefTicks.map((v) => (
-                  <text key={`c${v}`} className="ch-axis ch-axis-coef" x={W - PAD.right + 8}
-                    y={chart.yC(v)} dominantBaseline="middle">{v.toFixed(3)}</text>
-                ))}
+                    {chart.gasoline.map((d, i) => (
+                      <path key={`g${i}`} d={d} className="ch-line" stroke={COLOR_GASOLINE} />
+                    ))}
+                    {chart.diesel.map((d, i) => (
+                      <path key={`d${i}`} d={d} className="ch-line" stroke={COLOR_DIESEL} />
+                    ))}
+                    {chart.gasolineDots.map((p, i) => (
+                      <circle key={`gd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_GASOLINE} />
+                    ))}
+                    {chart.dieselDots.map((p, i) => (
+                      <circle key={`dd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_DIESEL} />
+                    ))}
+                  </svg>
+                  <p className="chart-legend">
+                    <span><i style={{ background: COLOR_GASOLINE }} />휘발유 {formatPrice(chart.latest.g)}</span>
+                    <span><i style={{ background: COLOR_DIESEL }} />경유 {formatPrice(chart.latest.d)}</span>
+                  </p>
+                </section>
 
-                {/* 계수 1.000 = 초록불 커트라인 */}
-                {chart.cutoffY != null && (
-                  <>
-                    <line className="ch-cutoff" x1={PAD.left} x2={W - PAD.right}
-                      y1={chart.cutoffY} y2={chart.cutoffY} />
-                    <text className="ch-cutoff-label" x={W - PAD.right - 4} y={chart.cutoffY - 5}
-                      textAnchor="end">상위권 기준 1.000</text>
-                  </>
-                )}
+                {/* ── 계수 ───────────────────────────────────── */}
+                <section className="chart-panel">
+                  <h4 className="chart-panel-title">
+                    계수 <span>1.000 이하가 상위권</span>
+                  </h4>
+                  <svg viewBox={`0 0 ${W} ${H_COEF}`} className="chart-svg" role="img"
+                    aria-label={`${station.name} 합산 계수 추이`}>
+                    {chart.coefTicks.map((v) => (
+                      <g key={`c${v}`}>
+                        <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
+                          y1={chart.yC(v)} y2={chart.yC(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={chart.yC(v)}
+                          textAnchor="end" dominantBaseline="middle">{v.toFixed(3)}</text>
+                      </g>
+                    ))}
 
-                {/* x축 */}
-                {chart.ticks.map(({ k, date }) => (
-                  <text key={date} className="ch-axis" x={chart.x(k)} y={H - PAD.bottom + 16}
-                    textAnchor="middle">{fmtTick(date)}</text>
-                ))}
+                    {chart.cutoffY != null && (
+                      <>
+                        <line className="ch-cutoff" x1={PAD.left} x2={W - PAD.right}
+                          y1={chart.cutoffY} y2={chart.cutoffY} />
+                        <text className="ch-cutoff-label" x={W - PAD.right - 4}
+                          y={chart.cutoffY - 5} textAnchor="end">상위권 기준</text>
+                      </>
+                    )}
 
-                {chart.gasoline.map((d, i) => (
-                  <path key={`g${i}`} d={d} className="ch-line" stroke={COLOR_GASOLINE} />
-                ))}
-                {chart.diesel.map((d, i) => (
-                  <path key={`d${i}`} d={d} className="ch-line" stroke={COLOR_DIESEL} />
-                ))}
-                {chart.coef.map((d, i) => (
-                  <path key={`c${i}`} d={d} className="ch-line ch-line-coef" stroke={COLOR_COEF} />
-                ))}
+                    {/* 날짜 라벨은 아래 그래프에만. 두 그래프의 x 는 정확히 포개진다. */}
+                    {chart.ticks.map(({ k, date }) => (
+                      <text key={date} className="ch-axis" x={chart.x(k)}
+                        y={H_COEF - PAD_BOTTOM_AXIS + 18} textAnchor="middle">{fmtTick(date)}</text>
+                    ))}
 
-                {chart.gasolineDots.map((p, i) => (
-                  <circle key={`gd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_GASOLINE} />
-                ))}
-                {chart.dieselDots.map((p, i) => (
-                  <circle key={`dd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_DIESEL} />
-                ))}
-                {chart.coefDots.map((p, i) => (
-                  <circle key={`cd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_COEF} />
-                ))}
-              </svg>
-
-              <div className="chart-legend">
-                <span><i style={{ background: COLOR_GASOLINE }} />휘발유 {formatPrice(chart.latest.g)}</span>
-                <span><i style={{ background: COLOR_DIESEL }} />경유 {formatPrice(chart.latest.d)}</span>
-                <span><i style={{ background: COLOR_COEF }} />계수 {chart.latest.c?.toFixed(3) ?? "—"}</span>
-                <span className="chart-legend-note">왼쪽 축 원/L · 오른쪽 축 계수</span>
+                    {chart.coef.map((d, i) => (
+                      <path key={`cl${i}`} d={d} className="ch-line" stroke={COLOR_COEF} />
+                    ))}
+                    {chart.coefDots.map((p, i) => (
+                      <circle key={`cd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_COEF} />
+                    ))}
+                  </svg>
+                  <p className="chart-legend">
+                    <span><i style={{ background: COLOR_COEF }} />
+                      계수 {chart.latest.c?.toFixed(3) ?? "—"}</span>
+                  </p>
+                </section>
               </div>
-            </>
+
+              {/* ── 날짜별 기록 ──────────────────────────────── */}
+              <div className="chart-log">
+                <table className="log-table">
+                  <thead>
+                    <tr>
+                      <th>구분</th>
+                      <th className="num">휘발유</th>
+                      <th className="num">경유</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chart.rows.map((r) => (
+                      <tr key={r.date}>
+                        <th scope="row">{fmtTick(r.date)}</th>
+                        <td className="num">{r.g == null ? "—" : r.g.toLocaleString("ko-KR")}</td>
+                        <td className="num">{r.d == null ? "—" : r.d.toLocaleString("ko-KR")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       </div>

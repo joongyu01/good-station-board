@@ -2,12 +2,20 @@ name: 유가 수집 및 배포
 
 on:
   schedule:
-    # 매일 10:20 KST (01:20 UTC). 오피넷 과거 판매가격은 전일분이 오전에 올라온다.
+    # 하루 두 번 돈다. 수집 단계가 '어제~오늘' 을 한 번에 받아 그중 다 올라온
+    # 가장 최근 날짜를 쓰기 때문에, 아침에는 대개 전일분이 잡히고 저녁에는
+    # 당일분이 잡힌다.
+    #
+    # 아침 10:20 KST (01:20 UTC) — 전일분 확보
     - cron: "20 1 * * *"
+    # 저녁 19:30 KST (10:30 UTC) — 당일분 확보.
+    # 오피넷은 당일분을 하루에 걸쳐 채운다. 9월 5일 17시에 이미 10,223건으로
+    # 전날(10,237건)과 거의 같았다.
+    - cron: "30 10 * * *"
   workflow_dispatch:
     inputs:
       date:
-        description: "수집할 기준일 (YYYYMMDD, 비우면 어제)"
+        description: "수집할 기준일 (YYYYMMDD, 비우면 어제~오늘 중 최신)"
         required: false
         type: string
       skip_collect:

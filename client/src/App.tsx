@@ -6,7 +6,7 @@ import PriceChart from "./components/PriceChart.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import {
-  applyMode, dataUrl, formatDate, groupByRegion, summarize,
+  applyMode, dataUrl, formatCollectedAt, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
   type BoardData, type GeoCollection, type RegionSummary, type StationSignal, type ViewMode,
 } from "./lib/board.ts";
@@ -239,7 +239,14 @@ export default function App() {
         </div>
 
         <div className="meta">
-          <span className="date">{formatDate(board.date)} 판매가 기준</span>
+          <span className="date">{formatDate(board.date)} 판매가</span>
+          <span className="sep">·</span>
+          <span
+            className="collected"
+            title="집계가 실행된 한국시간. 매일 10:20 · 19:30 KST 에 자동 수집합니다."
+          >
+            {formatCollectedAt(board.generatedAt)} 자동 수집 데이터 기준
+          </span>
           <span className="sep">·</span>
           <span className="matched">{board.summary.matched}/{board.summary.total}곳 가격 연계</span>
         </div>
@@ -374,7 +381,7 @@ export default function App() {
 
       <footer className="foot">
         <span>가격 출처: 오피넷 사업자별 과거 판매가격 · {mode === "sum" ? "휘발유+경유 합계" : VIEW_MODE_LABELS[mode]}의 시·도 순위로 판정</span>
-        <span className="mono">생성 {new Date(board.generatedAt).toLocaleString("ko-KR")}</span>
+        <span className="mono">자동 수집 {formatCollectedAt(board.generatedAt)}</span>
       </footer>
 
       {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}

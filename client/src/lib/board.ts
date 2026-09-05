@@ -148,6 +148,28 @@ export function formatDate(yyyymmdd: string): string {
   return `${y}년 ${m}월 ${d}일`;
 }
 
+/**
+ * 수집 시각을 **한국시간**으로 찍는다.
+ *
+ * `generatedAt` 은 집계가 돈 순간의 UTC 다. 그대로 `toLocaleString()` 을 쓰면
+ * 보는 사람의 시간대로 바뀌어, 해외에서 열면 엉뚱한 시각이 나온다. 국내 유가
+ * 자료이므로 누가 어디서 보든 KST 로 고정한다.
+ *
+ * → `09-05 18:32:11 KST`
+ */
+export function formatCollectedAt(iso: string): string {
+  const t = new Date(iso);
+  if (Number.isNaN(t.getTime())) return "";
+  const p = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  }).formatToParts(t);
+  const at = (type: string) => p.find((x) => x.type === type)?.value ?? "";
+  return `${at("month")}-${at("day")} ${at("hour")}:${at("minute")}:${at("second")} KST`;
+}
+
 export function formatPrice(v: number | null): string {
   return v == null ? "—" : `${Math.round(v).toLocaleString("ko-KR")}원`;
 }

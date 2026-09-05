@@ -88,7 +88,7 @@ button { font: inherit; }
 
 .meta { font-size: 12.5px; color: rgba(255, 255, 255, .72); }
 .meta .sep { margin: 0 7px; opacity: .45; }
-.meta .matched { font-variant-numeric: tabular-nums; }
+.meta .matched, .meta .collected { font-variant-numeric: tabular-nums; }
 
 /* 판정 기준 전환 — 통합 / 휘발유 / 경유 */
 .mode-tabs {
@@ -505,14 +505,15 @@ button { font: inherit; }
   background: rgba(24, 26, 28, .5);
   display: flex; align-items: center; justify-content: center; padding: 20px;
 }
+/* 그래프 둘 + 기록표를 나란히 놓아야 해서 종전(820px)보다 넓다. */
 .chart-modal {
   background: var(--card); border-radius: var(--radius);
   box-shadow: 0 18px 48px rgba(0, 0, 0, .28);
-  width: min(820px, 100%); max-height: 92vh; overflow: auto;
+  width: min(1180px, 100%); max-height: 92vh; display: flex; flex-direction: column;
 }
 .chart-head {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-  padding: 16px 18px 12px; border-bottom: 1px solid var(--line);
+  padding: 16px 18px 12px; border-bottom: 1px solid var(--line); flex: none;
 }
 .chart-head h3 {
   margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.02em;
@@ -530,30 +531,67 @@ button { font: inherit; }
 }
 .chart-close:hover { background: var(--paper); color: var(--ink); }
 
-.chart-body { padding: 12px 18px 18px; }
-.chart-svg { width: 100%; height: auto; display: block; }
+.chart-body { padding: 12px 18px 18px; overflow: auto; }
 .chart-msg { padding: 40px 10px; text-align: center; color: var(--ink-soft); font-size: 13.5px; }
 .chart-msg code {
   display: inline-block; margin-top: 8px; padding: 3px 8px;
   background: var(--paper); border-radius: 6px; font-size: 12.5px;
 }
 
+/* 그래프 칸 | 기록표. 기록표는 내용에 맞춘 고정 폭이다. */
+.chart-split { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 16px; }
+@media (max-width: 900px) { .chart-split { grid-template-columns: 1fr; } }
+
+.chart-graphs { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+/* 판매가와 계수를 각자 자기 축을 가진 칸으로 나눈다. 이중축은 눈금 둘을
+   번갈아 읽어야 해서 어느 선이 어느 축인지 매번 확인하게 된다. */
+.chart-panel { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 8px; }
+.chart-panel-title {
+  margin: 0 0 2px; font-size: 12.5px; font-weight: 800; color: var(--ink);
+}
+.chart-panel-title span { font-weight: 500; color: var(--ink-soft); margin-left: 6px; }
+
+.chart-svg { width: 100%; height: auto; display: block; }
+
 .ch-grid { stroke: var(--line); stroke-width: 1; }
 .ch-axis { fill: var(--ink-soft); font-size: 10.5px; font-variant-numeric: tabular-nums; }
-.ch-axis-coef { fill: #C6402E; }
 .ch-cutoff { stroke: #C6402E; stroke-width: 1.2; stroke-dasharray: 5 4; opacity: .65; }
 .ch-cutoff-label { fill: #C6402E; font-size: 10px; font-weight: 700; opacity: .85; }
 .ch-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.ch-line-coef { stroke-width: 2.2; }
 
 .chart-legend {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line);
-  font-size: 12.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 0;
+  font-size: 12px; font-weight: 600;
 }
 .chart-legend span { display: flex; align-items: center; gap: 6px; }
 .chart-legend i { width: 14px; height: 3px; border-radius: 2px; display: block; }
-.chart-legend-note { margin-left: auto; color: var(--ink-soft); font-weight: 500; }
+
+/* ── 날짜별 기록표 ──────────────────────────────────────── */
+.chart-log {
+  border: 1px solid var(--line); border-radius: 10px; overflow: auto;
+  max-height: 460px; min-width: 0;
+}
+.log-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.log-table thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--paper); border-bottom: 1px solid var(--line);
+  padding: 7px 10px; font-weight: 800; color: var(--ink-soft); text-align: left;
+  white-space: nowrap;
+}
+.log-table thead th.num { text-align: right; }
+.log-table tbody th {
+  padding: 5px 10px; text-align: left; font-weight: 600; color: var(--ink-soft);
+  white-space: nowrap;
+}
+.log-table tbody td {
+  padding: 5px 10px; text-align: right;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.log-table tbody tr + tr th, .log-table tbody tr + tr td {
+  border-top: 1px solid var(--line);
+}
+.log-table tbody tr:hover th, .log-table tbody tr:hover td { background: var(--paper); }
 
 /* 지도 주유기 핀 */
 .pin { cursor: pointer; }
