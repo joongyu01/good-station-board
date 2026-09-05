@@ -137,15 +137,9 @@ async function main() {
     process.exit(3);
   }
 
-  mkdirSync(RAW_DIR, { recursive: true });
-  for (const d of dates) {
-    const part = byDate.get(d)!;
-    const bytes = writeRaw(RAW_DIR, d, { date: d, collectedAt: new Date().toISOString(), rows: part });
-    console.log(`  data/raw/${d}.json.gz  (${part.length}건, ${Math.round(bytes / 1024)}KB)`);
-  }
-
   // 가장 최근 날짜를 기준일로 삼되, 아직 채우는 중이면 전날로 물러선다.
   let actualDate = dates.at(-1)!;
+  let partial: string | null = null;
   if (dates.length > 1) {
     const latest = byDate.get(actualDate)!.length;
     const prev = byDate.get(dates.at(-2)!)!.length;
@@ -155,8 +149,26 @@ async function main() {
         `${Math.round((latest / prev) * 100)}% 뿐입니다. 아직 올라오는 중으로 보고 ` +
         `${dates.at(-2)} 를 기준일로 씁니다.`,
       );
+      partial = actualDate;
       actualDate = dates.at(-2)!;
     }
+  }
+
+  // 다 올라온 날짜만 저장한다. 같은 날짜는 덮어쓰므로 하루에 파일 하나다.
+  //
+  // 채우는 중인 날을 남기면 안 된다. 집계는 data/raw 에서 **가장 최근 날짜**를
+  // 스스로 고르기 때문에, 여기서 기준일을 전날로 물렸어도 반쪽짜리 파일이
+  // 남아 있으면 집계가 그걸 집어 전국 분포가 통째로 어긋난다.
+  // 저녁 수집이 같은 날짜를 완전한 것으로 덮어쓴다.
+  mkdirSync(RAW_DIR, { recursive: true });
+  for (const d of dates) {
+    if (d === partial) {
+      console.log(`  data/raw/${d}.json.gz  건너뜀 (아직 올라오는 중)`);
+      continue;
+    }
+    const part = byDate.get(d)!;
+    const bytes = writeRaw(RAW_DIR, d, { date: d, collectedAt: new Date().toISOString(), rows: part });
+    console.log(`  data/raw/${d}.json.gz  (${part.length}건, ${Math.round(bytes / 1024)}KB)`);
   }
 
   // 주유소 인덱스 — 매칭 단계가 쓴다. 가격은 빼고 식별 정보만 누적한다.

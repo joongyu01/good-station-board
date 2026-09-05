@@ -213,7 +213,7 @@ npm run collect        # 오피넷 수집 (어제~오늘)
 npm run match          # 오피넷 코드 매칭
 npm run aggregate      # 판정 · 시계열 · 순위표
 npm run ranks          # 보관 원본으로 순위표만 다시
-npm run backfill       # 과거 시계열 채우기 (3일씩)
+npm run backfill       # 과거 시계열 — 원본이 있으면 재계산, 없으면 내려받기
 npm run coords:vworld  # 좌표 (국내에서만 — 해외 IP 는 막힌다)
 ```
 

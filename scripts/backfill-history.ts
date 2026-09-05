@@ -17,7 +17,10 @@
  *   npm run backfill                       2026-07-01 ~ 어제
  *   npm run backfill 20260701 20260903     기간 지정
  *   npm run backfill --chunk=2             한 번에 받을 일수
- *   npm run backfill --force               이미 받은 날짜도 다시 받는다
+ *   npm run backfill --redownload          원본을 무시하고 오피넷에서 다시 받는다
+ *
+ * 원본(data/raw)이 있는 날짜는 내려받지 않고 그걸로 다시 계산한다. 판정식이
+ * 바뀌어 두 달치를 다시 낼 때 세 시간이 아니라 몇 초로 끝난다.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
@@ -77,7 +80,17 @@ async function main() {
   const from = dates[0] ?? DEFAULT_FROM;
   const to = dates[1] ?? yesterdayKST();
   const chunk = Number(args.find((a) => a.startsWith("--chunk="))?.slice(8) ?? DEFAULT_CHUNK);
-  const force = args.includes("--force");
+  // 원본을 무시하고 다시 받는다. 오피넷이 값을 정정했을 때처럼 보관분을
+  // 못 믿는 경우에만 쓴다. 두 달치면 세 시간 걸린다.
+  const redownload = args.includes("--redownload");
+
+  // 예전 --force 는 "이미 받은 날짜도 다시" 라는 뜻이었다. 지금은 원본이 있으면
+  // 늘 다시 계산하므로 그 자체가 기본 동작이다. 조용히 --redownload 로 바꿔
+  // 읽으면 몇 초면 될 일에 세 시간을 쓰게 되니 알려만 주고 넘어간다.
+  if (args.includes("--force")) {
+    console.log("[backfill] --force 는 이제 필요 없습니다 — 원본이 있으면 늘 다시 계산합니다.");
+    console.log("           오피넷에서 정말 다시 받으려면 --redownload 를 쓰세요.");
+  }
 
   const goodPath = path.join(DATA, "good-stations.json");
   if (!existsSync(goodPath)) {
@@ -110,11 +123,16 @@ async function main() {
   //
   // 판정 방식을 바꿀 때마다 두 달치를 다시 긁느라 세 시간씩 썼다. 원본을
   // 남기기 시작한 뒤로는 같은 일이 몇 초로 끝난다.
-  const local = wanted.filter((d) => !force && hasRaw(RAW_DIR, d));
-  const missing = wanted.filter((d) => force || !hasRaw(RAW_DIR, d));
+  // 원본이 있으면 **언제나** 그걸로 재계산한다. 내려받는 것은 원본이 없는
+  // 날짜뿐이다. 판정식이 바뀌어 두 달치를 다시 내야 할 때 세 시간이 몇 초가 된다.
+  //
+  // `--redownload` 는 원본을 못 믿을 때만 쓴다(오피넷이 값을 정정한 경우 등).
+  // 보관분을 무시하고 다시 받아 덮어쓴다.
+  const local = wanted.filter((d) => !redownload && hasRaw(RAW_DIR, d));
+  const missing = wanted.filter((d) => redownload || !hasRaw(RAW_DIR, d));
 
   console.log(`[backfill] 기간 ${from}~${to} (${wanted.length}일)`);
-  console.log(`[backfill] 원본 보유(재계산) ${local.length}일 · 새로 받을 날짜 ${missing.length}일`);
+  console.log(`[backfill] 원본으로 재계산 ${local.length}일 · 새로 받을 날짜 ${missing.length}일`);
 
   let okDays = 0;
 
