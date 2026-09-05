@@ -10,7 +10,8 @@ import { useNarrow } from "./lib/useNarrow.ts";
 import {
   applyMode, dataUrl, formatCollectedAt, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
-  type BoardData, type GeoCollection, type RegionSummary, type StationSignal, type ViewMode,
+  type BoardData, type GeoCollection, type RegionSummary, type SignalColor,
+  type StationSignal, type ViewMode,
 } from "./lib/board.ts";
 
 /** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
@@ -42,6 +43,8 @@ export default function App() {
   const [mode, setMode] = useState<ViewMode>("sum");
   /** 표 정렬. null 이면 화면마다 정해둔 기본 순서를 그대로 쓴다. */
   const [sort, setSort] = useState<SortState | null>(null);
+  /** 요약 띠에서 고른 판정. null 이면 전체를 보여준다. */
+  const [filter, setFilter] = useState<SignalColor | null>(null);
   /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
   const [resetSignal, setResetSignal] = useState(0);
 
@@ -211,6 +214,25 @@ export default function App() {
     };
   }, [activeSido, activeRegion, activeDistrict, sigunguGeo, districtGeo, byRegion, stations, mode]);
 
+  /**
+   * 요약 띠에서 고른 판정으로 한 번 더 거른다.
+   *
+   * 지역 드릴다운 **위에** 얹는다. 경북을 고른 상태에서 '가격기준 초과' 를
+   * 누르면 경북의 초과 건만 남는다.
+   */
+  const view = useMemo(() => {
+    if (!filter) return panel;
+    const list = panel.stations.filter((s) => s.signal === filter);
+    return {
+      ...panel,
+      stations: list,
+      title: `${panel.title} · ${SIGNAL_LABELS[filter]}`,
+      subtitle: `${list.length}곳 · ${SIGNAL_LABELS[filter]}만 보는 중 (다시 누르면 전체)`,
+      scope: `${panel.scope}_${SIGNAL_LABELS[filter]}`,
+      empty: `${SIGNAL_LABELS[filter]}인 착한주유소가 없습니다.`,
+    };
+  }, [panel, filter]);
+
   const totals = useMemo(() => summarize(stations, "전국", ""), [stations]);
 
   /** 기관 로고를 누르면 처음 화면으로 — 드릴다운·확대·정렬을 모두 되돌린다. */
@@ -220,6 +242,7 @@ export default function App() {
     setActiveDistrict(null);
     setChartOf(null);
     setSort(null);
+    setFilter(null);
     setMode("sum");
     setMapOpen(false);
     setListOpen(false);
@@ -229,7 +252,7 @@ export default function App() {
   }
 
   /** 표에 보이는 순서 그대로. CSV 도 이 배열을 쓴다. */
-  const rows = useMemo(() => sortStations(panel.stations, sort), [panel.stations, sort]);
+  const rows = useMemo(() => sortStations(view.stations, sort), [view.stations, sort]);
 
   if (hash.startsWith("#/admin")) {
     return <Admin onExit={() => { window.location.hash = ""; }} />;
@@ -361,11 +384,18 @@ export default function App() {
       <div className="page">
       <div className="summary-strip">
         {(["green", "yellow", "red", "unknown"] as const).map((k) => (
-          <div key={k} className={`stat stat-${k}`}>
+          <button
+            key={k}
+            type="button"
+            className={`stat stat-${k}${filter === k ? " is-on" : ""}`}
+            aria-pressed={filter === k}
+            title={filter === k ? "눌러서 전체 보기" : `${SIGNAL_LABELS[k]} 만 보기`}
+            onClick={() => setFilter(filter === k ? null : k)}
+          >
             <span className="dot" style={{ background: SIGNAL_COLORS[k] }} />
             <span className="stat-label">{SIGNAL_LABELS[k]}</span>
             <strong className="stat-value">{totals[k]}</strong>
-          </div>
+          </button>
         ))}
         <div className="stat stat-note">
           <strong>{mode === "sum" ? "휘발유+경유 합산" : `${VIEW_MODE_LABELS[mode]} 단독`}</strong>
@@ -404,15 +434,15 @@ export default function App() {
         right={<>
           <div className="panel-head">
             <div className="panel-title">
-              <h2>{panel.title}</h2>
-              <p className="panel-sub">{panel.subtitle}</p>
+              <h2>{view.title}</h2>
+              <p className="panel-sub">{view.subtitle}</p>
             </div>
             <button
               type="button"
               className="btn-csv"
               disabled={rows.length === 0}
               title="지금 보이는 목록을 보이는 순서 그대로 내려받습니다"
-              onClick={() => downloadCsv(rows, csvName(`${panel.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
+              onClick={() => downloadCsv(rows, csvName(`${view.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
             >
               CSV 내려받기
             </button>
@@ -428,8 +458,8 @@ export default function App() {
                 <>
                   <StationTable
                     stations={rows.slice(0, PREVIEW_ROWS)}
-                    showRegion={panel.showRegion}
-                    emptyText={panel.empty}
+                    showRegion={view.showRegion}
+                    emptyText={view.empty}
                     onSelect={setChartOf}
                     sort={sort}
                     onSort={setSort}
@@ -446,8 +476,8 @@ export default function App() {
             ) : (
               <StationTable
                 stations={rows}
-                showRegion={panel.showRegion}
-                emptyText={panel.empty}
+                showRegion={view.showRegion}
+                emptyText={view.empty}
                 onSelect={setChartOf}
                 sort={sort}
                 onSort={setSort}
@@ -464,7 +494,7 @@ export default function App() {
           head={crumbs}
           onClose={() => setMapOpen(false)}
           foot={<>
-            <span>{panel.title} · {panel.stations.length}곳</span>
+            <span>{view.title} · {view.stations.length}곳</span>
             <button type="button" className="btn" onClick={() => setMapOpen(false)}>목록 보기</button>
           </>}
         >
@@ -477,8 +507,8 @@ export default function App() {
           scroll
           label="착한주유소 목록"
           head={<>
-            <h2 className="sheet-title">{panel.title}</h2>
-            <p className="panel-sub">{panel.subtitle}</p>
+            <h2 className="sheet-title">{view.title}</h2>
+            <p className="panel-sub">{view.subtitle}</p>
           </>}
           onClose={() => setListOpen(false)}
           foot={
@@ -486,7 +516,7 @@ export default function App() {
               type="button"
               className="btn-csv"
               disabled={rows.length === 0}
-              onClick={() => downloadCsv(rows, csvName(`${panel.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
+              onClick={() => downloadCsv(rows, csvName(`${view.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
             >
               CSV 내려받기
             </button>
@@ -494,8 +524,8 @@ export default function App() {
         >
           <StationTable
             stations={rows}
-            showRegion={panel.showRegion}
-            emptyText={panel.empty}
+            showRegion={view.showRegion}
+            emptyText={view.empty}
             onSelect={setChartOf}
             sort={sort}
             onSort={setSort}

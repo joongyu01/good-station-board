@@ -71,10 +71,10 @@ export const SIGNAL_COLORS: Record<SignalColor, string> = {
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {
-  green: "상위권",
-  yellow: "근접",
-  red: "미달",
-  unknown: "미상",
+  green: "가격기준 적합",
+  yellow: "가격기준 근접",
+  red: "가격기준 초과",
+  unknown: "가격정보 없음",
 };
 
 /** 지역 단위 집계 — 지도 색칠에 쓴다. */

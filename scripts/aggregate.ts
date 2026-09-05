@@ -243,7 +243,57 @@ function main() {
       greenRank,
       isRegionLowest: m.isRegionLowest,
       signal: m.signal,
+      dataGapDays: 0, // 시계열을 얹은 뒤 아래에서 채운다
     });
+  }
+
+  // ── 시계열 ──────────────────────────────────────────────────────────
+  //
+  // 판정보다 먼저 얹는다. 아래에서 "여태 한 번이라도 가격이 빈 적이 있는가" 를
+  // 세려면 오늘치까지 들어간 시계열이 필요하다.
+  const historyPath = path.join(DATA, "history.json");
+  const history: History = existsSync(historyPath)
+    ? JSON.parse(readFileSync(historyPath, "utf8")) : emptyHistory();
+
+  const ids = new Set<string>();
+  for (const s of signals) if (s.stationId) ids.add(s.stationId);
+
+  mergeDay(history, date, sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th)));
+  const droppedSeries = pruneTo(history, ids);
+  history.generatedAt = new Date().toISOString();
+
+  writeFileSync(historyPath, JSON.stringify(history), "utf8");
+  writeFileSync(path.join(OUT_DIR, "history.json"), JSON.stringify(history), "utf8");
+
+  // ── 가격정보 없음 ───────────────────────────────────────────────────
+  //
+  // 하루라도 가격이 비었거나 0원이었던 곳은 판정을 붙이지 않는다.
+  //
+  // 그날 값만 보고 판정하면 "어제는 1위, 오늘은 미상" 처럼 오락가락한다.
+  // 신고를 거른 이력이 있는 주유소는 애초에 그 값을 믿고 순위를 매기기
+  // 어렵다는 뜻이라, 아예 따로 모아 확인 대상으로 둔다.
+  //
+  // 실측 23곳(4.9%)이라 나머지 세 칸을 헐겁게 만들지 않는다.
+  let gapCount = 0;
+  for (const sig of signals) {
+    const series = sig.stationId ? history.stations[sig.stationId] : undefined;
+    let gaps = 0;
+    if (series) {
+      for (let i = 0; i < history.dates.length; i++) {
+        const g = series.g[i];
+        const d = series.d[i];
+        if (g == null || d == null || g === 0 || d === 0) gaps++;
+      }
+    } else {
+      gaps = history.dates.length; // 시계열조차 없으면 전부 결측으로 본다
+    }
+
+    sig.dataGapDays = gaps;
+    if (gaps > 0) {
+      gapCount++;
+      sig.signal = "unknown";
+      for (const mode of VIEW_MODES) sig.metrics[mode].signal = "unknown";
+    }
   }
 
   // ── 요약 ────────────────────────────────────────────────────────────
@@ -283,23 +333,6 @@ function main() {
   const available = all.slice(0, KEEP_DAYS);
   writeFileSync(path.join(OUT_DIR, "index.json"), JSON.stringify({ dates: available }), "utf8");
 
-  // ── 시계열 ──────────────────────────────────────────────────────────
-  //
-  // 오늘치를 data/history.json 에 얹고 화면이 읽을 곳으로 복사한다. 과거치는
-  // `npm run backfill` 이 채운다. 여기서는 하루씩 이어붙이기만 한다.
-  const historyPath = path.join(DATA, "history.json");
-  const history: History = existsSync(historyPath)
-    ? JSON.parse(readFileSync(historyPath, "utf8")) : emptyHistory();
-
-  const ids = new Set<string>();
-  for (const s of signals) if (s.stationId) ids.add(s.stationId);
-
-  mergeDay(history, date, sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th)));
-  const droppedSeries = pruneTo(history, ids);
-  history.generatedAt = new Date().toISOString();
-
-  writeFileSync(historyPath, JSON.stringify(history), "utf8");
-  writeFileSync(path.join(OUT_DIR, "history.json"), JSON.stringify(history), "utf8");
 
   // ── 콘솔 요약 ───────────────────────────────────────────────────────
   const withIndex = signals.filter((s) => s.priceIndex).length;
@@ -307,6 +340,7 @@ function main() {
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
+  console.log(`  가격정보 없음: ${gapCount}곳 (하루라도 결측·0원이 있던 곳)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }

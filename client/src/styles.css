@@ -121,8 +121,17 @@ button { font: inherit; }
   border-radius: var(--radius); padding: 12px 16px; margin-bottom: 14px;
   box-shadow: var(--shadow);
 }
-.stat { display: flex; align-items: center; gap: 8px; padding: 2px 16px 2px 0; }
+/* 판정 칸은 누르면 그 목록만 걸러 보는 버튼이다. */
+.stat {
+  display: flex; align-items: center; gap: 8px; padding: 2px 16px 2px 0;
+  border: 0; background: transparent; font: inherit; color: inherit;
+}
+button.stat { cursor: pointer; border-radius: 8px; padding: 4px 12px 4px 8px; }
+button.stat:hover { background: var(--paper); }
+button.stat.is-on { background: var(--green-pale); box-shadow: inset 0 0 0 1.5px var(--green); }
+button.stat.is-on .stat-label { color: var(--green-deep); }
 .stat + .stat { border-left: 1px solid var(--line); padding-left: 16px; }
+button.stat + button.stat { margin-left: 4px; }
 .stat .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
 .stat-label { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
 .stat-value { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
@@ -361,6 +370,7 @@ button { font: inherit; }
 .badge-low { background: var(--good-bg); color: var(--good); }
 .badge-self { background: rgba(47, 111, 181, .12); color: #2F6FB5; }
 .badge-warn { background: var(--warn-bg); color: var(--warn); }
+.badge-gap { background: rgba(88, 89, 91, .12); color: var(--gray); }
 
 /* ── 바닥 ─────────────────────────────────────────────── */
 .foot {

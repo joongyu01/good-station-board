@@ -173,6 +173,15 @@ export interface StationSignal {
   greenRank: number;
   isRegionLowest: boolean;
   signal: SignalColor;
+
+  /**
+   * 시계열에서 가격이 비었거나 0원이었던 날 수.
+   *
+   * 0보다 크면 판정을 붙이지 않고 '가격정보 없음' 으로 뺀다. 그날 값만 보고
+   * 판정하면 "어제는 1위, 오늘은 미상" 처럼 오락가락하는데, 신고를 거른 이력이
+   * 있는 곳은 그 값을 믿고 순위를 매기기 어렵다는 뜻이라 확인 대상으로 둔다.
+   */
+  dataGapDays: number;
 }
 
 /**

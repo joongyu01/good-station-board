@@ -140,6 +140,14 @@ export default function StationTable({
               </button>
               {s.isSelf && <span className="badge badge-self">셀프</span>}
               {s.isRegionLowest && <span className="badge badge-low">시·도 최저</span>}
+              {s.dataGapDays > 0 && (
+                <span
+                  className="badge badge-gap"
+                  title={`최근 기록 중 ${s.dataGapDays}일치 가격이 비었거나 0원입니다. 값을 믿기 어려워 판정에서 뺐습니다.`}
+                >
+                  미신고 {s.dataGapDays}일
+                </span>
+              )}
               {!s.stationId && (
                 <span className="badge badge-warn" title="Opinet 주유소 코드를 찾지 못해 가격을 붙이지 못했습니다">
                   미매칭
