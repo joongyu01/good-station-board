@@ -113,10 +113,23 @@ jobs:
           git add client/public/data data/raw data/station-index.json data/station-mapping.json data/match-report.md data/station-coords.json data/good-stations.json data/thresholds.json data/history.json
           if git diff --staged --quiet; then
             echo "변경 없음"
-          else
-            git commit -m "chore: 유가 데이터 갱신 ($(date -u -d '+9 hours' '+%Y-%m-%d'))"
-            git push
+            exit 0
           fi
+
+          git commit -m "chore: 유가 데이터 갱신 ($(date -u -d '+9 hours' '+%Y-%m-%d'))"
+
+          # 체크아웃과 푸시 사이에 사람이 밀어 넣으면 non-fast-forward 로 거절된다.
+          # 수집은 1분이면 끝나지만 그 사이에 실제로 부딪혔다(run 33969060217).
+          # 데이터 파일은 우리가 방금 새로 만든 것이 정답이므로, 당겨서 우리
+          # 커밋을 위로 올리고 다시 민다.
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "푸시 거절 — 원격을 당겨 다시 시도합니다 ($i/3)"
+            git pull --rebase --autostash origin main || exit 1
+          done
+
+          echo "::error::세 번 시도했지만 푸시하지 못했습니다."
+          exit 1
 
       - name: 수집 건너뜀 안내
         if: ${{ inputs.skip_collect }}
