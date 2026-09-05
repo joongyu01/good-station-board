@@ -112,15 +112,30 @@ export function toSignal(
 }
 
 /**
- * 초록불 기준선 — 그 시·도에서 상위권 커트라인에 해당하는 합계.
+ * 오름차순 목록에서 서로 다른 값만 남긴다.
  *
- * 서울·경기는 10위, 그 밖은 5위 자리의 합계다. 이 값이 계수 1.000 이 된다.
- * 모집단이 기준 순위보다 작으면 마지막 값을 쓴다.
+ * 순위를 **조밀 순위(dense rank)** 로 매기기 때문에 필요하다. 1위가 세 곳
+ * 동점이면 다음은 4위가 아니라 2위다. 가격이 같으면 같은 등수이고, 등수는
+ * 서로 다른 가격의 개수만큼만 존재한다.
  */
-export function greenBaseOf(sortedSums: number[], greenRank: number): number | null {
-  if (sortedSums.length === 0) return null;
-  const i = Math.min(greenRank, sortedSums.length) - 1;
-  return sortedSums[i];
+export function distinctAsc(sorted: number[]): number[] {
+  const out: number[] = [];
+  for (const v of sorted) if (out.length === 0 || out[out.length - 1] !== v) out.push(v);
+  return out;
+}
+
+/**
+ * 초록불 기준선 — 그 시·도에서 상위권 커트라인에 해당하는 값.
+ *
+ * 서울·경기는 10위, 그 밖은 5위 값이다. 이 값이 계수 1 이 된다.
+ * **서로 다른 값 기준**이라 동점이 많은 시·도에서는 커트라인이 뒤로 밀린다
+ * — 서울은 3,617원(열 번째 줄)이 아니라 3,634원(열 번째로 싼 가격)이다.
+ *
+ * 서로 다른 값이 기준 순위보다 적으면 마지막 값을 쓴다.
+ */
+export function greenBaseOf(distinct: number[], greenRank: number): number | null {
+  if (distinct.length === 0) return null;
+  return distinct[Math.min(greenRank, distinct.length) - 1];
 }
 
 /**
@@ -164,13 +179,17 @@ export function coefficientOf(
   return { sum, regionBase: greenBase, coefficient };
 }
 
-/** 오름차순 목록에서 순위(1 = 최저)를 구한다. 동가는 같은 순위. */
-export function rankOf(value: number, sorted: number[]): number {
+/**
+ * 조밀 순위 — 1위가 세 곳 동점이면 다음은 **2위**다.
+ *
+ * @param distinct `distinctAsc()` 로 만든 서로 다른 값들의 오름차순 목록
+ */
+export function rankOf(value: number, distinct: number[]): number {
   let lo = 0;
-  let hi = sorted.length;
+  let hi = distinct.length;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
-    if (sorted[mid] < value) lo = mid + 1;
+    if (distinct[mid] < value) lo = mid + 1;
     else hi = mid;
   }
   return lo + 1;

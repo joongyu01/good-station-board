@@ -11,7 +11,7 @@
  * 전국을 다 실으면 하루 4MB 지만 K=30 이면 16개 시·도 × 3기준 × 30행이라
  * 100KB 안쪽이다.
  */
-import { greenRankWith, type Thresholds } from "./signal.ts";
+import { distinctAsc, greenRankWith, type Thresholds } from "./signal.ts";
 import { VIEW_MODES, type ViewMode } from "./types.ts";
 
 /** 시·도마다 실어 둘 상위 건수. 2N(서울·경기 20위)보다 넉넉해야 커트라인 전후가 보인다. */
@@ -93,14 +93,15 @@ export function buildRanks(
 
       const greenRank = greenRankWith(sido, th);
       const yellowRank = greenRank * th.rankYellowFactor;
-      const at = (k: number) => (arr.length ? arr[Math.min(k, arr.length) - 1].v : null);
+      // 커트라인도 **서로 다른 값** 기준이다. 조밀 순위와 같은 잣대여야 한다.
+      const distinct = distinctAsc(arr.map((a) => a.v));
+      const at = (k: number) => (distinct.length ? distinct[Math.min(k, distinct.length) - 1] : null);
 
       const out: RankRow[] = [];
       for (let i = 0; i < Math.min(topK, arr.length); i++) {
         const { row, v } = arr[i];
-        // 동점은 같은 순위. 앞에 자기보다 작은 값이 몇 개인지로 센다.
-        let r = i + 1;
-        if (i > 0 && arr[i - 1].v === v) r = out[i - 1].r;
+        // 조밀 순위 — 동점은 같은 등수, 다음 값은 바로 다음 등수.
+        let r = i === 0 ? 1 : (arr[i - 1].v === v ? out[i - 1].r : out[i - 1].r + 1);
         out.push({
           r,
           stationId: row.stationId,

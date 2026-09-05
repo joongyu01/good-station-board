@@ -1,4 +1,4 @@
-import { COEF_DIGITS } from "./signal.ts";
+import { COEF_DIGITS, distinctAsc } from "./signal.ts";
 
 /**
  * 착한주유소 일별 시계열.
@@ -131,14 +131,15 @@ export function sampleDay(
   }
 
   // 그날의 커트라인 두 개 — 적합(N위)과 근접(2N위).
-  const base = new Map<string, { green: number; yellow: number; sorted: number[] }>();
+  const base = new Map<string, { green: number; yellow: number }>();
   for (const [sido, arr] of sums) {
     arr.sort((a, b) => a - b);
+    // 조밀 순위라 서로 다른 값 기준으로 센다. 동점이 많으면 커트라인이 뒤로 밀린다.
+    const d = distinctAsc(arr);
     const n = greenRankOf(sido);
     base.set(sido, {
-      green: arr[Math.min(n, arr.length) - 1],
-      yellow: arr[Math.min(n * yellowFactor, arr.length) - 1],
-      sorted: arr,
+      green: d[Math.min(n, d.length) - 1],
+      yellow: d[Math.min(n * yellowFactor, d.length) - 1],
     });
   }
 

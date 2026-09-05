@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  toSignal, describe, rankOf, greenRankWith, greenBaseOf, coefficientOf,
+  toSignal, describe, distinctAsc, rankOf, greenRankWith, greenBaseOf, coefficientOf,
   DEFAULT_THRESHOLDS, type Thresholds,
 } from "../src/lib/signal.ts";
 import {
@@ -95,10 +95,13 @@ function main() {
   // 유종별 통계는 화면 표시용이고, 순위와 계수는 모두 합계("sum") 분포에서 낸다.
   const stats = new Map<string, RegionStat>();
   const sortedPrices = new Map<string, number[]>();
+  /** 서로 다른 값만 남긴 목록. 순위는 조밀 순위라 이걸 기준으로 센다. */
+  const distinctPrices = new Map<string, number[]>();
 
   function put(sido: string, kind: RegionStat["fuelType"], values: number[]) {
     const d = describe(values);
     sortedPrices.set(`${sido}|${kind}`, d.sorted);
+    distinctPrices.set(`${sido}|${kind}`, distinctAsc(d.sorted));
     stats.set(`${sido}|${kind}`, {
       regionKey: sido,
       sido,
@@ -188,11 +191,12 @@ function main() {
       const statKey = kind === "sum" ? "sum" : kind;
       const stat = stats.get(`${effSido}|${statKey}`);
       const sorted = sortedPrices.get(`${effSido}|${statKey}`) ?? [];
+      const distinct = distinctPrices.get(`${effSido}|${statKey}`) ?? [];
       const n = stat?.n ?? 0;
 
-      const rank = value != null && sorted.length > 0 ? rankOf(value, sorted) : null;
+      const rank = value != null && distinct.length > 0 ? rankOf(value, distinct) : null;
       const regionMin = sorted.length > 0 ? sorted[0] : null;
-      const idx = coefficientOf(value, greenBaseOf(sorted, greenRank));
+      const idx = coefficientOf(value, greenBaseOf(distinct, greenRank));
 
       return {
         price: value,
