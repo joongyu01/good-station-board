@@ -161,9 +161,6 @@ button { font: inherit; }
 @media (max-width: 1240px) {
   .layout { grid-template-columns: 1fr; }
   .layout-resizer { display: none; }
-  /* 한 줄로 쌓이면 맞출 상대가 없다. 절대 배치를 풀고 제 높이로 돌아간다. */
-  .panel-col { position: static; }
-  .panel-inner { position: static; }
   .panel-body { max-height: 70vh; }
 }
 
@@ -173,9 +170,15 @@ button { font: inherit; }
 }
 .map-col { padding: 12px 14px 14px; }
 
-/* 목록 칸은 지도 칸과 같은 높이로 늘어나고, 넘치는 표는 안에서 스크롤한다. */
-.panel-col { position: relative; min-height: 320px; }
-.panel-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+/* 목록 칸은 지도 칸과 같은 높이로 늘어나고, 넘치는 표는 안에서 스크롤한다.
+   두 칸이 나란히 놓일 때만이다 — 한 줄로 쌓이면 맞출 상대가 없고, 절대 배치는
+   목록이 320px 짜리 칸 밖으로 흘러넘쳐 저작권 문구와 겹치게 만든다.
+   min-width 로 거는 이유: 이 규칙이 위쪽 max-width 구간보다 아래에 있어
+   같은 특정도면 이쪽이 이겨 버린다. */
+@media (min-width: 1241px) {
+  .panel-col { position: relative; min-height: 320px; }
+  .panel-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+}
 
 /* ── 브레드크럼 ───────────────────────────────────────── */
 .breadcrumb { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
