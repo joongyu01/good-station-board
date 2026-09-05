@@ -104,19 +104,17 @@ async function main() {
   const history: History = existsSync(HISTORY)
     ? JSON.parse(readFileSync(HISTORY, "utf8")) : emptyHistory();
 
-  const have = new Set(history.dates);
   const wanted = eachDay(from, to);
-  const todo = force ? wanted : wanted.filter((d) => !have.has(d));
 
   // 보관해 둔 원본이 있으면 내려받지 않는다.
   //
   // 판정 방식을 바꿀 때마다 두 달치를 다시 긁느라 세 시간씩 썼다. 원본을
   // 남기기 시작한 뒤로는 같은 일이 몇 초로 끝난다.
-  const local = todo.filter((d) => hasRaw(RAW_DIR, d));
-  const missing = todo.filter((d) => !hasRaw(RAW_DIR, d));
+  const local = wanted.filter((d) => !force && hasRaw(RAW_DIR, d));
+  const missing = wanted.filter((d) => force || !hasRaw(RAW_DIR, d));
 
   console.log(`[backfill] 기간 ${from}~${to} (${wanted.length}일)`);
-  console.log(`[backfill] 이미 보유 ${wanted.length - todo.length}일 · 원본 재사용 ${local.length}일 · 받을 ${missing.length}일`);
+  console.log(`[backfill] 원본 보유(재계산) ${local.length}일 · 새로 받을 날짜 ${missing.length}일`);
 
   let okDays = 0;
 
