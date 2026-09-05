@@ -209,7 +209,7 @@ export default function App() {
     );
     return {
       title: "전국 착한주유소 리스트",
-      subtitle: `${all.length}곳 · ${VIEW_MODE_LABELS[mode]} 계수가 낮은 순 (1.000 이하가 상위권)`,
+      subtitle: `${all.length}곳 · ${VIEW_MODE_LABELS[mode]} 계수가 낮은 순 (1 이하가 상위권)`,
       stations: all,
       showRegion: true,
       scope: "전국",

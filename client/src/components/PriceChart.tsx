@@ -19,6 +19,7 @@ import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from 
 import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
+import { COEF_DIGITS } from "@shared/lib/signal.ts";
 
 /**
  * viewBox 너비. 모바일에서는 좁게 잡는다.
@@ -351,7 +352,7 @@ export default function PriceChart({ station, onClose }: Props) {
                 {/* ── 계수 ───────────────────────────────────── */}
                 <section className="chart-panel">
                   <h4 className="chart-panel-title">
-                    계수 <span>1.000 이하가 상위권</span>
+                    계수 <span>1 이하가 상위권</span>
                   </h4>
                   <svg viewBox={`0 0 ${W} ${H_COEF}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합산 계수 추이`}>
@@ -360,7 +361,7 @@ export default function PriceChart({ station, onClose }: Props) {
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
                           y1={chart.yC(v)} y2={chart.yC(v)} />
                         <text className="ch-axis" x={PAD.left - 8} y={chart.yC(v)}
-                          textAnchor="end" dominantBaseline="middle">{v.toFixed(3)}</text>
+                          textAnchor="end" dominantBaseline="middle">{v.toFixed(COEF_DIGITS)}</text>
                       </g>
                     ))}
 
@@ -388,7 +389,7 @@ export default function PriceChart({ station, onClose }: Props) {
                   </svg>
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_COEF }} />
-                      계수 {chart.latest.c?.toFixed(3) ?? "—"}</span>
+                      계수 {chart.latest.c?.toFixed(COEF_DIGITS) ?? "—"}</span>
                   </p>
                 </section>
               </div>
@@ -442,7 +443,7 @@ function niceTicks(lo: number, hi: number, count: number): number[] {
   const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? mag * 10;
   const out: number[] = [];
   for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) {
-    out.push(Math.round(v * 1000) / 1000);
+    out.push(Math.round(v * 10 ** COEF_DIGITS) / 10 ** COEF_DIGITS);
   }
   return out;
 }

@@ -1,3 +1,5 @@
+import { COEF_DIGITS } from "./signal.ts";
+
 /**
  * 착한주유소 일별 시계열.
  *
@@ -151,7 +153,7 @@ export function sampleDay(
     let signal: DaySignal | null = null;
     if (g != null && d != null && b != null && b.green > 0) {
       const sum = g + d;
-      coefficient = Math.round((sum / b.green) * 1000) / 1000;
+      coefficient = Math.round((sum / b.green) * 10 ** COEF_DIGITS) / 10 ** COEF_DIGITS;
       signal = sum <= b.green ? "g" : sum <= b.yellow ? "y" : "r";
     }
 

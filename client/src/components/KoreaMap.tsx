@@ -21,6 +21,7 @@ import type { GeoCollection, GeoFeature, RegionSummary, StationSignal } from "..
 import { SIGNAL_COLORS, formatPrice } from "../lib/board.ts";
 import { placePinLabels, poleOfInaccessibility, relaxChips, type Chip } from "../lib/labels.ts";
 import { withBrand, type BrandCode } from "@shared/lib/brand.ts";
+import { COEF_DIGITS } from "@shared/lib/signal.ts";
 import { tileSource, visibleTiles } from "../lib/basemap.ts";
 
 const WIDTH = 720;
@@ -639,7 +640,7 @@ export default function KoreaMap({
             const full = withBrand(station.name, station.brand);
             const tip = `${full} · 휘발유 ${formatPrice(station.prices.gasoline)}`
               + ` / 경유 ${formatPrice(station.prices.diesel)}`
-              + (station.priceIndex == null ? "" : ` · 계수 ${station.priceIndex.coefficient.toFixed(3)}`)
+              + (station.priceIndex == null ? "" : ` · 계수 ${station.priceIndex.coefficient.toFixed(COEF_DIGITS)}`)
               + (station.regionRank == null ? "" : ` · 시·도 ${station.regionRank}위`);
             const open = () => {
               if (suppressClick.current) { suppressClick.current = false; return; }

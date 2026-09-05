@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import { dataUrl, formatPrice, sidoLabel } from "../lib/board.ts";
 import { VIEW_MODES, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
 import type { RankFile } from "@shared/lib/rank.ts";
+import { COEF_DIGITS } from "@shared/lib/signal.ts";
 
 interface Props {
   /** 열릴 때 고를 날짜 — 현황판이 보고 있는 기준일 */
@@ -94,7 +95,7 @@ export default function RankWindow({ date, sido, mode, onClose }: Props) {
         <div className="sheet-head-main">
           <h2 className="sheet-title">계수 검증 — 시·도 순위표</h2>
           <p className="panel-sub">
-            그날 그 시·도를 값 오름차순으로 줄 세운 결과입니다. 계수 1.000 이 되는
+            그날 그 시·도를 값 오름차순으로 줄 세운 결과입니다. 계수 1 이 되는
             커트라인이 어디서 잘렸는지 확인할 수 있습니다.
           </p>
         </div>
@@ -192,7 +193,7 @@ export default function RankWindow({ date, sido, mode, onClose }: Props) {
                       <td className="num">{formatPrice(r.diesel)}</td>
                       <td className="num"><b>{r.v.toLocaleString("ko-KR")}</b></td>
                       <td className="num idx">
-                        {table.greenBase ? (r.v / table.greenBase).toFixed(3) : "—"}
+                        {table.greenBase ? (r.v / table.greenBase).toFixed(COEF_DIGITS) : "—"}
                       </td>
                     </tr>
                   );

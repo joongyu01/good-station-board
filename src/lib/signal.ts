@@ -136,20 +136,30 @@ export function greenBaseOf(sortedSums: number[], greenRank: number): number | n
  * 될 수 없어 "기준을 통과했는가"를 계수만 보고 알 수 없었다. 지금은 1.000 이
  * 곧 합격선이라 계수 하나로 판정 근거가 읽힌다.
  */
+/**
+ * 계수 소수 자리수.
+ *
+ * 셋째 자리로는 **1원 차이가 안 보인다.** 합산 커트라인이 3,600원 언저리라
+ * 1원은 0.00028 인데, 3608원과 3609원이 둘 다 1.002 로 찍혀 순위가 다른데도
+ * 같은 값처럼 보였다. 넷째 자리면 1.0022 · 1.0025 로 갈린다.
+ */
+export const COEF_DIGITS = 4;
+const COEF_SCALE = 10 ** COEF_DIGITS;
+
 export function coefficientOf(
   sum: number | null,
   greenBase: number | null,
 ): { sum: number; regionBase: number; coefficient: number } | null {
   if (sum == null || greenBase == null || !(greenBase > 0)) return null;
 
-  // 소수 셋째 자리에서 반올림하되 1.000 을 넘어서 반올림되지는 않게 한다.
+  // 1 을 넘어서 반올림되지는 않게 한다.
   //
-  // 커트라인보다 1원 비싼 주유소가 3553/3552 = 1.000282 → 1.000 으로 찍히면
-  // 화면에서 "계수 1.000인데 근접"이 되어 판정 근거가 어긋나 보인다. 1.000 은
-  // 합격선이라는 뜻이므로 이 값은 커트라인 이하일 때만 나와야 한다.
-  let coefficient = Math.round((sum / greenBase) * 1000) / 1000;
-  if (sum > greenBase && coefficient <= 1) coefficient = 1.001;
-  if (sum < greenBase && coefficient >= 1) coefficient = 0.999;
+  // 커트라인보다 1원 비싼 주유소가 1.0000 으로 찍히면 화면에서 "계수 1인데
+  // 근접"이 되어 판정 근거가 어긋나 보인다. 1 은 합격선이라는 뜻이므로
+  // 커트라인 이하일 때만 나와야 한다.
+  let coefficient = Math.round((sum / greenBase) * COEF_SCALE) / COEF_SCALE;
+  if (sum > greenBase && coefficient <= 1) coefficient = 1 + 1 / COEF_SCALE;
+  if (sum < greenBase && coefficient >= 1) coefficient = 1 - 1 / COEF_SCALE;
 
   return { sum, regionBase: greenBase, coefficient };
 }

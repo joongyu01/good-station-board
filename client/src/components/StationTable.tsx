@@ -3,6 +3,7 @@ import type { StationSignal } from "../lib/board.ts";
 import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 import { nextSort, type SortDir, type SortKey, type SortState } from "../lib/table.ts";
 import { VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
+import { COEF_DIGITS } from "@shared/lib/signal.ts";
 import { BRAND_LABELS, withBrand } from "@shared/lib/brand.ts";
 
 interface Props {
@@ -48,7 +49,7 @@ function headers(mode: ViewMode): HeaderDef[] {
     },
     {
       key: "coefficient", label: "계수", num: true,
-      title: `${of}를 그 시·도의 상위권 커트라인으로 나눈 값. 1.000 이하가 상위권`,
+      title: `${of}를 그 시·도의 상위권 커트라인으로 나눈 값. 1 이하가 상위권`,
     },
     {
       key: "rank", label: "시·도 순위", num: true,
@@ -171,7 +172,7 @@ export default function StationTable({
               ? `${mode === "sum" ? "휘발유+경유" : VIEW_MODE_LABELS[mode]} ${s.priceIndex.sum.toLocaleString("ko-KR")}원`
                 + ` / 시·도 상위권 커트라인 ${s.priceIndex.regionBase.toLocaleString("ko-KR")}원`
               : "이 유종을 취급하지 않아 산출 불가"}>
-              {s.priceIndex ? s.priceIndex.coefficient.toFixed(3) : "—"}
+              {s.priceIndex ? s.priceIndex.coefficient.toFixed(COEF_DIGITS) : "—"}
             </td>
             <td data-label="시·도 순위"
               className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
