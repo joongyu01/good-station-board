@@ -189,6 +189,20 @@ export function sidoLabel(sido: string): string {
 }
 
 /** 정적 배포 경로 어디서든 데이터 파일을 찾도록 base를 붙인다. */
+/**
+ * 데이터 파일을 받는다. **언제나 서버에 다시 물어본다.**
+ *
+ * 파일 이름에 붙인 `?v=` 만으로는 부족했다. 그 값은 번들 안에 박혀 있는데,
+ * 브라우저가 index.html 을 캐시하고 있으면 옛 번들을 쓰고 따라서 옛 `?v=` 로
+ * 옛 데이터를 다시 꺼내 쓴다. 실제로 배포 직후 화면이 옛 판정 수치를 보여줬다.
+ *
+ * `cache: "no-cache"` 는 캐시를 버리는 게 아니라 **매번 검증**하게 한다.
+ * 안 바뀌었으면 304 로 끝나 본문을 다시 받지 않으니 값도 싸다.
+ */
+export function fetchData(name: string): Promise<Response> {
+  return fetch(dataUrl(name), { cache: "no-cache" });
+}
+
 export function dataUrl(name: string): string {
   const u = new URL(`data/${name}`, document.baseURI);
   // 배포마다 값이 바뀐다. 이게 없으면 GitHub Pages 의 max-age=600 때문에

@@ -9,7 +9,7 @@
  * 커트라인은 N위·2N위라 K=30 안에 반드시 들어온다.
  */
 import { useEffect, useMemo, useState } from "react";
-import { dataUrl, formatPrice, sidoLabel } from "../lib/board.ts";
+import { fetchData, formatPrice, sidoLabel } from "../lib/board.ts";
 import { VIEW_MODES, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
 import type { RankFile } from "@shared/lib/rank.ts";
 import { COEF_DIGITS } from "@shared/lib/signal.ts";
@@ -27,7 +27,7 @@ const cache = new Map<string, Promise<RankFile>>();
 function loadRank(date: string): Promise<RankFile> {
   let p = cache.get(date);
   if (!p) {
-    p = fetch(dataUrl(`rank-${date}.json`)).then((r) => {
+    p = fetchData(`rank-${date}.json`).then((r) => {
       if (!r.ok) throw new Error(`rank-${date}.json ${r.status}`);
       return r.json();
     });
@@ -59,7 +59,7 @@ export default function RankWindow({ date, sido, mode, onClose }: Props) {
   // 고를 수 있는 날짜 — 순위표가 실제로 있는 날만.
   useEffect(() => {
     let alive = true;
-    fetch(dataUrl("index.json"))
+    fetchData("index.json")
       .then((r) => r.json())
       .then((j: { ranks?: string[] }) => {
         if (!alive || !j.ranks?.length) return;

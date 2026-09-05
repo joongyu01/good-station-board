@@ -9,7 +9,7 @@ import SplitLayout from "./components/SplitLayout.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import { useNarrow } from "./lib/useNarrow.ts";
 import {
-  applyMode, dataUrl, formatCollectedAt, formatDate, groupByRegion, summarize,
+  applyMode, fetchData, formatCollectedAt, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
   type BoardData, type GeoCollection, type RegionSummary, type SignalColor,
   type StationSignal, type ViewMode,
@@ -76,11 +76,11 @@ export default function App() {
 
   useEffect(() => {
     Promise.all([
-      fetch(dataUrl("latest.json")).then((r) => r.json()),
-      fetch(dataUrl("geo-sido.json")).then((r) => r.json()),
-      fetch(dataUrl("geo-sigungu.json")).then((r) => r.json()),
+      fetchData("latest.json").then((r) => r.json()),
+      fetchData("geo-sido.json").then((r) => r.json()),
+      fetchData("geo-sigungu.json").then((r) => r.json()),
       // 일반구 레이어는 없어도 동작한다. 구 단계만 사라진다.
-      fetch(dataUrl("geo-district.json")).then((r) => r.json()).catch(() => EMPTY_GEO),
+      fetchData("geo-district.json").then((r) => r.json()).catch(() => EMPTY_GEO),
     ])
       .then(([b, s, g, d]) => {
         setBoard(b); setSidoGeo(s); setSigunguGeo(g); setDistrictGeo(d ?? EMPTY_GEO);

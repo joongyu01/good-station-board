@@ -16,7 +16,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from "@shared/lib/history.ts";
-import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/board.ts";
+import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
 import { COEF_DIGITS } from "@shared/lib/signal.ts";
@@ -59,7 +59,7 @@ const COLOR_COEF = "#C6402E";
 let cache: Promise<History> | null = null;
 function loadHistory(): Promise<History> {
   if (!cache) {
-    cache = fetch(dataUrl("history.json")).then((r) => {
+    cache = fetchData("history.json").then((r) => {
       if (!r.ok) throw new Error(`history.json ${r.status}`);
       return r.json();
     });
