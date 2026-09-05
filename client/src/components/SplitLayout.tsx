@@ -123,7 +123,14 @@ export default function SplitLayout({ left, right }: Props) {
         <span className="layout-grip" aria-hidden="true" />
       </div>
 
-      <section className="panel-col">{right}</section>
+      {/*
+        안쪽을 절대 배치로 띄운다. 그냥 두면 목록 472줄이 그리드 행 높이를 밀어
+        올려 지도 칸까지 같이 늘어난다. 행 높이는 지도가 정하고 목록은 그 안에서
+        스크롤해야 두 칸의 높이가 맞는다.
+      */}
+      <section className="panel-col">
+        <div className="panel-inner">{right}</div>
+      </section>
     </main>
   );
 }

@@ -137,7 +137,9 @@ button { font: inherit; }
 .layout {
   display: grid;
   grid-template-columns: minmax(0, var(--map-col, 58%)) 8px minmax(0, 1fr);
-  gap: 10px; align-items: start;
+  gap: 10px;
+  /* 두 칸의 높이를 맞춘다. 행 높이는 지도가 정한다 — .panel-inner 참고. */
+  align-items: stretch;
 }
 .layout.is-resizing { cursor: col-resize; user-select: none; }
 
@@ -159,6 +161,10 @@ button { font: inherit; }
 @media (max-width: 1240px) {
   .layout { grid-template-columns: 1fr; }
   .layout-resizer { display: none; }
+  /* 한 줄로 쌓이면 맞출 상대가 없다. 절대 배치를 풀고 제 높이로 돌아간다. */
+  .panel-col { position: static; }
+  .panel-inner { position: static; }
+  .panel-body { max-height: 70vh; }
 }
 
 .map-col, .panel-col {
@@ -166,6 +172,10 @@ button { font: inherit; }
   border-radius: var(--radius); box-shadow: var(--shadow);
 }
 .map-col { padding: 12px 14px 14px; }
+
+/* 목록 칸은 지도 칸과 같은 높이로 늘어나고, 넘치는 표는 안에서 스크롤한다. */
+.panel-col { position: relative; min-height: 320px; }
+.panel-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
 
 /* ── 브레드크럼 ───────────────────────────────────────── */
 .breadcrumb { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -245,8 +255,6 @@ button { font: inherit; }
   padding: 5px 10px; border-radius: 7px; font-size: 12px;
   pointer-events: none; white-space: nowrap; z-index: 5;
 }
-.map-hint { margin: 6px 2px 0; font-size: 12px; color: var(--ink-soft); }
-
 /* ── 상세 단계: 실제 지도 + 핀 ────────────────────────── */
 .map-tile { image-rendering: auto; }
 .region.is-detail {
@@ -298,7 +306,7 @@ button { font: inherit; }
 .panel-head { padding: 14px 18px; border-bottom: 1px solid var(--line); }
 .panel-head h2 { margin: 0; font-size: 16px; font-weight: 800; }
 .panel-sub { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-soft); }
-.panel-body { max-height: 820px; overflow: auto; }
+.panel-body { flex: 1; min-height: 0; overflow: auto; }
 .empty { padding: 40px 18px; text-align: center; color: var(--ink-soft); }
 
 /* ── 주유소 표 ────────────────────────────────────────── */
@@ -312,6 +320,9 @@ button { font: inherit; }
 .station-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .station-table tbody tr:hover { background: var(--green-pale); }
 .col-sig { width: 22px; padding-right: 0 !important; }
+/* 가격 옆 괄호 순위. 가격보다 한 단계 여리게 둬 숫자 둘이 엉키지 않게 한다. */
+.fuel-rank { margin-left: 3px; font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+
 .col-name { min-width: 200px; }
 .col-name .name { font-weight: 600; }
 /* 상호를 누르면 판매가 추이가 열린다. 링크로 보이되 표 안에서 튀지 않게. */
@@ -568,9 +579,16 @@ button { font: inherit; }
 .chart-legend i { width: 14px; height: 3px; border-radius: 2px; display: block; }
 
 /* ── 날짜별 기록표 ──────────────────────────────────────── */
-.chart-log {
-  border: 1px solid var(--line); border-radius: 10px; overflow: auto;
-  max-height: 460px; min-width: 0;
+/* 표가 그리드 행 높이를 밀어 올리지 않도록 안쪽 스크롤러를 띄운다.
+   높이는 왼쪽 그래프 칸이 정하고, 표는 그 안에서만 스크롤한다. */
+.chart-log { position: relative; min-width: 0; min-height: 260px; }
+.chart-log-scroll {
+  position: absolute; inset: 0; overflow: auto;
+  border: 1px solid var(--line); border-radius: 10px;
+}
+@media (max-width: 900px) {
+  .chart-log { position: static; height: 300px; }
+  .chart-log-scroll { position: static; height: 100%; }
 }
 .log-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .log-table thead th {

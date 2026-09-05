@@ -343,11 +343,6 @@ export default function App() {
             resetSignal={resetSignal}
           />
 
-          <p className="map-hint">
-            {!activeSido && "시·도를 누르면 시·군·구 지도로 내려갑니다. 착한주유소가 없는 지역은 표시하지 않고 외곽선만 그립니다."}
-            {activeSido && !activeRegion && "시·군·구를 누르면 실제 지도 위에 주유소 핀이 찍힙니다. 휠로 확대, 끌어서 이동."}
-            {activeSido && activeRegion && "주유기 아이콘 색이 그 주유소의 신호등입니다. 누르면 판매가 추이가 열립니다. 휠로 확대, 끌어서 이동."}
-          </p>
         </>}
         right={<>
           <div className="panel-head">
@@ -378,11 +373,6 @@ export default function App() {
           </div>
         </>}
       />
-
-      <footer className="foot">
-        <span>가격 출처: 오피넷 사업자별 과거 판매가격 · {mode === "sum" ? "휘발유+경유 합계" : VIEW_MODE_LABELS[mode]}의 시·도 순위로 판정</span>
-        <span className="mono">자동 수집 {formatCollectedAt(board.generatedAt)}</span>
-      </footer>
 
       {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}
 

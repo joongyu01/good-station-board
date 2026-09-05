@@ -114,8 +114,15 @@ export function parseStationCsv(text: string): ParseResult {
     const address = pick("address");
     if (!name || !address) continue;
 
-    // 지역 열이 있으면 그쪽을 먼저 본다. 주소보다 짧아 오탐이 적다.
-    const region = normalizeRegion(pick("region")) ?? normalizeRegion(address);
+    // 주소를 먼저 본다. `지역` 열은 보조다.
+    //
+    // 지역 열은 시·군·구까지만 적혀 있어 일반구를 잃는다("경북 포항시"). 그것만
+    // 믿으면 포항·천안·창원 등 8개 시의 56곳이 구 없이 남아, 지도에서 그 시로
+    // 내려갔을 때 구 폴리곤에 아무것도 안 붙고 "착한주유소가 없습니다" 가 뜬다.
+    //
+    // 둘이 어긋나는 7건도 주소 쪽이 맞다. 광주 6곳은 지역 열이 "광주시" 인데
+    // 통합시에 그런 시·군·구는 없고 주소의 광산구·북구·동구가 실제 소재지다.
+    const region = normalizeRegion(address) ?? normalizeRegion(pick("region"));
     if (!region) {
       failures.push({ line: i + 1, name, address, reason: "시·도 또는 시·군·구 인식 실패" });
       continue;

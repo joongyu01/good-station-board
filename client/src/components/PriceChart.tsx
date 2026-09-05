@@ -20,10 +20,19 @@ import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/
 import { withBrand } from "@shared/lib/brand.ts";
 
 const W = 720;
-/** 판매가 그래프 높이. 날짜 라벨이 없어 아래 여백이 좁다. */
-const H_PRICE = 250;
-/** 계수 그래프 높이. 값의 폭이 좁아 판매가보다 낮아도 읽힌다. */
-const H_COEF = 165;
+/**
+ * 그래프 높이(viewBox 기준).
+ *
+ * SVG 는 `width:100%; height:auto` 라 실제 높이가 **칸 너비 × H/W** 로 정해진다.
+ * 창 너비가 1180px 로 묶여 있으니 그래프 칸은 900px 언저리에서 더 넓어지지
+ * 않고, 따라서 이 값이 곧 화면에서의 높이를 결정한다.
+ *
+ * 250/165 로 뒀더니 노트북 화면에서 창이 세로로 넘쳐 계수 그래프의 날짜
+ * 라벨이 잘렸다. 높이 768px 짜리 화면에도 스크롤 없이 들어가도록 줄였다.
+ */
+const H_PRICE = 200;
+/** 계수는 값의 폭이 좁아 판매가보다 낮아도 읽힌다. */
+const H_COEF = 140;
 const PAD = { top: 16, right: 16, bottom: 10, left: 58 };
 /** 날짜 라벨이 들어가는 아래 여백 — 계수 그래프에만 적용한다. */
 const PAD_BOTTOM_AXIS = 30;
@@ -172,12 +181,13 @@ export default function PriceChart({ station, onClose }: Props) {
       priceH, coefH,
       from: dates[idx[0]], to: dates[last],
       latest: { g: series.g[last], d: series.d[last], c: series.c[last] },
-      // 오른쪽 기록표 — 날짜 오름차순. 요청하신 `구분, 휘발유, 경유` 그대로.
+      // 오른쪽 기록표 — **최신 날짜가 위로**. 표를 열자마자 보고 싶은 것은
+      // 오늘 가격이지 두 달 전 가격이 아니다. 그래프는 시간순 그대로 둔다.
       rows: idx.map((i) => ({
         date: dates[i],
         g: series.g[i],
         d: series.d[i],
-      })),
+      })).reverse(),
     };
   }, [history, series]);
 
@@ -304,7 +314,12 @@ export default function PriceChart({ station, onClose }: Props) {
               </div>
 
               {/* ── 날짜별 기록 ──────────────────────────────── */}
+              {/*
+                안쪽 스크롤러를 절대 배치로 띄운다. 그냥 두면 67줄짜리 표가
+                그리드 행 높이를 밀어 올려 창이 그래프보다 훨씬 길어진다.
+              */}
               <div className="chart-log">
+                <div className="chart-log-scroll">
                 <table className="log-table">
                   <thead>
                     <tr>
@@ -323,6 +338,7 @@ export default function PriceChart({ station, onClose }: Props) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}

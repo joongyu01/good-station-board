@@ -36,8 +36,14 @@ function headers(mode: ViewMode): HeaderDef[] {
     { key: "signal", label: "", title: "신호등 — 상위권부터" },
     { key: "name", label: "주유소" },
     { key: "region", label: "지역", regionOnly: true },
-    { key: "gasoline", label: "휘발유", num: true },
-    { key: "diesel", label: "경유", num: true },
+    {
+      key: "gasoline", label: "휘발유(지역순위)", num: true,
+      title: "괄호 안은 그 시·도에서 휘발유 가격만 놓고 본 순위",
+    },
+    {
+      key: "diesel", label: "경유(지역순위)", num: true,
+      title: "괄호 안은 그 시·도에서 경유 가격만 놓고 본 순위",
+    },
     {
       key: "coefficient", label: "계수", num: true,
       title: `${of}를 그 시·도의 상위권 커트라인으로 나눈 값. 1.000 이하가 상위권`,
@@ -45,10 +51,6 @@ function headers(mode: ViewMode): HeaderDef[] {
     {
       key: "rank", label: "시·도 순위", num: true,
       title: `그 시·도에서 ${of} 기준 순위`,
-    },
-    {
-      key: "regionMin", label: "시·도 최저", num: true,
-      title: `그 시·도에서 실제로 가장 싼 ${mode === "sum" ? "합계" : VIEW_MODE_LABELS[mode] + " 가격"}`,
     },
   ];
 }
@@ -113,8 +115,14 @@ export default function StationTable({
               )}
             </td>
             {showRegion && <td className="col-region">{s.sigungu}</td>}
-            <td className="num">{formatPrice(s.prices.gasoline)}</td>
-            <td className="num">{formatPrice(s.prices.diesel)}</td>
+            <td className="num">
+              {formatPrice(s.prices.gasoline)}
+              <FuelRank rank={s.metrics?.gasoline?.regionRank ?? null} />
+            </td>
+            <td className="num">
+              {formatPrice(s.prices.diesel)}
+              <FuelRank rank={s.metrics?.diesel?.regionRank ?? null} />
+            </td>
             <td className="num idx" title={s.priceIndex
               ? `${mode === "sum" ? "휘발유+경유" : VIEW_MODE_LABELS[mode]} ${s.priceIndex.sum.toLocaleString("ko-KR")}원`
                 + ` / 시·도 상위권 커트라인 ${s.priceIndex.regionBase.toLocaleString("ko-KR")}원`
@@ -124,10 +132,20 @@ export default function StationTable({
             <td className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
               {s.regionRank == null ? "—" : `${s.regionRank.toLocaleString("ko-KR")} / ${s.regionN.toLocaleString("ko-KR")}`}
             </td>
-            <td className="num muted">{formatPrice(s.regionMinSum)}</td>
           </tr>
         ))}
       </tbody>
     </table>
   );
+}
+
+/**
+ * 가격 옆 괄호 안 지역 순위.
+ *
+ * 그 유종만 놓고 본 시·도 순위다. 표의 '시·도 순위' 열은 지금 고른 기준(통합/
+ * 휘발유/경유)의 순위라 값이 다를 수 있다 — 통합으로 보는 중이면 합산 순위다.
+ */
+function FuelRank({ rank }: { rank: number | null }) {
+  if (rank == null) return null;
+  return <span className="fuel-rank">({rank.toLocaleString("ko-KR")})</span>;
 }
