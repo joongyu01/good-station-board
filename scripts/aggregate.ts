@@ -271,16 +271,18 @@ function main() {
   writeFileSync(historyPath, JSON.stringify(history), "utf8");
   writeFileSync(path.join(OUT_DIR, "history.json"), JSON.stringify(history), "utf8");
 
-  // ── 가격정보 없음 ───────────────────────────────────────────────────
+  // ── 가격을 믿기 어려운 곳 ───────────────────────────────────────────
   //
-  // 하루라도 가격이 비었거나 0원이었던 곳은 판정을 붙이지 않는다.
+  // 둘로 나눈다. 성격이 달라 한 칸에 묶으면 무엇을 확인해야 하는지 흐려진다.
   //
-  // 그날 값만 보고 판정하면 "어제는 1위, 오늘은 미상" 처럼 오락가락한다.
-  // 신고를 거른 이력이 있는 주유소는 애초에 그 값을 믿고 순위를 매기기
-  // 어렵다는 뜻이라, 아예 따로 모아 확인 대상으로 둔다.
+  //   unknown  오늘 가격이 없어 아예 판정을 못 한 곳 → 지금 확인할 일
+  //   stale    오늘은 가격이 있으나 과거에 거른 이력이 있는 곳 → 신고 이력을 볼 일
   //
-  // 실측 23곳(4.9%)이라 나머지 세 칸을 헐겁게 만들지 않는다.
+  // 하루치만 보고 판정하면 "어제는 1위, 오늘은 미상" 처럼 오락가락한다. 신고를
+  // 거른 이력이 있으면 그 값을 믿고 순위를 매기기 어렵다는 뜻이라, 판정에서
+  // 빼되 오늘 값이 아예 없는 곳과는 구분해 둔다.
   let gapCount = 0;
+  let staleCount = 0;
   for (const sig of signals) {
     const series = sig.stationId ? history.stations[sig.stationId] : undefined;
     let gaps = 0;
@@ -296,11 +298,15 @@ function main() {
 
     sig.dataGapDays = gaps;
     if (sig.stationId) sig.compliance = complianceOf(history, sig.stationId, COMPLIANCE_FROM);
-    if (gaps > 0) {
-      gapCount++;
-      sig.signal = "unknown";
-      for (const mode of VIEW_MODES) sig.metrics[mode].signal = "unknown";
-    }
+    if (gaps === 0) continue;
+
+    // 오늘 값이 있으면 stale, 없으면 unknown.
+    const hasToday = sig.prices.gasoline != null && sig.prices.diesel != null;
+    const mark: "stale" | "unknown" = hasToday ? "stale" : "unknown";
+    if (hasToday) staleCount++; else gapCount++;
+
+    sig.signal = mark;
+    for (const mode of VIEW_MODES) sig.metrics[mode].signal = mark;
   }
 
   // ── 요약 ────────────────────────────────────────────────────────────
@@ -309,6 +315,7 @@ function main() {
     yellow: signals.filter((s) => s.signal === "yellow").length,
     red: signals.filter((s) => s.signal === "red").length,
     unknown: signals.filter((s) => s.signal === "unknown").length,
+    stale: signals.filter((s) => s.signal === "stale").length,
   };
 
   // 시·도 통계는 전부 실어도 50건이 안 된다.
@@ -347,7 +354,7 @@ function main() {
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
-  console.log(`  가격정보 없음: ${gapCount}곳 (하루라도 결측·0원이 있던 곳)`);
+  console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }

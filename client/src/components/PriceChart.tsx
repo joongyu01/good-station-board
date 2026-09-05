@@ -208,11 +208,14 @@ export default function PriceChart({ station, onClose }: Props) {
       latest: { g: series.g[last], d: series.d[last], c: series.c[last] },
       // 오른쪽 기록표 — **최신 날짜가 위로**. 표를 열자마자 보고 싶은 것은
       // 오늘 가격이지 두 달 전 가격이 아니다. 그래프는 시간순 그대로 둔다.
-      rows: idx.map((i) => ({
-        date: dates[i],
-        g: series.g[i],
-        d: series.d[i],
-      })).reverse(),
+      //
+      // 그래프와 달리 **구간의 모든 날**을 넣는다. 값이 없는 날을 건너뛰면
+      // 9/5·9/4 가 통째로 사라지고 9/3 부터 시작해, 신고를 거른 것인지 아직
+      // 안 받아온 것인지 알 수가 없다. 빈 날은 '정보없음' 으로 적는다.
+      rows: dates
+        .map((date, i) => ({ date, g: series.g[i], d: series.d[i] }))
+        .filter((r) => r.date >= from)
+        .reverse(),
     };
   }, [history, series, from, W, H_PRICE, H_COEF]);
 
@@ -407,10 +410,16 @@ export default function PriceChart({ station, onClose }: Props) {
                   </thead>
                   <tbody>
                     {chart.rows.map((r) => (
-                      <tr key={r.date}>
+                      <tr key={r.date} className={r.g == null && r.d == null ? "is-none" : ""}>
                         <th scope="row">{fmtTick(r.date)}</th>
-                        <td className="num">{r.g == null ? "—" : r.g.toLocaleString("ko-KR")}</td>
-                        <td className="num">{r.d == null ? "—" : r.d.toLocaleString("ko-KR")}</td>
+                        {r.g == null && r.d == null ? (
+                          <td className="no-data" colSpan={2}>정보없음</td>
+                        ) : (
+                          <>
+                            <td className="num">{r.g == null ? "—" : r.g.toLocaleString("ko-KR")}</td>
+                            <td className="num">{r.d == null ? "—" : r.d.toLocaleString("ko-KR")}</td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>

@@ -88,7 +88,15 @@ export interface RegionStat {
   basisKey: string;
 }
 
-export type SignalColor = "green" | "yellow" | "red" | "unknown";
+/**
+ * 판정 색.
+ *
+ * `unknown` 과 `stale` 은 둘 다 "가격을 믿고 순위를 매기기 어렵다" 는 뜻이지만
+ * 성격이 다르다. unknown 은 **오늘** 가격이 없어 아예 판정을 못 한 것이고,
+ * stale 은 오늘은 가격이 있으나 **과거에 거른 이력**이 있는 것이다. 앞의 것은
+ * 지금 확인할 일이고 뒤의 것은 신고 이력을 따질 일이라 섞으면 안 된다.
+ */
+export type SignalColor = "green" | "yellow" | "red" | "unknown" | "stale";
 
 /** 판정 기준 — 휘발유+경유 합산, 또는 한 유종만. */
 export type ViewMode = "sum" | "gasoline" | "diesel";
@@ -224,6 +232,6 @@ export interface BoardData {
     total: number;
     matched: number;
     /** 주유소 단위 신호등 집계 */
-    counts: { green: number; yellow: number; red: number; unknown: number };
+    counts: Record<SignalColor, number>;
   };
 }

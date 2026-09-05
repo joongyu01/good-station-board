@@ -11,7 +11,7 @@ export type SortDir = "asc" | "desc";
 export interface SortState { key: SortKey; dir: SortDir }
 
 /** 신호등을 좋은 쪽부터 늘어놓기 위한 순서. */
-const SIGNAL_ORDER: Record<string, number> = { green: 0, yellow: 1, red: 2, unknown: 3 };
+const SIGNAL_ORDER: Record<string, number> = { green: 0, yellow: 1, red: 2, stale: 3, unknown: 4 };
 
 function valueOf(s: StationSignal, key: SortKey): number | string | null {
   switch (key) {

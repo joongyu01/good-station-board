@@ -68,6 +68,7 @@ export const SIGNAL_COLORS: Record<SignalColor, string> = {
   yellow: "#E3A81E",
   red: "#C6402E",
   unknown: "#B9BDBE",
+  stale: "#8A94A6",
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {
@@ -75,6 +76,7 @@ export const SIGNAL_LABELS: Record<SignalColor, string> = {
   yellow: "가격기준 근접",
   red: "가격기준 초과",
   unknown: "가격정보 없음",
+  stale: "과거 미신고",
 };
 
 /** 지역 단위 집계 — 지도 색칠에 쓴다. */
@@ -86,6 +88,7 @@ export interface RegionSummary {
   yellow: number;
   red: number;
   unknown: number;
+  stale: number;
   total: number;
   /** 착한주유소들이 지역 최저가에서 평균 몇 원 떨어져 있는지. 지도 색의 근거. */
   meanGap: number | null;
@@ -111,7 +114,7 @@ const GREEN_SHARE = 0.3;
 export function summarize(stations: StationSignal[], label: string, sido: string): RegionSummary {
   const s: RegionSummary = {
     label, sido,
-    green: 0, yellow: 0, red: 0, unknown: 0,
+    green: 0, yellow: 0, red: 0, unknown: 0, stale: 0,
     total: stations.length, meanGap: null, signal: "unknown",
   };
   const gaps: number[] = [];

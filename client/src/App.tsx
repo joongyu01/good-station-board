@@ -383,7 +383,7 @@ export default function App() {
 
       <div className="page">
       <div className="summary-strip">
-        {(["green", "yellow", "red", "unknown"] as const).map((k) => (
+        {(["green", "yellow", "red", "unknown", "stale"] as const).map((k) => (
           <button
             key={k}
             type="button"

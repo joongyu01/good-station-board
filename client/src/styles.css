@@ -32,6 +32,9 @@
   --sig-yellow: #E3A81E;
   --sig-red: #C6402E;
   --sig-none: #B9BDBE;
+  /* 과거 미신고 — 가격은 있으나 신고를 거른 이력이 있는 곳.
+     '가격정보 없음'(회색)과 구분되면서 판정 삼색과도 섞이지 않는 청회색. */
+  --sig-stale: #8A94A6;
 
   --map-empty: #E7EAE8;
   --map-stroke: #FFFFFF;
@@ -358,6 +361,7 @@ button.stat + button.stat { margin-left: 4px; }
 .dot-yellow { background: var(--sig-yellow); }
 .dot-red { background: var(--sig-red); }
 .dot-unknown { background: var(--sig-none); }
+.dot-stale { background: var(--sig-stale); }
 
 .diff.neg { color: var(--good); font-weight: 700; }
 .diff.pos { color: var(--bad); font-weight: 700; }
@@ -370,7 +374,7 @@ button.stat + button.stat { margin-left: 4px; }
 .badge-low { background: var(--good-bg); color: var(--good); }
 .badge-self { background: rgba(47, 111, 181, .12); color: #2F6FB5; }
 .badge-warn { background: var(--warn-bg); color: var(--warn); }
-.badge-gap { background: rgba(88, 89, 91, .12); color: var(--gray); }
+.badge-gap { background: rgba(138, 148, 166, .16); color: #5C6779; }
 
 /* ── 바닥 ─────────────────────────────────────────────── */
 .foot {
@@ -660,6 +664,11 @@ button.stat + button.stat { margin-left: 4px; }
   border-top: 1px solid var(--line);
 }
 .log-table tbody tr:hover th, .log-table tbody tr:hover td { background: var(--paper); }
+/* 가격을 안 낸 날. 건너뛰지 않고 한 줄로 남겨야 언제 걸렀는지 보인다. */
+.log-table .no-data {
+  text-align: center; color: var(--sig-stale); font-weight: 700; font-size: 11.5px;
+}
+.log-table tr.is-none th { color: var(--sig-stale); }
 
 /* 지도 주유기 핀 */
 .pin { cursor: pointer; }
