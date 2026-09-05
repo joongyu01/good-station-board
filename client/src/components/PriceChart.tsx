@@ -19,7 +19,15 @@ import type { History, StationSeries } from "@shared/lib/history.ts";
 import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 
-const W = 720;
+/**
+ * viewBox 너비. 모바일에서는 좁게 잡는다.
+ *
+ * SVG 가 `width:100%; height:auto` 라 화면에서의 높이는 **칸 너비 × H/W** 다.
+ * 폭 340px 짜리 화면에 W=720 을 그대로 쓰면 판매가 그래프가 94px 로 납작해져
+ * 선이 겹쳐 보인다. 좁은 화면에서는 W 를 줄여 세로 비율을 확보한다.
+ */
+const W_DESKTOP = 720;
+const W_MOBILE = 400;
 /**
  * 그래프 높이(viewBox 기준).
  *
@@ -30,9 +38,12 @@ const W = 720;
  * 250/165 로 뒀더니 노트북 화면에서 창이 세로로 넘쳐 계수 그래프의 날짜
  * 라벨이 잘렸다. 높이 768px 짜리 화면에도 스크롤 없이 들어가도록 줄였다.
  */
-const H_PRICE = 200;
+const H_PRICE_DESKTOP = 200;
+/** 모바일은 가로가 좁은 만큼 세로를 더 준다. */
+const H_PRICE_MOBILE = 250;
 /** 계수는 값의 폭이 좁아 판매가보다 낮아도 읽힌다. */
-const H_COEF = 140;
+const H_COEF_DESKTOP = 140;
+const H_COEF_MOBILE = 175;
 const PAD = { top: 16, right: 16, bottom: 10, left: 58 };
 /** 날짜 라벨이 들어가는 아래 여백 — 계수 그래프에만 적용한다. */
 const PAD_BOTTOM_AXIS = 30;
@@ -61,9 +72,27 @@ interface Props {
   onClose: () => void;
 }
 
+/** 화면 폭이 조건에 맞는지. 창 크기가 바뀌면 다시 그린다. */
+function useNarrow(query = "(max-width: 720px)"): boolean {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, [query]);
+  return narrow;
+}
+
 export default function PriceChart({ station, onClose }: Props) {
   const [history, setHistory] = useState<History | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const narrow = useNarrow();
+  const W = narrow ? W_MOBILE : W_DESKTOP;
+  const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
+  const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
 
   useEffect(() => {
     let alive = true;
@@ -189,7 +218,7 @@ export default function PriceChart({ station, onClose }: Props) {
         d: series.d[i],
       })).reverse(),
     };
-  }, [history, series]);
+  }, [history, series, W, H_PRICE, H_COEF]);
 
   return (
     <div className="chart-backdrop" onClick={onClose} role="presentation">

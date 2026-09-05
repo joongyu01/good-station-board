@@ -62,11 +62,41 @@ export default function StationTable({
     return <p className="empty">{emptyText ?? "표시할 주유소가 없습니다."}</p>;
   }
 
+  const cols = headers(mode).filter((h) => !h.regionOnly || showRegion);
+
   return (
+    <>
+      {/*
+        모바일에서는 표가 카드로 바뀌어 열 머리가 사라진다. 정렬을 통째로 잃지
+        않도록 같은 상태를 쓰는 선택 상자를 둔다. PC 에서는 감춘다.
+      */}
+      <div className="sort-mobile">
+        <label>
+          정렬
+          <select
+            value={sort ? `${sort.key}:${sort.dir}` : ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (!v) { onSort(null); return; }
+              const [key, dir] = v.split(":") as [SortKey, SortDir];
+              onSort({ key, dir });
+            }}
+          >
+            <option value="">기본 순서</option>
+            {cols.filter((h) => h.key !== "signal").map((h) => (
+              <optgroup key={h.key} label={h.label}>
+                <option value={`${h.key}:asc`}>{h.label} ↑</option>
+                <option value={`${h.key}:desc`}>{h.label} ↓</option>
+              </optgroup>
+            ))}
+          </select>
+        </label>
+      </div>
+
     <table className="station-table">
       <thead>
         <tr>
-          {headers(mode).filter((h) => !h.regionOnly || showRegion).map((h) => {
+          {cols.map((h) => {
             const active = sort?.key === h.key;
             const dir = active ? sort!.dir : null;
             return (
@@ -114,28 +144,30 @@ export default function StationTable({
                 </span>
               )}
             </td>
-            {showRegion && <td className="col-region">{s.sigungu}</td>}
-            <td className="num">
+            {showRegion && <td className="col-region" data-label="지역">{s.sigungu}</td>}
+            <td className="num" data-label="휘발유(지역순위)">
               {formatPrice(s.prices.gasoline)}
               <FuelRank rank={s.metrics?.gasoline?.regionRank ?? null} />
             </td>
-            <td className="num">
+            <td className="num" data-label="경유(지역순위)">
               {formatPrice(s.prices.diesel)}
               <FuelRank rank={s.metrics?.diesel?.regionRank ?? null} />
             </td>
-            <td className="num idx" title={s.priceIndex
+            <td className="num idx" data-label="계수" title={s.priceIndex
               ? `${mode === "sum" ? "휘발유+경유" : VIEW_MODE_LABELS[mode]} ${s.priceIndex.sum.toLocaleString("ko-KR")}원`
                 + ` / 시·도 상위권 커트라인 ${s.priceIndex.regionBase.toLocaleString("ko-KR")}원`
               : "이 유종을 취급하지 않아 산출 불가"}>
               {s.priceIndex ? s.priceIndex.coefficient.toFixed(3) : "—"}
             </td>
-            <td className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
+            <td data-label="시·도 순위"
+              className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
               {s.regionRank == null ? "—" : `${s.regionRank.toLocaleString("ko-KR")} / ${s.regionN.toLocaleString("ko-KR")}`}
             </td>
           </tr>
         ))}
       </tbody>
     </table>
+    </>
   );
 }
 

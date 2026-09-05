@@ -309,6 +309,9 @@ button { font: inherit; }
 .panel-body { flex: 1; min-height: 0; overflow: auto; }
 .empty { padding: 40px 18px; text-align: center; color: var(--ink-soft); }
 
+/* 모바일에서만 쓰는 정렬 선택. PC 는 열 머리로 정렬한다. */
+.sort-mobile { display: none; }
+
 /* ── 주유소 표 ────────────────────────────────────────── */
 .station-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .station-table thead th {
@@ -330,6 +333,9 @@ button { font: inherit; }
   border: 0; background: transparent; padding: 0; cursor: pointer;
   font: inherit; font-weight: 600; color: var(--ink); text-align: left;
   border-bottom: 1px dashed transparent;
+  /* 한글은 글자 단위로 아무 데서나 끊긴다. 띄어쓰기에서 먼저 끊고, 그래도
+     안 들어가는 긴 상호만 마지막 수단으로 쪼갠다. */
+  word-break: keep-all; overflow-wrap: anywhere;
 }
 .name-link:hover { color: var(--green-deep); border-bottom-color: currentColor; }
 .name-link:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; border-radius: 3px; }
@@ -645,3 +651,102 @@ button { font: inherit; }
 }
 .btn-csv:hover:not(:disabled) { background: var(--good-bg); border-color: var(--green); }
 .btn-csv:disabled { opacity: .45; cursor: default; }
+
+
+/* ══════════════════════════════════════════════════════════
+   모바일 (≤720px)
+   ──────────────────────────────────────────────────────────
+   PC 화면은 손대지 않는다. 이 구간 밖의 규칙은 그대로 두고
+   여기서만 좁은 화면용으로 덮어쓴다.
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+  /* 가로로 비어져 나가는 것을 막는다. 지도·표가 넓어 쉽게 넘친다. */
+  html, body { overflow-x: hidden; }
+
+  .topbar { padding: 8px 12px; gap: 8px 10px; row-gap: 8px; }
+  .brand h1 { font-size: 15px; }
+  .topbar-logo { height: 26px; padding: 3px 7px; }
+  /* 수집 시각까지 다 넣으면 두 줄이 넘는다. 판매가 기준일만 남긴다. */
+  .meta .collected, .meta .matched, .meta .sep { display: none; }
+  .meta { font-size: 11.5px; }
+  /* 기준 전환은 한 줄을 통째로 쓴다. 손가락으로 누르기 좋게. */
+  .mode-tabs { margin-left: 0; order: 3; flex: 1 1 100%; }
+  .mode-tabs button { flex: 1; padding: 8px 0; }
+  .topbar > .admin-link { margin-left: auto; padding: 5px 10px; }
+
+  .page { padding: 12px 10px 28px; }
+
+  .summary-strip { padding: 10px 12px; gap: 6px; }
+  .stat { padding: 2px 10px 2px 0; }
+  .stat + .stat { padding-left: 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-note { flex: 1 1 100%; margin-left: 0; padding-left: 0; border-left: 0; }
+
+  .map-col { padding: 10px 10px 12px; }
+  .panel-head { flex-wrap: wrap; padding: 12px 12px; }
+  .btn-csv { width: 100%; }
+
+  /* 목록은 카드로 — 열 일곱 개짜리 표는 손바닥 화면에 들어가지 않는다. */
+  .sort-mobile { display: block; padding: 10px 12px 0; }
+  .sort-mobile label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; color: var(--ink-soft);
+  }
+  .sort-mobile select {
+    flex: 1; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--card); color: var(--ink);
+    font: inherit; font-size: 13px; font-weight: 600;
+  }
+
+  .station-table thead { display: none; }
+  .station-table, .station-table tbody, .station-table tr, .station-table td { display: block; }
+  .station-table { font-size: 13px; }
+  .station-table tr {
+    border-bottom: 1px solid var(--line); padding: 11px 12px 12px;
+    position: relative;
+  }
+  .station-table tbody tr:hover { background: transparent; }
+  .station-table td { border: 0; padding: 0; }
+
+  /* 신호등은 카드 왼쪽 세로 막대로. 점 하나보다 훑어보기 쉽다. */
+  .station-table td.col-sig {
+    position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px;
+    padding: 0 !important;
+  }
+  .station-table td.col-sig .dot {
+    width: 4px; height: 100%; margin: 0; border-radius: 0 3px 3px 0;
+  }
+
+  .col-name { min-width: 0; padding-bottom: 6px !important; }
+  .name-link { font-size: 14px; }
+
+  /* 값은 `항목 ······ 값` 두 칸으로. 라벨은 data-label 에서 가져온다.
+     flex 로 하면 안 된다 — 셀 안의 텍스트와 순위 <span> 이 각각 flex 항목이
+     되어 "1,755원" 과 "(1)" 이 양끝으로 갈라진다. 라벨만 왼쪽으로 띄운다. */
+  .station-table td[data-label] {
+    padding: 3px 0 !important; text-align: right; overflow: hidden;
+  }
+  .station-table td[data-label]::before {
+    content: attr(data-label); float: left;
+    color: var(--ink-soft); font-weight: 700; font-size: 11.5px;
+    white-space: nowrap; text-align: left; padding-right: 12px;
+  }
+  .station-table td.col-region { white-space: normal; }
+
+  /* 추이 창은 화면을 거의 다 쓴다. */
+  .chart-backdrop { padding: 0; align-items: stretch; }
+  .chart-modal {
+    width: 100%; max-height: 100vh; border-radius: 0;
+  }
+  .chart-head { padding: 12px 14px 10px; }
+  .chart-head h3 { font-size: 15px; }
+  .chart-body { padding: 10px 12px 16px; }
+  .chart-split { gap: 12px; }
+  .chart-log { min-height: 0; }
+  .chart-panel { padding: 8px 10px 6px; }
+
+  /* 관리 화면 표는 가로 스크롤로 넘긴다. 카드로 바꿀 만큼 자주 쓰지 않는다. */
+  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .admin-bar { flex-wrap: wrap; }
+  .admin-bar .search { flex: 1 1 100%; }
+}
