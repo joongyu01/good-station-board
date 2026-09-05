@@ -27,7 +27,10 @@ import {
   type RegionStat, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
-import { emptyHistory, mergeDay, pruneTo, sampleDay, type History } from "../src/lib/history.ts";
+import {
+  COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, pruneTo, sampleDay,
+  type History,
+} from "../src/lib/history.ts";
 import type { EnrichedRow } from "./collect.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -243,7 +246,9 @@ function main() {
       greenRank,
       isRegionLowest: m.isRegionLowest,
       signal: m.signal,
-      dataGapDays: 0, // 시계열을 얹은 뒤 아래에서 채운다
+      // 시계열을 얹은 뒤 아래에서 채운다
+      dataGapDays: 0,
+      compliance: { from: COMPLIANCE_FROM, to: COMPLIANCE_FROM, greenDays: 0, yellowDays: 0, redDays: 0, missingDays: 0 },
     });
   }
 
@@ -258,7 +263,8 @@ function main() {
   const ids = new Set<string>();
   for (const s of signals) if (s.stationId) ids.add(s.stationId);
 
-  mergeDay(history, date, sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th)));
+  mergeDay(history, date,
+    sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
   const droppedSeries = pruneTo(history, ids);
   history.generatedAt = new Date().toISOString();
 
@@ -289,6 +295,7 @@ function main() {
     }
 
     sig.dataGapDays = gaps;
+    if (sig.stationId) sig.compliance = complianceOf(history, sig.stationId, COMPLIANCE_FROM);
     if (gaps > 0) {
       gapCount++;
       sig.signal = "unknown";

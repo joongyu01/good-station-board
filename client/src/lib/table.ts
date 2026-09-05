@@ -5,7 +5,7 @@ import { BRAND_LABELS, withBrand } from "@shared/lib/brand.ts";
 
 export type SortKey =
   | "signal" | "name" | "region"
-  | "gasoline" | "diesel" | "coefficient" | "rank" | "regionMin";
+  | "gasoline" | "diesel" | "coefficient" | "rank" | "compliance";
 
 export type SortDir = "asc" | "desc";
 export interface SortState { key: SortKey; dir: SortDir }
@@ -22,7 +22,7 @@ function valueOf(s: StationSignal, key: SortKey): number | string | null {
     case "diesel": return s.prices.diesel;
     case "coefficient": return s.priceIndex?.coefficient ?? null;
     case "rank": return s.regionRank;
-    case "regionMin": return s.regionMinSum;
+    case "compliance": return s.compliance?.greenDays ?? null;
   }
 }
 
@@ -96,6 +96,12 @@ const COLUMNS: Col[] = [
       [`${label}_판정`, (s) => (s.metrics?.[m] ? SIGNAL_LABELS[s.metrics[m].signal] : "")],
     ];
   }),
+  ["집계시작", (s) => s.compliance?.from ?? ""],
+  ["집계종료", (s) => s.compliance?.to ?? ""],
+  ["적합일수", (s) => s.compliance?.greenDays ?? null],
+  ["근접일수", (s) => s.compliance?.yellowDays ?? null],
+  ["초과일수", (s) => s.compliance?.redDays ?? null],
+  ["미신고일수", (s) => s.compliance?.missingDays ?? null],
   ["주유소코드", (s) => s.stationId ?? ""],
   ["위도", (s) => s.lat],
   ["경도", (s) => s.lng],

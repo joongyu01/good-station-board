@@ -15,7 +15,7 @@
  * 언제 기준을 넘나들었는지가 한눈에 읽힌다.
  */
 import { useEffect, useMemo, useState } from "react";
-import type { History, StationSeries } from "@shared/lib/history.ts";
+import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from "@shared/lib/history.ts";
 import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
@@ -77,6 +77,13 @@ export default function PriceChart({ station, onClose }: Props) {
   const [history, setHistory] = useState<History | null>(null);
   const [error, setError] = useState<string | null>(null);
   const narrow = useNarrow();
+  /**
+   * 조회 시작일. 기본은 8월 1일이고 끝은 늘 최신일이다.
+   *
+   * 한 달치면 꾸준했는지 보기에 충분하고, 두 달치를 다 그리면 최근 흐름이
+   * 뭉개진다. 그 이전까지 보고 싶으면 '전체' 로 넓힌다.
+   */
+  const [from, setFrom] = useState<string>(COMPLIANCE_FROM);
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -104,9 +111,11 @@ export default function PriceChart({ station, onClose }: Props) {
     // 아래 헬퍼들이 중첩 함수라 history 의 null 좁히기가 풀린다. 한 번 묶어 둔다.
     const dates = history.dates;
 
-    // 값이 하나라도 있는 구간만 그린다. 앞뒤로 빈 날짜가 길면 선이 구석에 몰린다.
+    // 고른 구간 안에서, 값이 하나라도 있는 날만 그린다.
+    // 앞뒤로 빈 날짜가 길면 선이 구석에 몰린다.
     const idx: number[] = [];
     for (let i = 0; i < dates.length; i++) {
+      if (dates[i] < from) continue;
       if (series.g[i] != null || series.d[i] != null || series.c[i] != null) idx.push(i);
     }
     if (idx.length === 0) return null;
@@ -205,7 +214,33 @@ export default function PriceChart({ station, onClose }: Props) {
         d: series.d[i],
       })).reverse(),
     };
-  }, [history, series, W, H_PRICE, H_COEF]);
+  }, [history, series, from, W, H_PRICE, H_COEF]);
+
+  /** 고른 구간의 적합·근접·초과 일수. */
+  const days = useMemo(
+    () => (history && station.stationId ? complianceOf(history, station.stationId, from) : null),
+    [history, station.stationId, from],
+  );
+
+  /**
+   * '전체' 버튼이 넓힐 수 있는 가장 이른 날.
+   *
+   * 판정이 저장된 날까지만이다. 가격은 있는데 판정이 없는 구간(시계열을 나중에
+   * 확장하기 전에 받아둔 날들)까지 넓히면 그 날들이 전부 '가격정보 없음' 으로
+   * 잡혀 일수가 틀리게 나온다. 기본 구간과 같아지면 버튼을 감춘다.
+   */
+  const earliest = useMemo(() => {
+    if (!history) return COMPLIANCE_FROM;
+    for (let i = 0; i < history.dates.length; i++) {
+      const judged = Object.values(history.stations).some((x) => x.s?.[i] != null);
+      if (judged) return history.dates[i];
+    }
+    return COMPLIANCE_FROM;
+  }, [history]);
+
+  /** 고를 수 있는 구간. 판정이 8월부터만 있으면 '전체' 는 뜻이 없어 감춘다. */
+  const ranges: Array<[string, string]> = [[COMPLIANCE_FROM, "8월 1일부터"]];
+  if (earliest < COMPLIANCE_FROM) ranges.push([earliest, "전체"]);
 
   return (
     <div className="chart-backdrop" onClick={onClose} role="presentation">
@@ -230,6 +265,32 @@ export default function PriceChart({ station, onClose }: Props) {
           </div>
           <button className="chart-close" onClick={onClose} aria-label="닫기">✕</button>
         </header>
+
+        {days && (
+          <div className="chart-days">
+            <div className="chart-range" role="group" aria-label="조회 구간">
+              {ranges.map(([v, label]) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={from === v ? "is-active" : ""}
+                  onClick={() => setFrom(v)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <ul className="days-list">
+              <li className="d-g"><b>{days.greenDays}</b>일<span>가격기준 적합</span></li>
+              <li className="d-y"><b>{days.yellowDays}</b>일<span>가격기준 근접</span></li>
+              <li className="d-r"><b>{days.redDays}</b>일<span>가격기준 초과</span></li>
+              {days.missingDays > 0 && (
+                <li className="d-n"><b>{days.missingDays}</b>일<span>가격정보 없음</span></li>
+              )}
+            </ul>
+          </div>
+        )}
 
         <div className="chart-body">
           {error && (

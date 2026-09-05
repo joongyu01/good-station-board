@@ -54,6 +54,10 @@ function headers(mode: ViewMode): HeaderDef[] {
       key: "rank", label: "시·도 순위", num: true,
       title: `그 시·도에서 ${of} 기준 순위`,
     },
+    {
+      key: "compliance", label: "기준 충족(일)", num: true, first: "desc",
+      title: "8월 1일부터 오늘까지 적합 / 근접 / 초과였던 날 수",
+    },
   ];
 }
 
@@ -173,6 +177,9 @@ export default function StationTable({
               className={`num rank ${s.regionRank == null ? "" : s.regionRank <= s.greenRank ? "in" : ""}`}>
               {s.regionRank == null ? "—" : `${s.regionRank.toLocaleString("ko-KR")} / ${s.regionN.toLocaleString("ko-KR")}`}
             </td>
+            <td className="num days" data-label="기준 충족(일)">
+              <ComplianceDays c={s.compliance} />
+            </td>
           </tr>
         ))}
       </tbody>
@@ -190,4 +197,35 @@ export default function StationTable({
 function FuelRank({ rank }: { rank: number | null }) {
   if (rank == null) return null;
   return <span className="fuel-rank">({rank.toLocaleString("ko-KR")})</span>;
+}
+
+/**
+ * 기준 충족 일수 — 적합 / 근접 / 초과.
+ *
+ * 하루치 신호등은 그날 사정에 따라 흔들린다. 한 달치를 나란히 놓으면 그
+ * 주유소가 꾸준했는지가 보인다. 0인 칸은 흐리게 둬 눈에 걸리지 않게 한다.
+ */
+function ComplianceDays({ c }: { c: StationSignal["compliance"] }) {
+  if (!c) return <span className="muted">—</span>;
+  const total = c.greenDays + c.yellowDays + c.redDays + c.missingDays;
+  if (total === 0) return <span className="muted">—</span>;
+
+  const tip =
+    `${fmtDay(c.from)} ~ ${fmtDay(c.to)} ${total}일 중`
+    + ` 적합 ${c.greenDays}일 · 근접 ${c.yellowDays}일 · 초과 ${c.redDays}일`
+    + (c.missingDays ? ` · 미신고 ${c.missingDays}일` : "");
+
+  return (
+    <span className="days-bar" title={tip}>
+      <b className={`d-g${c.greenDays ? "" : " is-zero"}`}>{c.greenDays}</b>
+      <i>/</i>
+      <b className={`d-y${c.yellowDays ? "" : " is-zero"}`}>{c.yellowDays}</b>
+      <i>/</i>
+      <b className={`d-r${c.redDays ? "" : " is-zero"}`}>{c.redDays}</b>
+    </span>
+  );
+}
+
+function fmtDay(d: string): string {
+  return `${Number(d.slice(4, 6))}/${Number(d.slice(6, 8))}`;
 }

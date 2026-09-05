@@ -528,6 +528,15 @@ button.stat + button.stat { margin-left: 4px; }
 /* 초록 기준 순위 안에 든 경우 강조 */
 .station-table .rank.in { color: var(--good); font-weight: 700; }
 
+/* 기준 충족 일수 — 적합/근접/초과를 한 칸에 나란히. */
+.days-bar { display: inline-flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
+.days-bar b { font-weight: 800; }
+.days-bar i { font-style: normal; color: var(--line); }
+.days-bar .d-g { color: var(--sig-green); }
+.days-bar .d-y { color: var(--sig-yellow); }
+.days-bar .d-r { color: var(--sig-red); }
+.days-bar .is-zero { color: var(--sig-none); font-weight: 600; }
+
 
 /* ── 판매가 추이 창 ─────────────────────────────────────── */
 .chart-backdrop {
@@ -560,6 +569,28 @@ button.stat + button.stat { margin-left: 4px; }
   flex: none;
 }
 .chart-close:hover { background: var(--paper); color: var(--ink); }
+
+/* ── 조회 구간 · 기준 충족 일수 ─────────────────────────── */
+.chart-days {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; flex: none;
+  padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--paper);
+}
+.chart-range { display: flex; gap: 2px; background: rgba(46, 48, 51, .07); border-radius: 8px; padding: 3px; }
+.chart-range button {
+  border: 0; background: transparent; cursor: pointer; font: inherit;
+  font-size: 12px; font-weight: 700; color: var(--ink-soft);
+  padding: 5px 12px; border-radius: 6px;
+}
+.chart-range button.is-active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+
+.days-list { display: flex; gap: 18px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+.days-list li { display: flex; align-items: baseline; gap: 4px; font-size: 12px; color: var(--ink-soft); }
+.days-list b { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.days-list span { margin-left: 3px; font-weight: 600; }
+.days-list .d-g b { color: var(--sig-green); }
+.days-list .d-y b { color: var(--sig-yellow); }
+.days-list .d-r b { color: var(--sig-red); }
+.days-list .d-n b { color: var(--sig-none); }
 
 .chart-body { padding: 12px 18px 18px; overflow: auto; }
 .chart-msg { padding: 40px 10px; text-align: center; color: var(--ink-soft); font-size: 13.5px; }
@@ -754,6 +785,9 @@ button.stat + button.stat { margin-left: 4px; }
   .chart-head { padding: 12px 14px 10px; }
   .chart-head h3 { font-size: 15px; }
   .chart-body { padding: 10px 12px 16px; }
+  .chart-days { padding: 8px 12px; gap: 10px; }
+  .days-list { gap: 12px; }
+  .days-list b { font-size: 15px; }
   .chart-split { gap: 12px; }
   .chart-log { min-height: 0; }
   .chart-panel { padding: 8px 10px 6px; }

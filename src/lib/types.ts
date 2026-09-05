@@ -1,4 +1,5 @@
 import type { BrandCode } from "./brand.ts";
+import type { Compliance } from "./history.ts";
 
 /** Opinet 다운로드 CSV가 제공하는 유종. 파싱은 4종 모두 한다. */
 export type FuelType = "gasoline" | "diesel" | "kerosene" | "premiumGasoline";
@@ -182,6 +183,14 @@ export interface StationSignal {
    * 있는 곳은 그 값을 믿고 순위를 매기기 어렵다는 뜻이라 확인 대상으로 둔다.
    */
   dataGapDays: number;
+
+  /**
+   * 기본 구간(8월 1일 ~ 최신일) 동안 며칠이나 기준 안에 들어왔는지.
+   *
+   * 하루치 신호등은 그날 사정에 따라 흔들린다. 이 값은 한 달치 성적이라
+   * 그 주유소가 꾸준했는지를 보여준다.
+   */
+  compliance: Compliance;
 }
 
 /**

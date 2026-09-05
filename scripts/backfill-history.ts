@@ -151,7 +151,7 @@ async function main() {
     }
 
     for (const [date, dayRows] of [...byDate.entries()].sort()) {
-      const samples = sampleDay(dayRows, ids, (sido) => greenRankWith(sido, th));
+      const samples = sampleDay(dayRows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor);
       mergeDay(history, date, samples);
       okDays++;
       console.log(`         ${date} — 전국 ${dayRows.length}건, 착한주유소 ${samples.size}곳`);
