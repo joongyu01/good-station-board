@@ -190,5 +190,9 @@ export function sidoLabel(sido: string): string {
 
 /** 정적 배포 경로 어디서든 데이터 파일을 찾도록 base를 붙인다. */
 export function dataUrl(name: string): string {
-  return new URL(`data/${name}`, document.baseURI).toString();
+  const u = new URL(`data/${name}`, document.baseURI);
+  // 배포마다 값이 바뀐다. 이게 없으면 GitHub Pages 의 max-age=600 때문에
+  // 새 코드가 옛 데이터를 읽는 구간이 생긴다.
+  u.searchParams.set("v", __BUILD_ID__);
+  return u.toString();
 }
