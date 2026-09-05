@@ -3,8 +3,10 @@ import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
+import MobileSheet from "./components/MobileSheet.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
+import { useNarrow } from "./lib/useNarrow.ts";
 import {
   applyMode, dataUrl, formatCollectedAt, formatDate, groupByRegion, summarize,
   SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
@@ -15,6 +17,9 @@ import {
 const LOGO = new URL("logo.png", document.baseURI).toString();
 
 const EMPTY_GEO: GeoCollection = { type: "FeatureCollection", features: [] };
+
+/** 모바일 본문에 미리 보여줄 카드 수. 나머지는 전체화면에서 본다. */
+const PREVIEW_ROWS = 5;
 
 export default function App() {
   // 정적 사이트라 라우터를 두지 않고 해시만 본다. #/admin 이면 관리 화면.
@@ -39,6 +44,26 @@ export default function App() {
   const [sort, setSort] = useState<SortState | null>(null);
   /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
   const [resetSignal, setResetSignal] = useState(0);
+
+  /**
+   * 모바일에서 지도를 전체화면으로 띄웠는지.
+   *
+   * 좁은 화면에서는 지도가 페이지 스크롤과 다툰다. 지도는 손가락 끌기를
+   * 이동으로 먹어야 하고(`touch-action: none`) 페이지는 같은 동작으로
+   * 스크롤해야 하니 둘 중 하나는 반드시 진다.
+   *
+   * 그래서 목록 안의 지도는 **보기만 하는 그림**으로 두고(포인터 이벤트를
+   * 꺼서 끌면 페이지가 스크롤된다), 누르면 전체화면으로 열어 거기서만
+   * 확대·이동·드릴다운을 하게 한다.
+   */
+  const narrow = useNarrow();
+  const [mapOpen, setMapOpen] = useState(false);
+  /** 목록도 같은 이유로 전체화면으로 뺀다. 472개 카드가 페이지 안에서 또 스크롤되면 손이 꼬인다. */
+  const [listOpen, setListOpen] = useState(false);
+
+  // 화면이 넓어지면 전체화면은 의미가 없다. PC 로 돌아가면 닫는다.
+  useEffect(() => { if (!narrow) { setMapOpen(false); setListOpen(false); } }, [narrow]);
+
   const [activeSido, setActiveSido] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [activeDistrict, setActiveDistrict] = useState<string | null>(null);
@@ -196,6 +221,8 @@ export default function App() {
     setChartOf(null);
     setSort(null);
     setMode("sum");
+    setMapOpen(false);
+    setListOpen(false);
     // 이미 전국 보기면 드릴다운 상태가 안 바뀌어 지도가 스스로 초기화하지
     // 않는다. 확대만 걸려 있는 경우를 위해 따로 신호를 준다.
     setResetSignal((n) => n + 1);
@@ -221,6 +248,66 @@ export default function App() {
   if (!board || !sidoGeo || !sigunguGeo) {
     return <div className="state-msg"><p>불러오는 중…</p></div>;
   }
+
+  const mapNode = (
+    <KoreaMap
+      sidoGeo={sidoGeo}
+      sigunguGeo={sigunguGeo}
+      districtGeo={districtGeo}
+      stations={stations}
+      activeSido={activeSido}
+      activeRegion={activeRegion}
+      activeDistrict={activeDistrict}
+      sidoSummary={sidoSummary}
+      regionSummary={regionSummary}
+      districtSummary={districtSummary}
+      onSelectSido={setActiveSido}
+      onSelectRegion={setActiveRegion}
+      onSelectDistrict={setActiveDistrict}
+      onSelectStation={setChartOf}
+      resetSignal={resetSignal}
+    />
+  );
+
+  /** 드릴다운 경로. 목록 위와 전체화면 지도 머리에 같이 쓴다. */
+  const crumbs = (
+    <div className="breadcrumb">
+      <button
+        className={activeSido ? "crumb" : "crumb is-current"}
+        onClick={() => { setActiveSido(null); setActiveRegion(null); setActiveDistrict(null); }}
+      >
+        전국
+      </button>
+      {activeSido && (
+        <>
+          <span className="crumb-sep">›</span>
+          <button
+            className={activeRegion ? "crumb" : "crumb is-current"}
+            onClick={() => { setActiveRegion(null); setActiveDistrict(null); }}
+          >
+            {sidoLabel(activeSido)}
+          </button>
+        </>
+      )}
+      {activeRegion && (
+        <>
+          <span className="crumb-sep">›</span>
+          <button
+            className={activeDistrict ? "crumb" : "crumb is-current"}
+            onClick={() => setActiveDistrict(null)}
+          >
+            {activeRegion}
+          </button>
+        </>
+      )}
+      {activeDistrict && (
+        <>
+          <span className="crumb-sep">›</span>
+          <span className="crumb is-current">{activeDistrict}</span>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -288,60 +375,30 @@ export default function App() {
 
       <SplitLayout
         left={<>
-          <div className="breadcrumb">
-            <button
-              className={activeSido ? "crumb" : "crumb is-current"}
-              onClick={() => { setActiveSido(null); setActiveRegion(null); setActiveDistrict(null); }}
-            >
-              전국
-            </button>
-            {activeSido && (
-              <>
-                <span className="crumb-sep">›</span>
-                <button
-                  className={activeRegion ? "crumb" : "crumb is-current"}
-                  onClick={() => { setActiveRegion(null); setActiveDistrict(null); }}
-                >
-                  {sidoLabel(activeSido)}
-                </button>
-              </>
-            )}
-            {activeRegion && (
-              <>
-                <span className="crumb-sep">›</span>
-                <button
-                  className={activeDistrict ? "crumb" : "crumb is-current"}
-                  onClick={() => setActiveDistrict(null)}
-                >
-                  {activeRegion}
-                </button>
-              </>
-            )}
-            {activeDistrict && (
-              <>
-                <span className="crumb-sep">›</span>
-                <span className="crumb is-current">{activeDistrict}</span>
-              </>
-            )}
-          </div>
+          {crumbs}
 
-          <KoreaMap
-            sidoGeo={sidoGeo}
-            sigunguGeo={sigunguGeo}
-            districtGeo={districtGeo}
-            stations={stations}
-            activeSido={activeSido}
-            activeRegion={activeRegion}
-            activeDistrict={activeDistrict}
-            sidoSummary={sidoSummary}
-            regionSummary={regionSummary}
-            districtSummary={districtSummary}
-            onSelectSido={setActiveSido}
-            onSelectRegion={setActiveRegion}
-            onSelectDistrict={setActiveDistrict}
-            onSelectStation={setChartOf}
-            resetSignal={resetSignal}
-          />
+          {narrow ? (
+            mapOpen ? (
+              // 전체화면으로 옮겨 갔으므로 자리만 지킨다. 여기서도 그리면
+              // 지도 두 벌이 각자 타일을 받아온다.
+              <div className="map-placeholder">
+                <span>지도를 전체화면으로 보는 중</span>
+                <button type="button" className="btn" onClick={() => setMapOpen(false)}>
+                  닫기
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="map-preview"
+                onClick={() => setMapOpen(true)}
+                aria-label="지도 전체화면으로 보기"
+              >
+                {mapNode}
+                <span className="map-preview-hint">눌러서 지도 보기</span>
+              </button>
+            )
+          ) : mapNode}
 
         </>}
         right={<>
@@ -361,18 +418,91 @@ export default function App() {
             </button>
           </div>
           <div className="panel-body">
-            <StationTable
-              stations={rows}
-              showRegion={panel.showRegion}
-              emptyText={panel.empty}
-              onSelect={setChartOf}
-              sort={sort}
-              onSort={setSort}
-              mode={mode}
-            />
+            {narrow ? (
+              listOpen ? (
+                <div className="map-placeholder">
+                  <span>목록을 전체화면으로 보는 중</span>
+                  <button type="button" className="btn" onClick={() => setListOpen(false)}>닫기</button>
+                </div>
+              ) : (
+                <>
+                  <StationTable
+                    stations={rows.slice(0, PREVIEW_ROWS)}
+                    showRegion={panel.showRegion}
+                    emptyText={panel.empty}
+                    onSelect={setChartOf}
+                    sort={sort}
+                    onSort={setSort}
+                    mode={mode}
+                    compact
+                  />
+                  {rows.length > 0 && (
+                    <button type="button" className="panel-more" onClick={() => setListOpen(true)}>
+                      {rows.length.toLocaleString("ko-KR")}곳 전체 보기
+                    </button>
+                  )}
+                </>
+              )
+            ) : (
+              <StationTable
+                stations={rows}
+                showRegion={panel.showRegion}
+                emptyText={panel.empty}
+                onSelect={setChartOf}
+                sort={sort}
+                onSort={setSort}
+                mode={mode}
+              />
+            )}
           </div>
         </>}
       />
+
+      {narrow && mapOpen && (
+        <MobileSheet
+          label="지도"
+          head={crumbs}
+          onClose={() => setMapOpen(false)}
+          foot={<>
+            <span>{panel.title} · {panel.stations.length}곳</span>
+            <button type="button" className="btn" onClick={() => setMapOpen(false)}>목록 보기</button>
+          </>}
+        >
+          {mapNode}
+        </MobileSheet>
+      )}
+
+      {narrow && listOpen && (
+        <MobileSheet
+          scroll
+          label="착한주유소 목록"
+          head={<>
+            <h2 className="sheet-title">{panel.title}</h2>
+            <p className="panel-sub">{panel.subtitle}</p>
+          </>}
+          onClose={() => setListOpen(false)}
+          foot={
+            <button
+              type="button"
+              className="btn-csv"
+              disabled={rows.length === 0}
+              onClick={() => downloadCsv(rows, csvName(`${panel.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
+            >
+              CSV 내려받기
+            </button>
+          }
+        >
+          <StationTable
+            stations={rows}
+            showRegion={panel.showRegion}
+            emptyText={panel.empty}
+            onSelect={setChartOf}
+            sort={sort}
+            onSort={setSort}
+            mode={mode}
+          />
+        </MobileSheet>
+      )}
 
       {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}
 

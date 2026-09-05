@@ -749,4 +749,68 @@ button { font: inherit; }
   .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
   .admin-bar { flex-wrap: wrap; }
   .admin-bar .search { flex: 1 1 100%; }
+
+  /* ── 미리보기 ─────────────────────────────────────────
+     지도와 목록은 본문에서 '보기만' 한다. 스크롤 주체를 페이지 하나로
+     묶어야 손가락 동작이 다투지 않는다. */
+
+  /* 지도 미리보기 — 포인터 이벤트를 꺼 두면 끌 때 페이지가 스크롤된다. */
+  .map-preview {
+    display: block; width: 100%; position: relative;
+    border: 0; padding: 0; background: transparent; cursor: pointer;
+  }
+  .map-preview .map-wrap { pointer-events: none; }
+  .map-preview .map-svg { touch-action: auto; }
+  /* 확대 버튼과 좌표 안내는 미리보기에서 쓸 수 없다. */
+  .map-preview .map-zoom, .map-preview .map-credit, .map-preview .map-nopins { display: none; }
+  .map-preview-hint {
+    position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+    background: rgba(46, 48, 51, .82); color: #fff;
+    padding: 7px 16px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  }
+
+  /* 목록은 몇 줄만 보여주고 나머지는 전체화면에서. */
+  .panel-body { max-height: none; overflow: visible; }
+  .sort-mobile.is-hidden { display: none; }
+  .panel-more {
+    display: block; width: calc(100% - 24px); margin: 10px 12px 12px;
+    padding: 12px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--paper); color: var(--green-deep);
+    font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  }
+
+  /* 전체화면으로 옮겨 간 동안 본문에 남기는 자리 */
+  .map-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 40px 16px; color: var(--ink-soft); font-size: 13px;
+  }
+
+  /* ── 전체화면 시트 ───────────────────────────────────── */
+  .sheet {
+    position: fixed; inset: 0; z-index: 90;
+    background: var(--card); display: flex; flex-direction: column;
+  }
+  .sheet-head {
+    display: flex; align-items: flex-start; gap: 10px; flex: none;
+    padding: 10px 12px; border-bottom: 1px solid var(--line);
+  }
+  .sheet-head-main { flex: 1; min-width: 0; }
+  .sheet-head .breadcrumb { margin: 0; }
+  .sheet-title { margin: 0; font-size: 15px; font-weight: 800; }
+  .sheet-close {
+    flex: none; width: 34px; height: 34px; border-radius: 9px;
+    border: 1px solid var(--line); background: transparent;
+    font-size: 15px; color: var(--ink-soft); cursor: pointer;
+  }
+  .sheet-body { flex: 1; min-height: 0; overflow: hidden; }
+  .sheet-body.is-scroll { overflow: auto; -webkit-overflow-scrolling: touch; }
+  .sheet-body .map-wrap { height: 100%; display: flex; align-items: center; }
+  .sheet-foot {
+    flex: none; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 10px 12px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-soft);
+  }
+  .sheet-foot .btn, .sheet-foot .btn-csv { padding: 10px 16px; }
+  .sheet-foot .btn-csv { width: 100%; }
 }

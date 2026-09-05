@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { History, StationSeries } from "@shared/lib/history.ts";
 import { SIGNAL_COLORS, dataUrl, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
+import { useNarrow } from "../lib/useNarrow.ts";
 
 /**
  * viewBox 너비. 모바일에서는 좁게 잡는다.
@@ -70,20 +71,6 @@ function loadHistory(): Promise<History> {
 interface Props {
   station: StationSignal;
   onClose: () => void;
-}
-
-/** 화면 폭이 조건에 맞는지. 창 크기가 바뀌면 다시 그린다. */
-function useNarrow(query = "(max-width: 720px)"): boolean {
-  const [narrow, setNarrow] = useState(
-    () => typeof window !== "undefined" && window.matchMedia(query).matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setNarrow(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, [query]);
-  return narrow;
 }
 
 export default function PriceChart({ station, onClose }: Props) {

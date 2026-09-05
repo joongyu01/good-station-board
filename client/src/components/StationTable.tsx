@@ -17,6 +17,8 @@ interface Props {
   onSort: (s: SortState | null) => void;
   /** 계수·순위 열이 어느 기준의 값인지 */
   mode: ViewMode;
+  /** 모바일 미리보기 — 몇 줄만 보여주는 자리라 정렬 선택을 감춘다. */
+  compact?: boolean;
 }
 
 interface HeaderDef {
@@ -56,7 +58,7 @@ function headers(mode: ViewMode): HeaderDef[] {
 }
 
 export default function StationTable({
-  stations, showRegion, emptyText, onSelect, sort, onSort, mode,
+  stations, showRegion, emptyText, onSelect, sort, onSort, mode, compact,
 }: Props) {
   if (stations.length === 0) {
     return <p className="empty">{emptyText ?? "표시할 주유소가 없습니다."}</p>;
@@ -70,7 +72,7 @@ export default function StationTable({
         모바일에서는 표가 카드로 바뀌어 열 머리가 사라진다. 정렬을 통째로 잃지
         않도록 같은 상태를 쓰는 선택 상자를 둔다. PC 에서는 감춘다.
       */}
-      <div className="sort-mobile">
+      <div className={`sort-mobile${compact ? " is-hidden" : ""}`}>
         <label>
           정렬
           <select
