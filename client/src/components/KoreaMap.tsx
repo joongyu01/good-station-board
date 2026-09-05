@@ -56,25 +56,35 @@ const PIN_ICON = 52;
 /** 이름표에 넣을 상호 최대 글자 수. 넘으면 줄인다 — 전체 이름은 목록과 툴팁에 있다. */
 const PIN_NAME_MAX = 12;
 /**
- * 기본 확대율.
+ * 단계별 기본 확대율.
  *
- * 1로 두면 전국 보기에서 지도 둘레에 빈 여백이 넓게 남는다. 1.5배가 기본이면
- * 한반도가 화면을 채우고 시·도 라벨도 그만큼 커진다. 잘려 나가는 것은 바다뿐이다.
+ * 전국 보기만 1.5배다. 한반도는 세로로 길어 가로 여백이 넓게 남는데, 1.5배로
+ * 키우면 그 여백이 줄고 시·도 라벨도 그만큼 커진다. 잘려 나가는 것은 바다뿐이다.
+ *
+ * 시·도 안으로 들어가면 1배로 돌아온다. 시·군·구 아래부터는 투영이 이미 그
+ * 지역에 맞춰지므로 더 키우면 가장자리 군이 화면 밖으로 밀려난다.
  */
-const DEFAULT_ZOOM = 1.5;
+const DEFAULT_ZOOM: Record<Level, number> = {
+  sido: 1.5,
+  sigungu: 1,
+  district: 1,
+  detail: 1,
+};
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 16;
 /** 이 거리(px)를 넘게 끌어야 지도 이동으로 친다. 클릭 시 손떨림과 구분하기 위함. */
 const DRAG_THRESHOLD = 5;
 
+type Level = "sido" | "sigungu" | "district" | "detail";
+
 interface Transform { k: number; x: number; y: number }
-/** 기본 확대율을 화면 중심에 건 상태. 이것이 '초기화' 위치다. */
-const IDENTITY: Transform = {
-  k: DEFAULT_ZOOM,
-  x: (WIDTH / 2) * (1 - DEFAULT_ZOOM),
-  y: (HEIGHT / 2) * (1 - DEFAULT_ZOOM),
-};
+
+/** 그 단계의 기본 확대율을 화면 중심에 건 상태. 이것이 '초기화' 위치다. */
+function identityFor(level: Level): Transform {
+  const k = DEFAULT_ZOOM[level];
+  return { k, x: (WIDTH / 2) * (1 - k), y: (HEIGHT / 2) * (1 - k) };
+}
 
 interface Props {
   sidoGeo: GeoCollection;
@@ -109,7 +119,7 @@ export default function KoreaMap({
   onSelectSido, onSelectRegion, onSelectDistrict, onSelectStation, resetSignal,
 }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [tf, setTf] = useState<Transform>(IDENTITY);
+  const [tf, setTf] = useState<Transform>(() => identityFor("sido"));
   const [hover, setHover] = useState<{ x: number; y: number; text: string } | null>(null);
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ sx: number; sy: number; px: number; py: number; panning: boolean } | null>(null);
@@ -423,7 +433,7 @@ export default function KoreaMap({
 
   // 드릴다운 단계가 바뀌면 확대/이동을 초기화한다.
   useEffect(() => {
-    setTf(IDENTITY);
+    setTf(identityFor(view.level));
   }, [activeSido, activeRegion, activeDistrict, view.level, resetSignal]);
 
   // 휠 확대. React onWheel은 passive라 preventDefault가 먹지 않아 직접 붙인다.
@@ -519,6 +529,8 @@ export default function KoreaMap({
   }
 
   const k = tf.k;
+  /** 지금 단계의 초기 위치. 초기화 버튼과 확대율 표시가 이걸 기준으로 삼는다. */
+  const home = identityFor(view.level);
 
   return (
     <div className="map-wrap">
@@ -662,12 +674,12 @@ export default function KoreaMap({
       <div className="map-zoom" role="group" aria-label="지도 확대 축소">
         <button onClick={() => zoomBy(1.5)} aria-label="확대" title="확대">＋</button>
         <button onClick={() => zoomBy(1 / 1.5)} aria-label="축소" title="축소">－</button>
-        <button onClick={() => setTf(IDENTITY)}
-          disabled={k === IDENTITY.k && tf.x === IDENTITY.x && tf.y === IDENTITY.y}
+        <button onClick={() => setTf(home)}
+          disabled={k === home.k && tf.x === home.x && tf.y === home.y}
           aria-label="초기화" title="초기화">⟲</button>
       </div>
 
-      {Math.abs(k - DEFAULT_ZOOM) > 0.01 && (
+      {Math.abs(k - home.k) > 0.01 && (
         <div className="map-zoom-level">{k.toFixed(1)}×</div>
       )}
 
