@@ -27,6 +27,8 @@ import {
   type RegionStat, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
+import { buildRanks } from "../src/lib/rank.ts";
+import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
   COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, pruneTo, sampleDay,
   type History,
@@ -48,12 +50,7 @@ const OUT_DIR = path.join(ROOT, "client", "public", "data");
 const KEEP_DAYS = 30;
 
 function latestRawDate(): string | null {
-  if (!existsSync(RAW_DIR)) return null;
-  const dates = readdirSync(RAW_DIR)
-    .filter((f) => /^\d{8}\.json$/.test(f))
-    .map((f) => f.slice(0, 8))
-    .sort();
-  return dates.at(-1) ?? null;
+  return listRawDates(RAW_DIR).at(-1) ?? null;
 }
 
 function main() {
@@ -65,13 +62,12 @@ function main() {
     process.exit(1);
   }
 
-  const rawPath = path.join(RAW_DIR, `${date}.json`);
-  if (!existsSync(rawPath)) {
-    console.error(`data/raw/${date}.json 이 없습니다.`);
+  if (!hasRaw(RAW_DIR, date)) {
+    console.error(`data/raw/${date}.json(.gz) 이 없습니다.`);
     process.exit(1);
   }
 
-  const raw: { date: string; rows: EnrichedRow[] } = JSON.parse(readFileSync(rawPath, "utf8"));
+  const raw = readRaw<{ date: string; rows: EnrichedRow[] }>(RAW_DIR, date)!;
   const good: GoodStation[] = JSON.parse(readFileSync(path.join(DATA, "good-stations.json"), "utf8"));
 
   const mappingPath = path.join(DATA, "station-mapping.json");
@@ -333,6 +329,13 @@ function main() {
   writeFileSync(path.join(OUT_DIR, `board-${date}.json`), JSON.stringify(board), "utf8");
   writeFileSync(path.join(OUT_DIR, "latest.json"), JSON.stringify(board), "utf8");
 
+  // 계수 검증용 순위표. 전국 원본은 안 남기므로 시·도별 상위 K건만 뽑아 둔다.
+  writeFileSync(
+    path.join(OUT_DIR, `rank-${date}.json`),
+    JSON.stringify(buildRanks(raw.rows, ids, th, date)),
+    "utf8",
+  );
+
   // 보관 기간을 넘긴 스냅샷 정리
   const all = readdirSync(OUT_DIR)
     .filter((f) => /^board-\d{8}\.json$/.test(f))
@@ -341,11 +344,24 @@ function main() {
     .reverse();
 
   const stale = all.slice(KEEP_DAYS);
-  for (const d of stale) rmSync(path.join(OUT_DIR, `board-${d}.json`), { force: true });
+  for (const d of stale) {
+    rmSync(path.join(OUT_DIR, `board-${d}.json`), { force: true });
+    rmSync(path.join(OUT_DIR, `rank-${d}.json`), { force: true });
+  }
   if (stale.length) console.log(`[aggregate] 오래된 스냅샷 ${stale.length}건 정리 (보관 ${KEEP_DAYS}일)`);
 
   const available = all.slice(0, KEEP_DAYS);
-  writeFileSync(path.join(OUT_DIR, "index.json"), JSON.stringify({ dates: available }), "utf8");
+  // 순위표는 파일이 실제로 있는 날짜만 싣는다. 화면의 날짜 선택이 이 목록을 쓴다.
+  const ranks = readdirSync(OUT_DIR)
+    .filter((f) => /^rank-\d{8}\.json$/.test(f))
+    .map((f) => f.slice(5, 13))
+    .sort()
+    .reverse();
+  writeFileSync(
+    path.join(OUT_DIR, "index.json"),
+    JSON.stringify({ dates: available, ranks }),
+    "utf8",
+  );
 
 
   // ── 콘솔 요약 ───────────────────────────────────────────────────────

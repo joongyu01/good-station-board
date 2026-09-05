@@ -25,12 +25,14 @@ import { fileURLToPath } from "node:url";
 import { downloadOilPrice } from "../src/lib/opinet/scraper.ts";
 import { parseOilPriceFile } from "../src/lib/opinet/parser.ts";
 import { normalizeRegion } from "../src/lib/region.ts";
+import { hasRaw, readRaw, writeRaw } from "../src/lib/raw.ts";
 import { greenRankWith, DEFAULT_THRESHOLDS, type Thresholds } from "../src/lib/signal.ts";
 import { emptyHistory, mergeDay, pruneTo, sampleDay, type History } from "../src/lib/history.ts";
 import type { GoodStation } from "../src/lib/types.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "data");
+const RAW_DIR = path.join(DATA, "raw");
 const HISTORY = path.join(DATA, "history.json");
 
 /** 시계열 시작일. 요구사항이 7월 1일부터다. */
@@ -104,12 +106,42 @@ async function main() {
 
   const have = new Set(history.dates);
   const wanted = eachDay(from, to);
-  const missing = force ? wanted : wanted.filter((d) => !have.has(d));
+  const todo = force ? wanted : wanted.filter((d) => !have.has(d));
+
+  // 보관해 둔 원본이 있으면 내려받지 않는다.
+  //
+  // 판정 방식을 바꿀 때마다 두 달치를 다시 긁느라 세 시간씩 썼다. 원본을
+  // 남기기 시작한 뒤로는 같은 일이 몇 초로 끝난다.
+  const local = todo.filter((d) => hasRaw(RAW_DIR, d));
+  const missing = todo.filter((d) => !hasRaw(RAW_DIR, d));
 
   console.log(`[backfill] 기간 ${from}~${to} (${wanted.length}일)`);
-  console.log(`[backfill] 이미 보유 ${wanted.length - missing.length}일 / 받을 ${missing.length}일`);
+  console.log(`[backfill] 이미 보유 ${wanted.length - todo.length}일 · 원본 재사용 ${local.length}일 · 받을 ${missing.length}일`);
+
+  let okDays = 0;
+
+  for (const d of local) {
+    const raw = readRaw<{ rows: Array<{ stationId: string; sido: string; gasoline: number | null; diesel: number | null }> }>(RAW_DIR, d);
+    if (!raw) continue;
+    mergeDay(history, d,
+      sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
+    okDays++;
+  }
+  if (local.length) {
+    console.log(`[backfill] 원본에서 ${local.length}일 재계산 완료`);
+    mkdirSync(DATA, { recursive: true });
+    history.generatedAt = new Date().toISOString();
+    writeFileSync(HISTORY, JSON.stringify(history), "utf8");
+  }
+
   if (missing.length === 0) {
-    console.log("[backfill] 받을 날짜가 없습니다.");
+    const dropped0 = pruneTo(history, ids);
+    history.generatedAt = new Date().toISOString();
+    writeFileSync(HISTORY, JSON.stringify(history), "utf8");
+    console.log(`
+[backfill] 완료 — ${okDays}일 (내려받기 없음)`);
+    if (dropped0) console.log(`  명단에서 빠진 주유소 ${dropped0}곳 정리`);
+    console.log(`  날짜축 ${history.dates.length}일 (${history.dates[0]} ~ ${history.dates.at(-1)})`);
     return;
   }
 
@@ -123,7 +155,6 @@ async function main() {
 
   console.log(`[backfill] ${groups.length}회 나눠 받습니다 (한 번에 최대 ${chunk}일)\n`);
 
-  let okDays = 0;
   let failedGroups = 0;
 
   for (let i = 0; i < groups.length; i++) {
@@ -139,6 +170,21 @@ async function main() {
     }
 
     const rows = parseOilPriceFile(res.buffer, res.filename);
+
+    // 받은 원본은 남긴다. 다음에 같은 날짜가 필요하면 다시 긁지 않는다.
+    const rawByDate = new Map<string, typeof rows>();
+    for (const r of rows) {
+      const arr = rawByDate.get(r.date);
+      if (arr) arr.push(r); else rawByDate.set(r.date, [r]);
+    }
+    mkdirSync(RAW_DIR, { recursive: true });
+    for (const [d, part] of rawByDate) {
+      const enriched = part.flatMap((r) => {
+        const region = normalizeRegion(r.region) ?? normalizeRegion(r.address);
+        return region ? [{ ...r, sido: region.sido, sigungu: region.sigungu, normSido: region.sido, normKey: region.key }] : [];
+      });
+      writeRaw(RAW_DIR, d, { date: d, collectedAt: new Date().toISOString(), rows: enriched });
+    }
 
     // 날짜별로 나눠 각각 그날의 시세로 계수를 낸다.
     const byDate = new Map<string, Array<{ stationId: string; sido: string; gasoline: number | null; diesel: number | null }>>();

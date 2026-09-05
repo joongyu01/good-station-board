@@ -4,6 +4,7 @@ import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
 import MobileSheet from "./components/MobileSheet.tsx";
+import RankWindow from "./components/RankWindow.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import { useNarrow } from "./lib/useNarrow.ts";
@@ -45,6 +46,8 @@ export default function App() {
   const [sort, setSort] = useState<SortState | null>(null);
   /** 요약 띠에서 고른 판정. null 이면 전체를 보여준다. */
   const [filter, setFilter] = useState<SignalColor | null>(null);
+  /** 계수 검증용 순위표 창 */
+  const [rankOpen, setRankOpen] = useState(false);
   /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
   const [resetSignal, setResetSignal] = useState(0);
 
@@ -243,6 +246,7 @@ export default function App() {
     setChartOf(null);
     setSort(null);
     setFilter(null);
+    setRankOpen(false);
     setMode("sum");
     setMapOpen(false);
     setListOpen(false);
@@ -437,15 +441,25 @@ export default function App() {
               <h2>{view.title}</h2>
               <p className="panel-sub">{view.subtitle}</p>
             </div>
-            <button
-              type="button"
-              className="btn-csv"
-              disabled={rows.length === 0}
-              title="지금 보이는 목록을 보이는 순서 그대로 내려받습니다"
-              onClick={() => downloadCsv(rows, csvName(`${view.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
-            >
-              CSV 내려받기
-            </button>
+            <div className="panel-actions">
+              <button
+                type="button"
+                className="btn-csv"
+                disabled={rows.length === 0}
+                title="지금 보이는 목록을 보이는 순서 그대로 내려받습니다"
+                onClick={() => downloadCsv(rows, csvName(`${view.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
+              >
+                CSV 내려받기
+              </button>
+              <button
+                type="button"
+                className="btn-rank"
+                title="그날 그 시·도의 순위를 펼쳐 계수가 맞는지 확인합니다"
+                onClick={() => setRankOpen(true)}
+              >
+                순위표 검증
+              </button>
+            </div>
           </div>
           <div className="panel-body">
             {narrow ? (
@@ -532,6 +546,15 @@ export default function App() {
             mode={mode}
           />
         </MobileSheet>
+      )}
+
+      {rankOpen && (
+        <RankWindow
+          date={board.date}
+          sido={activeSido}
+          mode={mode}
+          onClose={() => setRankOpen(false)}
+        />
       )}
 
       {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}

@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { downloadOilPrice } from "../src/lib/opinet/scraper.ts";
 import { parseOilPriceFile } from "../src/lib/opinet/parser.ts";
 import { normalizeRegion } from "../src/lib/region.ts";
+import { writeRaw } from "../src/lib/raw.ts";
 import type { StationPriceRow } from "../src/lib/types.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -139,12 +140,8 @@ async function main() {
   mkdirSync(RAW_DIR, { recursive: true });
   for (const d of dates) {
     const part = byDate.get(d)!;
-    writeFileSync(
-      path.join(RAW_DIR, `${d}.json`),
-      JSON.stringify({ date: d, collectedAt: new Date().toISOString(), rows: part }),
-      "utf8",
-    );
-    console.log(`  data/raw/${d}.json  (${part.length}건)`);
+    const bytes = writeRaw(RAW_DIR, d, { date: d, collectedAt: new Date().toISOString(), rows: part });
+    console.log(`  data/raw/${d}.json.gz  (${part.length}건, ${Math.round(bytes / 1024)}KB)`);
   }
 
   // 가장 최근 날짜를 기준일로 삼되, 아직 채우는 중이면 전날로 물러선다.

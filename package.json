@@ -9,6 +9,7 @@
     "collect": "tsx scripts/collect.ts",
     "match": "tsx scripts/match-stations.ts",
     "aggregate": "tsx scripts/aggregate.ts",
+    "ranks": "tsx scripts/build-ranks.ts",
     "geo": "tsx scripts/build-geo.ts",
     "coords": "tsx scripts/fetch-coords.ts",
     "coords:osm": "tsx scripts/fetch-coords-osm.ts",
