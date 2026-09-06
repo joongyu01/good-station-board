@@ -196,8 +196,39 @@
 ```
 
 `data/raw/*.json.gz` 를 커밋합니다. 압축 안 한 `.json` 만 gitignore 로 막아
-3.5MB 짜리가 실수로 들어가지 않게 합니다. `backfill` 은 보관분을 먼저 보고,
-있으면 내려받지 않고 바로 재계산합니다.
+3.5MB 짜리가 실수로 들어가지 않게 합니다.
+
+보관분을 읽어 다시 계산하는 것이 `backfill`(시계열) · `ranks`(순위표) ·
+`reindex`(지역 정규화) 셋입니다. 오피넷을 다시 긁는 것은 `--redownload` 를
+붙였을 때뿐입니다. **67일 전체 재계산이 3.4초**입니다.
+
+---
+
+## 처음 세팅
+
+**Node 22** 가 필요합니다(CI 도 22 를 씁니다).
+
+```bash
+npm ci
+npm run dev
+```
+
+데이터는 `client/public/data/` 에 커밋돼 있어 그대로 뜹니다. 수집 스크립트를
+돌리려면 `npx playwright install chromium` 이 한 번 더 필요합니다.
+
+### 키가 사는 곳
+
+| 어디 | 무엇 | 없으면 |
+|---|---|---|
+| `client/public/config.js` | Supabase URL · **anon** 키 | 현황판은 정상, 관리 화면만 잠김 |
+| `.env` (`.env.example` 복사) | `VITE_TILE_*` 배경 지도 타일 | OSM 공개 타일로 대체 |
+| GitHub **Secrets** | `SUPABASE_SERVICE_ROLE_KEY` · `OPINET_API_KEY` · `VWORLD_API_KEY` · `VITE_TILE_URL` · `VITE_TILE_ATTRIBUTION` | 수집 잡이 Supabase 를 못 읽음 |
+| GitHub **Variables** | `SUPABASE_URL` | 〃 |
+
+> `config.js` 에는 **anon(publishable) 키만** 넣습니다. service_role / secret 키는
+> 절대 넣지 마세요 — 이 파일은 공개 저장소에 그대로 올라갑니다.
+> 오피넷·브이월드 키의 실제 값은 Supabase `gs_secret` 에 있고, 브라우저로는
+> 이름과 설정 여부만 내려갑니다.
 
 ---
 
@@ -207,14 +238,32 @@
 npm run dev            # 개발 서버 (5173)
 npm run check          # 타입 검사
 npm run build          # 정적 빌드 → dist/
+```
 
-npm run normalize      # stations.csv → 명단
-npm run collect        # 오피넷 수집 (어제~오늘)
-npm run match          # 오피넷 코드 매칭
-npm run aggregate      # 판정 · 시계열 · 순위표
-npm run ranks          # 보관 원본으로 순위표만 다시
+### 파이프라인 ⓪~⑤
+
+```bash
+npm run supabase:pull  # ⓪ Supabase → 명단 · 임계값 · API 키
+npm run normalize      # ① stations.csv → data/good-stations.json
+npm run collect        # ② 오피넷 수집 (어제~오늘 중 다 올라온 날)
+npm run match          # ③ 명단 ↔ 오피넷 코드
+npm run aggregate      # ④ 판정 · 시계열 · 그날 순위표
+npm run supabase:push  # ⑤ 판정 결과 보관
+npm run pipeline       # ②③④ 한 번에
+```
+
+### 보조
+
+```bash
+npm run ranks          # 보관 원본으로 순위표를 다시 (npm run ranks 20260902)
 npm run backfill       # 과거 시계열 — 원본이 있으면 재계산, 없으면 내려받기
-npm run coords:vworld  # 좌표 (국내에서만 — 해외 IP 는 막힌다)
+npm run backfill -- --redownload  # 원본을 못 믿을 때만. 두 달치면 세 시간
+                       #   ↑ 옵션 앞 `--` 를 빼면 npm 이 먹어 전달되지 않는다
+npm run reindex        # region.ts 규칙을 고쳤을 때 보관 원본을 다시 정규화
+npm run geo            # 행정구역 경계 → client/public/data/geo-*.json
+npm run coords:vworld  # 좌표 (국내에서만 — 해외 IP 는 전건 실패한다)
+npm run coords:osm     # 좌표 대체 수단. 정확도가 떨어진다
+npm run supabase:seed  # 저장소 명단·설정을 Supabase 로 올림
 ```
 
 ### 배포
@@ -254,14 +303,20 @@ gh workflow run collect.yml -f skip_collect=true  # 커밋된 데이터로 배�
 
 ---
 
-## 현황 (2026-09-05 판매가 기준)
+## 현황 (2026-09-05 판매가 기준 · 확인 2026-09-06)
 
 ```
 주유소   472 / 472 매칭 / 472 좌표
 판정     적합 90 · 근접 60 · 초과 299 · 과거 미신고 19 · 가격정보 없음 4
 폴       SK 123 · HD 100 · SOIL 73 · GS 71 · AL 69 · NH 28 · PB 5 · EX 3
-시계열   67일 (2026-07-01 ~ 09-05)
+시계열   67일 (2026-07-01 ~ 09-05) · 빠진 날 없음
+원본     67일 · 20MB (gzip)
+순위표   67일
 ```
+
+`stations.csv` 는 472곳이지만 **Supabase `gs_station` 은 아직 옛 449곳**입니다.
+지금은 가드가 막고 있어 화면은 정상이나, 관리 화면에서 명단을 고쳐도 파이프라인에
+반영되지 않습니다 — [HANDOVER.md](HANDOVER.md#6-지금-남은-일) 참고.
 
 ---
 

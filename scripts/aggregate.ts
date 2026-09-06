@@ -333,7 +333,8 @@ function main() {
   writeFileSync(path.join(OUT_DIR, `board-${date}.json`), JSON.stringify(board), "utf8");
   writeFileSync(path.join(OUT_DIR, "latest.json"), JSON.stringify(board), "utf8");
 
-  // 계수 검증용 순위표. 전국 원본은 안 남기므로 시·도별 상위 K건만 뽑아 둔다.
+  // 계수 검증용 순위표. 화면에 전국 1.1만 건을 통째로 내려보낼 수는 없으니
+  // 시·도별 상위 K건만 뽑아 둔다. 과거 날짜는 `npm run ranks` 가 원본에서 만든다.
   writeFileSync(
     path.join(OUT_DIR, `rank-${date}.json`),
     JSON.stringify(buildRanks(raw.rows, ids, th, date)),

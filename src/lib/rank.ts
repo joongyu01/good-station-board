@@ -36,7 +36,7 @@ export interface RankRegion {
   n: number;
   greenRank: number;
   yellowRank: number;
-  /** 계수 1.000 이 되는 값 */
+  /** 계수 1 이 되는 값 */
   greenBase: number | null;
   /** 근접 경계값 */
   yellowBase: number | null;

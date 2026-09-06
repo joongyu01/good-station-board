@@ -1,10 +1,10 @@
 /**
  * 2단계 — Opinet 전국 주유소 가격 수집
  *
- *   Opinet opDownload.do  →  data/raw/{YYYYMMDD}.json  +  data/station-index.json
+ *   Opinet opDownload.do  →  data/raw/{YYYYMMDD}.json.gz  +  data/station-index.json
  *
- * 전국 약 1.1만 개 주유소 가격이 필요한 이유는 표준편차 때문이다. 착한주유소
- * 449곳만 받아서는 시군구 내 가격 분포를 알 수 없고, σ 없이는 신호등을 못 만든다.
+ * 전국 약 1.1만 개 주유소 가격이 필요한 이유는 모집단 때문이다. 착한주유소
+ * 472곳만 받아서는 시·도 안에서 몇 위인지를 알 수 없고, 그러면 신호등을 못 만든다.
  *
  * 실행:
  *   npm run collect              어제~오늘 중 올라온 가장 최근 날짜
