@@ -428,10 +428,23 @@ begin
 end;
 $$;
 
--- 파라미터 이름이 바뀌면 create or replace 가 거부한다(42P13).
--- 이전 버전(p_gap_yellow ...)이 남아 있으면 먼저 지운다. 없으면 아무 일도 없다.
-drop function if exists gs_config_save(text, integer, integer, integer);
-drop function if exists gs_config_save(text, integer, integer, integer, text, text, numeric, numeric);
+-- 인자 목록이 바뀌면 create or replace 가 거부한다(42P13). 그렇다고 옛 시그니처를
+-- 하나씩 적어 지우면, 저장소마다 어느 판이 깔려 있는지 달라 언젠가 또 어긋난다.
+-- 실제로 두 번 겪었다 — p_gap_yellow 판에서 한 번, 판정 방식 인자를 붙이며 한 번.
+--
+-- 그래서 시그니처를 따지지 않고 **이름으로 전부** 지운다. 바로 아래에서 다시
+-- 만들고 파일 끝에서 권한도 다시 주므로, 지우고 가는 것이 안전하다.
+do $$
+declare r record;
+begin
+  for r in
+    select oid::regprocedure as sig
+    from pg_proc
+    where proname = 'gs_config_save' and pronamespace = 'public'::regnamespace
+  loop
+    execute format('drop function %s', r.sig);
+  end loop;
+end $$;
 
 create or replace function gs_config_save(
   p_token          text,
@@ -578,7 +591,9 @@ grant execute on function gs_station_save(text, integer, text, text, text, text,
 grant execute on function gs_station_replace(text, jsonb)            to anon, authenticated;
 grant execute on function gs_station_delete(text, integer)          to anon, authenticated;
 grant execute on function gs_config_get(text)                        to anon, authenticated;
-grant execute on function gs_config_save(text, integer, integer, integer) to anon, authenticated;
+-- 인자가 늘면 시그니처가 통째로 바뀐다. 기본값이 있어도 grant 는 전체 인자를
+-- 적어야 하고, 옛 시그니처를 적으면 함수를 못 찾아 42883 으로 죽는다.
+grant execute on function gs_config_save(text, integer, integer, integer, text, text, numeric, numeric) to anon, authenticated;
 grant execute on function gs_code_change(text, text)                 to anon, authenticated;
 grant execute on function gs_secrets(text)                           to anon, authenticated;
 grant execute on function gs_secret_save(text, text, text, text)     to anon, authenticated;
