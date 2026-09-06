@@ -18,6 +18,9 @@
 
 ## 판정 규칙
 
+> 여기는 왜 그렇게 정했는지를 적습니다. **식 자체는 [JUDGING.md](JUDGING.md)** 에
+> 전부 있습니다 — 네 가지 판정 방식의 수식, 경계 조건, 실제 수치 예제.
+
 ### 비교 모집단은 시·도
 
 시·군·구가 아닙니다. 시·군·구로 쪼개면 관내 주유소가 두세 곳뿐인 곳이 생겨
@@ -382,7 +385,8 @@ gh workflow run collect.yml -f skip_collect=true  # 커밋된 데이터로 배�
 테이블을 읽지도 쓰지도 못하고, 모든 접근이 `SECURITY DEFINER` 함수를 거칩니다.
 접근코드와 API 키가 브라우저로 내려오지 않습니다.
 
-더 자세한 배경과 남은 일은 [HANDOVER.md](HANDOVER.md) 에 있습니다.
+판정 식 전문은 [JUDGING.md](JUDGING.md), 더 자세한 배경과 남은 일은
+[HANDOVER.md](HANDOVER.md) 에 있습니다.
 
 ---
 
