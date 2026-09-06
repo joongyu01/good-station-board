@@ -1,5 +1,9 @@
 {
   "rankGreenMetro": 10,
   "rankGreenDefault": 5,
-  "rankYellowFactor": 2
+  "rankYellowFactor": 2,
+  "judgeMode": "adjusted",
+  "adjustedCombine": "drift",
+  "driftGreen": 0,
+  "driftYellow": 0.01
 }
