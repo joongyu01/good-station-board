@@ -357,7 +357,7 @@ export default function App() {
           <span className="sep">·</span>
           <span
             className="collected"
-            title="집계가 실행된 한국시간. 매일 10:20 · 19:30 KST 에 자동 수집합니다."
+            title="이 데이터가 만들어진 한국시간. 값이 그대로면 시각도 그대로입니다. 하루 네 번 07:17 · 11:17 · 16:47 · 20:47 KST 에 자동 수집합니다."
           >
             {formatCollectedAt(board.generatedAt)} 자동 수집 데이터 기준
           </span>

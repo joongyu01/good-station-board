@@ -167,8 +167,11 @@ async function main() {
       continue;
     }
     const part = byDate.get(d)!;
-    const bytes = writeRaw(RAW_DIR, d, { date: d, collectedAt: new Date().toISOString(), rows: part });
-    console.log(`  data/raw/${d}.json.gz  (${part.length}건, ${Math.round(bytes / 1024)}KB)`);
+    const { bytes, changed } = writeRaw(RAW_DIR, d, {
+      date: d, collectedAt: new Date().toISOString(), rows: part,
+    });
+    const mark = changed ? "" : "  그대로 (행이 같아 다시 쓰지 않음)";
+    console.log(`  data/raw/${d}.json.gz  (${part.length}건, ${Math.round(bytes / 1024)}KB)${mark}`);
   }
 
   // 주유소 인덱스 — 매칭 단계가 쓴다. 가격은 빼고 식별 정보만 누적한다.

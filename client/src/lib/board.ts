@@ -154,7 +154,8 @@ export function formatDate(yyyymmdd: string): string {
 /**
  * 수집 시각을 **한국시간**으로 찍는다.
  *
- * `generatedAt` 은 집계가 돈 순간의 UTC 다. 그대로 `toLocaleString()` 을 쓰면
+ * `generatedAt` 은 이 값이 만들어진 순간의 UTC 다. 값이 하나도 안 바뀐 날은
+ * 집계를 다시 돌려도 그대로다. 그대로 `toLocaleString()` 을 쓰면
  * 보는 사람의 시간대로 바뀌어, 해외에서 열면 엉뚱한 시각이 나온다. 국내 유가
  * 자료이므로 누가 어디서 보든 KST 로 고정한다.
  *

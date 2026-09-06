@@ -13,7 +13,8 @@
  *   npm run aggregate           가장 최근 수집분
  *   npm run aggregate 20260902  특정 날짜
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { readFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -48,6 +49,9 @@ const OUT_DIR = path.join(ROOT, "client", "public", "data");
  * 장기 이력이 필요해지면 이 값을 늘리는 대신 별도 저장소나 DB로 빼는 편이 낫다.
  */
 const KEEP_DAYS = 30;
+
+/** 견줄 때 무시할 시각 필드. 이것만 다르면 안 바뀐 것으로 본다. */
+const TIMESTAMP = ["generatedAt"] as const;
 
 function latestRawDate(): string | null {
   return listRawDates(RAW_DIR).at(-1) ?? null;
@@ -268,8 +272,10 @@ function main() {
   const droppedSeries = pruneTo(history, ids);
   history.generatedAt = new Date().toISOString();
 
-  writeFileSync(historyPath, JSON.stringify(history), "utf8");
-  writeFileSync(path.join(OUT_DIR, "history.json"), JSON.stringify(history), "utf8");
+  // 시각 필드만 다른 재작성은 걸러 낸다 — stable-write.ts 참고.
+  let rewritten = 0;
+  if (writeJsonIfChanged(historyPath, history, TIMESTAMP)) rewritten++;
+  if (writeJsonIfChanged(path.join(OUT_DIR, "history.json"), history, TIMESTAMP)) rewritten++;
 
   // ── 가격을 믿기 어려운 곳 ───────────────────────────────────────────
   //
@@ -330,16 +336,16 @@ function main() {
   };
 
   mkdirSync(OUT_DIR, { recursive: true });
-  writeFileSync(path.join(OUT_DIR, `board-${date}.json`), JSON.stringify(board), "utf8");
-  writeFileSync(path.join(OUT_DIR, "latest.json"), JSON.stringify(board), "utf8");
+  if (writeJsonIfChanged(path.join(OUT_DIR, `board-${date}.json`), board, TIMESTAMP)) rewritten++;
+  if (writeJsonIfChanged(path.join(OUT_DIR, "latest.json"), board, TIMESTAMP)) rewritten++;
 
   // 계수 검증용 순위표. 화면에 전국 1.1만 건을 통째로 내려보낼 수는 없으니
   // 시·도별 상위 K건만 뽑아 둔다. 과거 날짜는 `npm run ranks` 가 원본에서 만든다.
-  writeFileSync(
+  if (writeJsonIfChanged(
     path.join(OUT_DIR, `rank-${date}.json`),
-    JSON.stringify(buildRanks(raw.rows, ids, th, date)),
-    "utf8",
-  );
+    buildRanks(raw.rows, ids, th, date),
+    TIMESTAMP,
+  )) rewritten++;
 
   // 보관 기간을 넘긴 스냅샷 정리
   const all = readdirSync(OUT_DIR)
@@ -362,16 +368,17 @@ function main() {
     .map((f) => f.slice(5, 13))
     .sort()
     .reverse();
-  writeFileSync(
-    path.join(OUT_DIR, "index.json"),
-    JSON.stringify({ dates: available, ranks }),
-    "utf8",
-  );
+  if (writeJsonIfChanged(path.join(OUT_DIR, "index.json"), { dates: available, ranks })) rewritten++;
 
 
   // ── 콘솔 요약 ───────────────────────────────────────────────────────
   const withIndex = signals.filter((s) => s.priceIndex).length;
   console.log(`[aggregate] 완료 — 기준일 ${date}`);
+  console.log(
+    rewritten === 0
+      ? "  산출물 그대로 — 값이 하나도 바뀌지 않아 다시 쓰지 않았습니다."
+      : `  산출물 ${rewritten}건 갱신`,
+  );
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
