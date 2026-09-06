@@ -18,7 +18,8 @@ import { fetchData, SIGNAL_LABELS } from "../lib/board.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
 import { parseStationCsv } from "@shared/lib/station-csv.ts";
 import { BRAND_LABELS, type BrandCode } from "@shared/lib/brand.ts";
-import type { BoardData, SignalColor } from "@shared/lib/types.ts";
+import { worseOf } from "@shared/lib/adjust.ts";
+import type { AdjustedCombine, BoardData, JudgeMode, SignalColor } from "@shared/lib/types.ts";
 
 const LOGO = new URL("logo.png", document.baseURI).toString();
 
@@ -332,73 +333,126 @@ function StationForm({ value, onSave, onCancel }: {
 }
 
 // ── 판정 설정 ────────────────────────────────────────────────────────
+/** 관리 화면에서 고를 수 있는 판정 방식 넷. */
+const JUDGE_CHOICES = [
+  {
+    key: "rank",
+    judgeMode: "rank" as JudgeMode,
+    combine: "both" as AdjustedCombine,
+    title: "기존 방식",
+    desc: "오늘 그 시·도에서 몇 위냐",
+  },
+  {
+    key: "adj-rank",
+    judgeMode: "adjusted" as JudgeMode,
+    combine: "rank" as AdjustedCombine,
+    title: "보정 · 순위",
+    desc: "선정 때 후보에서 빠졌던 곳을 뺀 모집단에서 다시 센 순위",
+  },
+  {
+    key: "adj-drift",
+    judgeMode: "adjusted" as JudgeMode,
+    combine: "drift" as AdjustedCombine,
+    title: "보정 · 이탈률",
+    desc: "선정 시점에 견줘, 시장이 오른 만큼을 빼고도 더 올렸는가",
+  },
+  {
+    key: "adj-both",
+    judgeMode: "adjusted" as JudgeMode,
+    combine: "both" as AdjustedCombine,
+    title: "보정 · 둘 다",
+    desc: "순위와 이탈률을 모두 통과해야 적합 (가장 엄격)",
+  },
+] as const;
+
+type ChoiceKey = (typeof JUDGE_CHOICES)[number]["key"];
+
+/** 저장된 설정이 넷 중 어느 것인지. */
+function choiceKeyOf(c: AdminConfig): ChoiceKey {
+  if (c.judgeMode !== "adjusted") return "rank";
+  return c.adjustedCombine === "drift" ? "adj-drift"
+    : c.adjustedCombine === "rank" ? "adj-rank"
+    : "adj-both";
+}
+
+/** 소수 첫째 자리까지. 0.01 * 100 이 1.0000000000000002 로 찍히는 것을 막는다. */
+function round1(v: number): number {
+  return Math.round(v * 10) / 10;
+}
+
 /**
- * 두 방식이 실제로 몇 곳을 어떻게 가르는지 나란히 보여준다.
+ * 네 방식이 실제로 몇 곳을 어떻게 가르는지 한 번에 보여준다.
  *
- * 설정만 바꿔 놓고 저장하면 다음 집계까지 결과를 볼 수 없다. 집계가 두 방식을
- * 모두 계산해 `latest.json` 에 함께 실어 두므로, 지금 커밋된 자료로 견줄 수는
- * 있다. 여기서 보이는 개수는 **저장된 설정으로 집계된 값**이라, 위 라디오를
- * 방금 바꾼 것은 아직 반영되지 않는다.
+ * 집계가 순위 판정과 이탈률을 **따로** 실어 두므로, 넷 모두 지금 브라우저에서
+ * 셀 수 있다. 저장하고 다음 집계를 기다릴 것 없이 고르는 자리에서 바로 견준다.
+ * 이탈률 임계값을 만지는 것도 즉시 반영된다 — 저장된 값이 아니라 화면에 지금
+ * 들어 있는 값으로 다시 세기 때문이다.
  */
-function JudgeCompare() {
+function JudgeCompare({ c }: { c: AdminConfig }) {
   const [board, setBoard] = useState<BoardData | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData("latest.json")
-      .then((r) => r.json())
-      .then(setBoard)
-      .catch((e) => setErr(String(e)));
+    fetchData("latest.json").then((r) => r.json()).then(setBoard).catch((e) => setErr(String(e)));
   }, []);
 
   if (err) return <p className="admin-err">현황 자료를 못 읽었습니다. ({err})</p>;
   if (!board) return <p className="admin-msg">현황 자료를 불러오는 중…</p>;
-  if (!board.summary.adjustedCounts) {
-    return <p className="muted">아직 보정 값이 실리지 않은 자료입니다. 집계를 한 번 돌리면 나옵니다.</p>;
-  }
 
-  const rows: [SignalColor, string][] = [
-    ["green", SIGNAL_LABELS.green], ["yellow", SIGNAL_LABELS.yellow], ["red", SIGNAL_LABELS.red],
-    ["stale", SIGNAL_LABELS.stale], ["unknown", SIGNAL_LABELS.unknown],
-  ];
-  const cur = board.summary.counts;
-  const adj = board.summary.adjustedCounts;
+  // 현황판 요약 띠와 같은 순서. 두 곳이 다르면 견주다 헷갈린다.
+  const cols: SignalColor[] = ["green", "yellow", "red", "unknown", "stale"];
+
+  const tallies = JUDGE_CHOICES.map((o) => {
+    const t: Record<SignalColor, number> = { green: 0, yellow: 0, red: 0, unknown: 0, stale: 0 };
+    for (const st of board.stations) {
+      // 값이 없어서 못 재는 것은 방식과 무관하다. 그대로 둔다.
+      if (st.signal === "stale" || st.signal === "unknown") { t[st.signal]++; continue; }
+      if (o.key === "rank") { t[st.signal]++; continue; }
+
+      const a = st.adjusted;
+      if (!a) { t.unknown++; continue; }
+      // 이탈률 색은 화면에 지금 들어 있는 임계값으로 다시 낸다.
+      const d = a.drift <= c.driftGreen ? "green" : a.drift <= c.driftYellow ? "yellow" : "red";
+      t[o.key === "adj-drift" ? d
+        : o.key === "adj-rank" ? a.rankSignal
+        : worseOf(a.rankSignal, d)]++;
+    }
+    return { ...o, t };
+  });
+
+  const selected = choiceKeyOf(c);
   const unconfirmed = board.baseline
     ? Object.keys(board.baseline.windows).filter((r) => !board.baseline!.confirmedRounds.includes(r))
     : [];
 
   return (
     <div className="judge-compare">
-      <h4>{board.date.slice(4, 6)}월 {board.date.slice(6, 8)}일 자료로 견준 결과</h4>
+      <h4>{board.date.slice(4, 6)}월 {board.date.slice(6, 8)}일 자료로 네 방식을 견준 결과</h4>
       <table className="admin-table">
-        <thead><tr><th>판정</th><th>현재</th><th>보정</th><th>차이</th></tr></thead>
+        <thead>
+          <tr><th>방식</th>{cols.map((k) => <th key={k}>{SIGNAL_LABELS[k]}</th>)}</tr>
+        </thead>
         <tbody>
-          {rows.map(([k, label]) => {
-            const d = adj[k] - cur[k];
-            return (
-              <tr key={k}>
-                <td>{label}</td>
-                <td>{cur[k]}</td>
-                <td>{adj[k]}</td>
-                <td className={d > 0 ? "up" : d < 0 ? "down" : ""}>{d > 0 ? `+${d}` : d || "—"}</td>
-              </tr>
-            );
-          })}
+          {tallies.map((row) => (
+            <tr key={row.key} className={row.key === selected ? "is-on" : ""}>
+              <td>{row.title}</td>
+              {cols.map((k) => <td key={k}>{row.t[k]}</td>)}
+            </tr>
+          ))}
         </tbody>
       </table>
-      {board.baseline && (
-        <p className="muted" style={{ fontSize: "12px" }}>
-          선정 때 후보에서 빠졌던 것으로 보이는 주유소 {board.baseline.excludedCount}곳을 모집단에서 뺐습니다.
-          {unconfirmed.length > 0 && (
-            <>
-              {" "}<b>{unconfirmed.join("·")}</b> 는 선정 기준기간을 확인하지 못해{" "}
-              {board.baseline.windows[unconfirmed[0]]?.slice(0, 4)}년{" "}
-              {board.baseline.windows[unconfirmed[0]]?.slice(4, 6)}월로 두었습니다 —
-              그 이전에 올린 몫은 잡히지 않아 실제보다 후하게 나옵니다.
-            </>
-          )}
-        </p>
-      )}
+      <p className="muted" style={{ fontSize: "12px" }}>
+        고른 줄에 표시가 붙습니다. 여기 숫자는 지금 화면의 설정으로 바로 센 것이고,
+        현황판에는 <b>저장한 뒤 다음 집계부터</b> 반영됩니다.
+        {board.baseline && <>
+          {" "}선정 때 후보에서 빠졌던 것으로 보이는 주유소 {board.baseline.excludedCount}곳을 모집단에서 뺐습니다.
+        </>}
+        {unconfirmed.length > 0 && board.baseline && <>
+          {" "}<b>{unconfirmed.join("·")}</b> 는 선정 기준기간을 확인하지 못해{" "}
+          {board.baseline.windows[unconfirmed[0]]?.slice(0, 4)}년 {board.baseline.windows[unconfirmed[0]]?.slice(4, 6)}월로
+          두었습니다 — 그 이전에 올린 몫은 잡히지 않아 실제보다 후하게 나옵니다.
+        </>}
+      </p>
     </div>
   );
 }
@@ -461,44 +515,30 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
         시장 기준은 시·도 <b>중앙값</b> 이라 몇 곳이 빠지고 드는 것에 흔들리지 않습니다.
       </p>
 
-      <label className="admin-radio">
-        <input type="radio" name="judge" checked={c.judgeMode === "rank"}
-          onChange={() => setC({ ...c, judgeMode: "rank" })} />
-        <span>현재 — 오늘 그 시·도에서 몇 위냐</span>
-      </label>
-      <label className="admin-radio">
-        <input type="radio" name="judge" checked={c.judgeMode === "adjusted"}
-          onChange={() => setC({ ...c, judgeMode: "adjusted" })} />
-        <span>보정 — 선정 시점 대비 시장연동 이탈까지 본다</span>
-      </label>
-
-      <h4>보정을 무엇으로 판정할지</h4>
-      <label className="admin-radio">
-        <input type="radio" name="combine" checked={c.adjustedCombine === "both"}
-          onChange={() => setC({ ...c, adjustedCombine: "both" })} />
-        <span>순위와 이탈률을 <b>둘 다</b> 통과해야 적합 <span className="muted">— 가장 엄격</span></span>
-      </label>
-      <label className="admin-radio">
-        <input type="radio" name="combine" checked={c.adjustedCombine === "drift"}
-          onChange={() => setC({ ...c, adjustedCombine: "drift" })} />
-        <span><b>이탈률만</b> <span className="muted">— '선정 뒤에 더 올렸나' 하나만 묻는다</span></span>
-      </label>
-      <label className="admin-radio">
-        <input type="radio" name="combine" checked={c.adjustedCombine === "rank"}
-          onChange={() => setC({ ...c, adjustedCombine: "rank" })} />
-        <span><b>보정 모집단 순위만</b> <span className="muted">— 선정 때 빠졌던 곳을 뺀 분포에서 순위</span></span>
-      </label>
+      {/*
+        네 가지를 한 줄에 세운다. 예전에는 '방식'과 '결합'을 따로 골랐는데,
+        기존 방식을 고르면 결합 라디오가 아무 뜻도 없어져 무엇이 켜져 있는지
+        읽히지 않았다.
+      */}
+      {JUDGE_CHOICES.map((o) => (
+        <label className="admin-radio" key={o.key}>
+          <input type="radio" name="judge"
+            checked={choiceKeyOf(c) === o.key}
+            onChange={() => setC({ ...c, judgeMode: o.judgeMode, adjustedCombine: o.combine })} />
+          <span><b>{o.title}</b> <span className="muted">— {o.desc}</span></span>
+        </label>
+      ))}
 
       <label>이탈률 — 이 값(%) 이하면 적합
-        <input type="number" step="0.1" value={c.driftGreen * 100}
+        <input type="number" step="0.1" value={round1(c.driftGreen * 100)}
           onChange={(e) => setC({ ...c, driftGreen: Number(e.target.value) / 100 })} />
       </label>
       <label>이탈률 — 이 값(%) 이하면 근접, 넘으면 초과
-        <input type="number" step="0.1" value={c.driftYellow * 100}
+        <input type="number" step="0.1" value={round1(c.driftYellow * 100)}
           onChange={(e) => setC({ ...c, driftYellow: Number(e.target.value) / 100 })} />
       </label>
 
-      <JudgeCompare />
+      <JudgeCompare c={c} />
 
       <button className="btn" onClick={async () => {
         try { await saveConfig(token, c); setMsg("저장했습니다. 다음 집계부터 현황판에 반영됩니다."); setErr(null); }

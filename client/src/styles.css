@@ -983,5 +983,11 @@ button.stat + button.stat { margin-left: 4px; }
 .judge-compare .admin-table { width: auto; min-width: 320px; }
 .judge-compare .admin-table td:not(:first-child),
 .judge-compare .admin-table th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
-.judge-compare .up { color: var(--green-deep); font-weight: 700; }
-.judge-compare .down { color: var(--red, #c0392b); font-weight: 700; }
+/* 고른 방식의 줄. 색만으로는 흑백 인쇄나 색각 이상에서 사라지므로 왼쪽에
+   굵은 선을 같이 세운다. */
+.judge-compare .admin-table tr.is-on td {
+  background: rgba(111, 168, 46, .10); font-weight: 700;
+}
+.judge-compare .admin-table tr.is-on td:first-child {
+  box-shadow: inset 3px 0 0 var(--green-deep);
+}
