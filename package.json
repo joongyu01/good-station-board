@@ -19,11 +19,12 @@
     "supabase:seed": "tsx scripts/supabase-seed.ts",
     "supabase:pull": "tsx scripts/supabase-pull.ts",
     "supabase:push": "tsx scripts/supabase-push.ts",
-    "pipeline": "npm run collect && npm run match && npm run aggregate",
+    "pipeline": "npm run collect && npm run match && npm run baseline && npm run aggregate",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "baseline": "tsx scripts/build-baseline.ts"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",

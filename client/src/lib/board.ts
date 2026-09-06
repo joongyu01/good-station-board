@@ -200,6 +200,31 @@ export function sidoLabel(sido: string): string {
  * `cache: "no-cache"` 는 캐시를 버리는 게 아니라 **매번 검증**하게 한다.
  * 안 바뀌었으면 304 로 끝나 본문을 다시 받지 않으니 값도 싸다.
  */
+/**
+ * 설정된 판정 방식을 자료에 입힌다.
+ *
+ * 집계가 두 방식을 모두 계산해 함께 싣고, 어느 쪽을 보일지는 `judgeMode` 가
+ * 정한다. 화면 곳곳이 `signal` 하나만 보게 여기서 한 번에 갈아 끼운다 —
+ * 지도·목록·요약·거르기가 저마다 방식을 따지게 두면 한 군데는 반드시 어긋난다.
+ *
+ * 유종별(휘발유·경유) 판정은 그대로 둔다. 보정은 **합계** 위에서만 정의된다 —
+ * 선정이 합계로 이뤄졌기 때문이다.
+ */
+export function applyJudgeMode(board: BoardData): BoardData {
+  if (board.judgeMode !== "adjusted") return board;
+
+  return {
+    ...board,
+    summary: { ...board.summary, counts: board.summary.adjustedCounts ?? board.summary.counts },
+    stations: board.stations.map((s) => {
+      // 기준선이 없어 보정 값을 못 낸 곳은 판정 불가로 둔다. 현재 방식의 색을
+      // 빌려 오면 두 방식이 뒤섞여 무엇을 보고 있는지 알 수 없게 된다.
+      const sig = s.adjusted?.signal ?? "unknown";
+      return { ...s, signal: sig, metrics: { ...s.metrics, sum: { ...s.metrics.sum, signal: sig } } };
+    }),
+  };
+}
+
 export function fetchData(name: string): Promise<Response> {
   return fetch(dataUrl(name), { cache: "no-cache" });
 }

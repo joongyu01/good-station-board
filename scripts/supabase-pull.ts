@@ -55,6 +55,11 @@ async function main() {
         rankGreenMetro: cfg.rank_green_metro,
         rankGreenDefault: cfg.rank_green_default,
         rankYellowFactor: cfg.rank_yellow_factor,
+        // 스키마가 아직 갱신되지 않은 저장소도 있으므로 없으면 코드 기본값으로 떨어진다.
+        judgeMode: cfg.judge_mode ?? "rank",
+        adjustedCombine: cfg.adjusted_combine ?? "both",
+        driftGreen: cfg.drift_green ?? 0,
+        driftYellow: cfg.drift_yellow ?? 0.01,
       }, null, 2),
       "utf8",
     );

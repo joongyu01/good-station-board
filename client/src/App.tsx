@@ -10,7 +10,7 @@ import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.
 import { useNarrow } from "./lib/useNarrow.ts";
 import {
   applyMode, fetchData, formatCollectedAt, formatDate, groupByRegion, summarize,
-  SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
+  applyJudgeMode, SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
   type BoardData, type GeoCollection, type RegionSummary, type SignalColor,
   type StationSignal, type ViewMode,
 } from "./lib/board.ts";
@@ -103,7 +103,7 @@ export default function App() {
       fetchData("geo-district.json").then((r) => r.json()).catch(() => EMPTY_GEO),
     ])
       .then(([b, s, g, d]) => {
-        setBoard(b); setSidoGeo(s); setSigunguGeo(g); setDistrictGeo(d ?? EMPTY_GEO);
+        setBoard(applyJudgeMode(b)); setSidoGeo(s); setSigunguGeo(g); setDistrictGeo(d ?? EMPTY_GEO);
       })
       .catch((e) => setError(String(e)));
   }, []);
@@ -423,7 +423,13 @@ export default function App() {
         ))}
         <div className="stat stat-note">
           <strong>{mode === "sum" ? "휘발유+경유 합산" : `${VIEW_MODE_LABELS[mode]} 단독`}</strong>
-          {" "}시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권
+          {/*
+            보정 모드에서 순위 문구를 그대로 두면 거짓말이 된다. 보정은 합계
+            위에서만 정의되므로, 유종 단독 보기는 보정 모드라도 순위 기준이다.
+          */}
+          {board.judgeMode === "adjusted" && mode === "sum"
+            ? " 선정 시점 대비 보정 기준 · 그 사이 시·도 시장이 오른 만큼을 빼고도 더 올렸는지로 판정"
+            : " 시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권"}
         </div>
       </div>
 

@@ -15,6 +15,10 @@
  */
 import { readFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
+import {
+  CONFIRMED_ROUNDS, DRIFT_GREEN, DRIFT_YELLOW, driftSignalOf, median, worseOf,
+  type AdjustedMetric, type Baseline,
+} from "../src/lib/adjust.ts";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -25,7 +29,7 @@ import {
   FUEL_TYPES,
   VIEW_MODES,
   type BoardData, type FuelMetric, type FuelType, type GoodStation,
-  type RegionStat, type StationSignal, type ViewMode,
+  type RegionStat, type SignalColor, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
 import { regionKey } from "../src/lib/region.ts";
 import { buildRanks } from "../src/lib/rank.ts";
@@ -83,6 +87,20 @@ function main() {
   const th: Thresholds = existsSync(thPath)
     ? { ...DEFAULT_THRESHOLDS, ...JSON.parse(readFileSync(thPath, "utf8")) }
     : DEFAULT_THRESHOLDS;
+
+  // 보정 판정의 기준선. 없으면 보정 값 없이 현재 방식만 싣는다.
+  const baselinePath = path.join(DATA, "baseline.json");
+  const baseline: Baseline | null = existsSync(baselinePath)
+    ? JSON.parse(readFileSync(baselinePath, "utf8")) : null;
+  if (!baseline) {
+    console.warn("[aggregate] data/baseline.json 이 없습니다. 보정 판정을 건너뜁니다 — npm run baseline");
+  }
+  const excluded = new Set<string>(baseline?.excluded ?? []);
+
+  // 보정 판정의 결합 방식과 이탈률 임계값.
+  const combine = th.adjustedCombine ?? "both";
+  const driftGreen = th.driftGreen ?? DRIFT_GREEN;
+  const driftYellow = th.driftYellow ?? DRIFT_YELLOW;
 
   const coordsPath = path.join(DATA, "station-coords.json");
   const coords: Record<string, { lat: number; lng: number }> = existsSync(coordsPath)
@@ -143,6 +161,30 @@ function main() {
     if (arr) arr.push(g + d); else sumBuckets.set(r.sido, [g + d]);
   }
   for (const [sido, values] of sumBuckets) put(sido, "sum", values);
+
+  // ── 보정 모집단 ─────────────────────────────────────────────────────
+  //
+  // 선정 때 후보에서 빠졌던 것으로 보이는 주유소를 뺀 분포다. 선정이 그 잣대로
+  // 이뤄졌으니 견줄 때도 같은 잣대라야 앞뒤가 맞는다. 실제로는 전국 수십 곳
+  // 규모라 순위가 몇 칸 움직이는 정도다 — baseline.ts 의 역산 설명 참고.
+  const adjDistinct = new Map<string, number[]>();
+  {
+    const buckets = new Map<string, number[]>();
+    for (const r of raw.rows) {
+      if (excluded.has(r.stationId)) continue;
+      const g = r.gasoline, d = r.diesel;
+      if (g == null || g <= 0 || d == null || d <= 0) continue;
+      const arr = buckets.get(r.sido);
+      if (arr) arr.push(g + d); else buckets.set(r.sido, [g + d]);
+    }
+    for (const [sido, values] of buckets) {
+      adjDistinct.set(sido, distinctAsc(values.sort((a, b) => a - b)));
+    }
+  }
+
+  /** 오늘 그 시·도의 시장 중앙값. 이탈률의 M1 이다. */
+  const marketNow = new Map<string, number>();
+  for (const [sido, values] of sumBuckets) marketNow.set(sido, median(values));
 
   console.log(`[aggregate] 시·도 통계 ${stats.size}건 (유종 ${FUEL_TYPES.length}종 + 합계)`);
 
@@ -222,6 +264,53 @@ function main() {
     }
     const m = metrics.sum;
 
+    /**
+     * 보정 판정.
+     *
+     * 순위는 제외 추정분을 뺀 모집단에서 다시 매기고, 이탈률은 선정 기준기간의
+     * 자기 가격에 그 사이 시장이 움직인 비율을 곱한 값과 견준다. 둘 다 통과해야
+     * 초록이다 — adjust.ts 참고.
+     */
+    const adjusted: AdjustedMetric | null = (() => {
+      const b = stationId ? baseline?.stations[stationId] : undefined;
+      if (!baseline || !b || sum == null) return null;
+
+      const m0 = baseline.market[b.window]?.[effSido];
+      const m1 = marketNow.get(effSido);
+      if (!m0 || !m1) return null;
+
+      const expected = b.base * (m1 / m0);
+      const drift = (sum - expected) / expected;
+
+      const distinct = adjDistinct.get(effSido) ?? [];
+      const rank = distinct.length > 0 ? rankOf(sum, distinct) : null;
+      const greenBase = greenBaseOf(distinct, greenRank);
+      const idx = coefficientOf(sum, greenBase);
+      const rankSignal = toSignal(rank, greenRank, th.rankYellowFactor, distinct.length);
+      const dSignal = driftSignalOf(drift, driftGreen, driftYellow);
+
+      // 무엇을 묻고 싶은지에 따라 묶는 방식이 다르다 — signal.ts 의 설명 참고.
+      const combined =
+        combine === "drift" ? dSignal :
+        combine === "rank" ? rankSignal :
+        worseOf(rankSignal, dSignal);
+
+      return {
+        window: b.window,
+        windowConfirmed: CONFIRMED_ROUNDS.includes(b.round),
+        base: b.base,
+        expected: Math.round(expected * 100) / 100,
+        drift: Math.round(drift * 1e6) / 1e6,
+        driftSignal: dSignal,
+        rank,
+        regionN: distinct.length,
+        greenBase,
+        coefficient: idx?.coefficient ?? null,
+        rankSignal,
+        signal: combined,
+      };
+    })();
+
     signals.push({
       seq: g.seq,
       stationId,
@@ -253,6 +342,7 @@ function main() {
       // 시계열을 얹은 뒤 아래에서 채운다
       dataGapDays: 0,
       compliance: { from: COMPLIANCE_FROM, to: COMPLIANCE_FROM, greenDays: 0, yellowDays: 0, redDays: 0, missingDays: 0 },
+      adjusted,
     });
   }
 
@@ -313,16 +403,23 @@ function main() {
 
     sig.signal = mark;
     for (const mode of VIEW_MODES) sig.metrics[mode].signal = mark;
+    // 값이 없어서 못 재는 것은 판정 방식과 무관하다. 보정 쪽도 같이 덮는다.
+    if (sig.adjusted) sig.adjusted.signal = mark;
   }
 
   // ── 요약 ────────────────────────────────────────────────────────────
-  const counts = {
-    green: signals.filter((s) => s.signal === "green").length,
-    yellow: signals.filter((s) => s.signal === "yellow").length,
-    red: signals.filter((s) => s.signal === "red").length,
-    unknown: signals.filter((s) => s.signal === "unknown").length,
-    stale: signals.filter((s) => s.signal === "stale").length,
-  };
+  const tally = (pick: (s: StationSignal) => SignalColor) => ({
+    green: signals.filter((s) => pick(s) === "green").length,
+    yellow: signals.filter((s) => pick(s) === "yellow").length,
+    red: signals.filter((s) => pick(s) === "red").length,
+    unknown: signals.filter((s) => pick(s) === "unknown").length,
+    stale: signals.filter((s) => pick(s) === "stale").length,
+  });
+
+  const counts = tally((s) => s.signal);
+  // 기준선이 없어 보정 값을 못 낸 곳은 판정 불가로 센다. 현재 방식의 색을
+  // 빌려 오면 두 방식의 개수를 나란히 놓고 견줄 수가 없다.
+  const adjustedCounts = tally((s) => s.adjusted?.signal ?? "unknown");
 
   // 시·도 통계는 전부 실어도 50건이 안 된다.
   const regions: RegionStat[] = [...stats.values()];
@@ -332,7 +429,18 @@ function main() {
     generatedAt: new Date().toISOString(),
     stations: signals,
     regions,
-    summary: { total: good.length, matched: matchedCount, counts },
+    summary: { total: good.length, matched: matchedCount, counts, adjustedCounts },
+    judgeMode: th.judgeMode ?? "rank",
+    baseline: baseline
+      ? {
+          windows: baseline.windows,
+          confirmedRounds: CONFIRMED_ROUNDS,
+          excludedCount: baseline.excluded.length,
+          combine,
+          driftGreen,
+          driftYellow,
+        }
+      : null,
   };
 
   mkdirSync(OUT_DIR, { recursive: true });

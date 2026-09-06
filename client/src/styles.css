@@ -959,3 +959,29 @@ button.stat + button.stat { margin-left: 4px; }
 
   .sheet-foot .btn-csv { width: 100%; }
 }
+
+/* ── 관리 화면 · 판정 방식 ─────────────────────────────────────────── */
+
+/* `.admin-body label` 이 display:block 을 걸고 있어 그보다 구체적이어야 한다. */
+.admin-body label.admin-radio {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 6px 0; font-size: 13.5px; font-weight: 500; line-height: 1.5; cursor: pointer;
+}
+/*
+  라디오는 폭을 스스로 정해야 한다. 위쪽 입력칸 규칙이 input 에 width:100% 를
+  걸어 두어, 그대로 두면 라디오 하나가 줄 전체를 먹고 글자가 한 자씩 세로로
+  쌓인다.
+*/
+.admin-body label.admin-radio input[type="radio"] {
+  width: auto; margin-top: 3px; flex: 0 0 auto;
+}
+
+.admin-body h4 { margin: 18px 0 6px; font-size: 13.5px; }
+
+/* 두 방식의 개수를 나란히 놓는 표. 차이 칸만 색으로 방향을 준다. */
+.judge-compare { margin: 14px 0 4px; }
+.judge-compare .admin-table { width: auto; min-width: 320px; }
+.judge-compare .admin-table td:not(:first-child),
+.judge-compare .admin-table th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.judge-compare .up { color: var(--green-deep); font-weight: 700; }
+.judge-compare .down { color: var(--red, #c0392b); font-weight: 700; }

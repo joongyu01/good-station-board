@@ -14,9 +14,11 @@ import {
   supabaseConfig,
   type AdminConfig, type SecretRow, type StationRow,
 } from "../lib/supabase.ts";
+import { fetchData, SIGNAL_LABELS } from "../lib/board.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
 import { parseStationCsv } from "@shared/lib/station-csv.ts";
 import { BRAND_LABELS, type BrandCode } from "@shared/lib/brand.ts";
+import type { BoardData, SignalColor } from "@shared/lib/types.ts";
 
 const LOGO = new URL("logo.png", document.baseURI).toString();
 
@@ -330,6 +332,77 @@ function StationForm({ value, onSave, onCancel }: {
 }
 
 // ── 판정 설정 ────────────────────────────────────────────────────────
+/**
+ * 두 방식이 실제로 몇 곳을 어떻게 가르는지 나란히 보여준다.
+ *
+ * 설정만 바꿔 놓고 저장하면 다음 집계까지 결과를 볼 수 없다. 집계가 두 방식을
+ * 모두 계산해 `latest.json` 에 함께 실어 두므로, 지금 커밋된 자료로 견줄 수는
+ * 있다. 여기서 보이는 개수는 **저장된 설정으로 집계된 값**이라, 위 라디오를
+ * 방금 바꾼 것은 아직 반영되지 않는다.
+ */
+function JudgeCompare() {
+  const [board, setBoard] = useState<BoardData | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData("latest.json")
+      .then((r) => r.json())
+      .then(setBoard)
+      .catch((e) => setErr(String(e)));
+  }, []);
+
+  if (err) return <p className="admin-err">현황 자료를 못 읽었습니다. ({err})</p>;
+  if (!board) return <p className="admin-msg">현황 자료를 불러오는 중…</p>;
+  if (!board.summary.adjustedCounts) {
+    return <p className="muted">아직 보정 값이 실리지 않은 자료입니다. 집계를 한 번 돌리면 나옵니다.</p>;
+  }
+
+  const rows: [SignalColor, string][] = [
+    ["green", SIGNAL_LABELS.green], ["yellow", SIGNAL_LABELS.yellow], ["red", SIGNAL_LABELS.red],
+    ["stale", SIGNAL_LABELS.stale], ["unknown", SIGNAL_LABELS.unknown],
+  ];
+  const cur = board.summary.counts;
+  const adj = board.summary.adjustedCounts;
+  const unconfirmed = board.baseline
+    ? Object.keys(board.baseline.windows).filter((r) => !board.baseline!.confirmedRounds.includes(r))
+    : [];
+
+  return (
+    <div className="judge-compare">
+      <h4>{board.date.slice(4, 6)}월 {board.date.slice(6, 8)}일 자료로 견준 결과</h4>
+      <table className="admin-table">
+        <thead><tr><th>판정</th><th>현재</th><th>보정</th><th>차이</th></tr></thead>
+        <tbody>
+          {rows.map(([k, label]) => {
+            const d = adj[k] - cur[k];
+            return (
+              <tr key={k}>
+                <td>{label}</td>
+                <td>{cur[k]}</td>
+                <td>{adj[k]}</td>
+                <td className={d > 0 ? "up" : d < 0 ? "down" : ""}>{d > 0 ? `+${d}` : d || "—"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {board.baseline && (
+        <p className="muted" style={{ fontSize: "12px" }}>
+          선정 때 후보에서 빠졌던 것으로 보이는 주유소 {board.baseline.excludedCount}곳을 모집단에서 뺐습니다.
+          {unconfirmed.length > 0 && (
+            <>
+              {" "}<b>{unconfirmed.join("·")}</b> 는 선정 기준기간을 확인하지 못해{" "}
+              {board.baseline.windows[unconfirmed[0]]?.slice(0, 4)}년{" "}
+              {board.baseline.windows[unconfirmed[0]]?.slice(4, 6)}월로 두었습니다 —
+              그 이전에 올린 몫은 잡히지 않아 실제보다 후하게 나옵니다.
+            </>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function Settings({ token, onExpire }: { token: string; onExpire: () => void }) {
   const [c, setC] = useState<AdminConfig | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -373,8 +446,62 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
         그 외 {c.rankGreenDefault}위 이내 초록 · {c.rankGreenDefault * c.rankYellowFactor}위까지 노랑
       </p>
 
+      <hr />
+
+      <h3>판정 방식</h3>
+      <p className="muted">
+        명단 472곳은 <b>아홉 차수</b>에 걸쳐 뽑혔고 차수마다 선정 기준기간이 다릅니다.
+        그런데 지금 판정은 1차부터 9차까지 전부 <b>오늘의 상위 N위</b> 라는 한 잣대로 잽니다.
+        선정된 지 오래된 차수가 뒤로 밀리는 것은 그 주유소 사정이 아니라 잣대가 묻는 질문이
+        달라서입니다.
+      </p>
+      <p className="muted">
+        <b>보정</b> 은 대신 이렇게 묻습니다 — 선정 시점에 견줘, 그 지역 시장이 오른 만큼을
+        빼고도 더 올렸는가. 기준가에 시장 변동률을 곱한 값을 기대가로 두고 실제가와 견줍니다.
+        시장 기준은 시·도 <b>중앙값</b> 이라 몇 곳이 빠지고 드는 것에 흔들리지 않습니다.
+      </p>
+
+      <label className="admin-radio">
+        <input type="radio" name="judge" checked={c.judgeMode === "rank"}
+          onChange={() => setC({ ...c, judgeMode: "rank" })} />
+        <span>현재 — 오늘 그 시·도에서 몇 위냐</span>
+      </label>
+      <label className="admin-radio">
+        <input type="radio" name="judge" checked={c.judgeMode === "adjusted"}
+          onChange={() => setC({ ...c, judgeMode: "adjusted" })} />
+        <span>보정 — 선정 시점 대비 시장연동 이탈까지 본다</span>
+      </label>
+
+      <h4>보정을 무엇으로 판정할지</h4>
+      <label className="admin-radio">
+        <input type="radio" name="combine" checked={c.adjustedCombine === "both"}
+          onChange={() => setC({ ...c, adjustedCombine: "both" })} />
+        <span>순위와 이탈률을 <b>둘 다</b> 통과해야 적합 <span className="muted">— 가장 엄격</span></span>
+      </label>
+      <label className="admin-radio">
+        <input type="radio" name="combine" checked={c.adjustedCombine === "drift"}
+          onChange={() => setC({ ...c, adjustedCombine: "drift" })} />
+        <span><b>이탈률만</b> <span className="muted">— '선정 뒤에 더 올렸나' 하나만 묻는다</span></span>
+      </label>
+      <label className="admin-radio">
+        <input type="radio" name="combine" checked={c.adjustedCombine === "rank"}
+          onChange={() => setC({ ...c, adjustedCombine: "rank" })} />
+        <span><b>보정 모집단 순위만</b> <span className="muted">— 선정 때 빠졌던 곳을 뺀 분포에서 순위</span></span>
+      </label>
+
+      <label>이탈률 — 이 값(%) 이하면 적합
+        <input type="number" step="0.1" value={c.driftGreen * 100}
+          onChange={(e) => setC({ ...c, driftGreen: Number(e.target.value) / 100 })} />
+      </label>
+      <label>이탈률 — 이 값(%) 이하면 근접, 넘으면 초과
+        <input type="number" step="0.1" value={c.driftYellow * 100}
+          onChange={(e) => setC({ ...c, driftYellow: Number(e.target.value) / 100 })} />
+      </label>
+
+      <JudgeCompare />
+
       <button className="btn" onClick={async () => {
-        try { await saveConfig(token, c); setMsg("저장했습니다."); setErr(null); }
+        try { await saveConfig(token, c); setMsg("저장했습니다. 다음 집계부터 현황판에 반영됩니다."); setErr(null); }
         catch (e) { setErr(describeError(e)); }
       }}>설정 저장</button>
 

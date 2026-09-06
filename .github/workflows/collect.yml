@@ -132,6 +132,12 @@ jobs:
         continue-on-error: true
         run: npm run coords
 
+      # 보정 판정의 기준선. 차수별 선정 기준기간의 원본을 읽어 기준가와 그때
+      # 시장 중앙값을 낸다. 보관 원본만 읽으므로 오피넷을 다시 두드리지 않는다.
+      - name: 선정 시점 기준선
+        if: steps.collect.outcome == 'success'
+        run: npm run baseline
+
       - name: 집계 및 신호등 판정
         if: steps.collect.outcome == 'success'
         run: npm run aggregate
@@ -147,7 +153,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add client/public/data data/raw data/station-index.json data/station-mapping.json data/match-report.md data/station-coords.json data/good-stations.json data/thresholds.json data/history.json
+          git add client/public/data data/raw data/station-index.json data/station-mapping.json data/match-report.md data/station-coords.json data/good-stations.json data/thresholds.json data/history.json data/baseline.json
           if git diff --staged --quiet; then
             echo "변경 없음"
             exit 0

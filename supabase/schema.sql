@@ -36,6 +36,13 @@ on conflict (id) do nothing;
 alter table gs_config add column if not exists rank_green_metro   integer not null default 10;
 alter table gs_config add column if not exists rank_green_default integer not null default 5;
 alter table gs_config add column if not exists rank_yellow_factor integer not null default 2;
+-- 판정 방식 — 여태 쓰던 순위 방식(rank)과 선정 시점 대비 보정(adjusted).
+-- 집계는 둘 다 계산해 함께 싣고, 이 값은 현황판이 무엇을 기본으로 보일지만 정한다.
+alter table gs_config add column if not exists judge_mode        text    not null default 'rank';
+alter table gs_config add column if not exists adjusted_combine  text    not null default 'both';
+alter table gs_config add column if not exists drift_green       numeric not null default 0;
+alter table gs_config add column if not exists drift_yellow      numeric not null default 0.01;
+
 alter table gs_config drop column if exists gap_yellow;
 alter table gs_config drop column if exists min_sample;
 alter table gs_config drop column if exists min_compare;
@@ -411,6 +418,10 @@ begin
     'rankGreenMetro', rank_green_metro,
     'rankGreenDefault', rank_green_default,
     'rankYellowFactor', rank_yellow_factor,
+    'judgeMode', judge_mode,
+    'adjustedCombine', adjusted_combine,
+    'driftGreen', drift_green,
+    'driftYellow', drift_yellow,
     'updatedAt', updated_at
   ) into v from gs_config where id = 1;
   return v;
@@ -420,12 +431,17 @@ $$;
 -- 파라미터 이름이 바뀌면 create or replace 가 거부한다(42P13).
 -- 이전 버전(p_gap_yellow ...)이 남아 있으면 먼저 지운다. 없으면 아무 일도 없다.
 drop function if exists gs_config_save(text, integer, integer, integer);
+drop function if exists gs_config_save(text, integer, integer, integer, text, text, numeric, numeric);
 
 create or replace function gs_config_save(
   p_token          text,
   p_rank_green_metro   integer,
   p_rank_green_default integer,
-  p_rank_yellow_factor integer
+  p_rank_yellow_factor integer,
+  p_judge_mode         text    default 'rank',
+  p_adjusted_combine   text    default 'both',
+  p_drift_green        numeric default 0,
+  p_drift_yellow       numeric default 0.01
 )
 returns json
 language plpgsql
@@ -442,11 +458,27 @@ begin
   if p_rank_yellow_factor < 1 or p_rank_yellow_factor > 20 then
     raise exception 'FACTOR_RANGE' using errcode = '22000';
   end if;
+  if p_judge_mode not in ('rank', 'adjusted') then
+    raise exception 'JUDGE_MODE' using errcode = '22000';
+  end if;
+  if p_adjusted_combine not in ('both', 'drift', 'rank') then
+    raise exception 'COMBINE_MODE' using errcode = '22000';
+  end if;
+  -- 이탈률은 비율이다. -50%~+50% 밖은 잘못 입력한 것으로 본다.
+  if p_drift_green < -0.5 or p_drift_green > 0.5
+     or p_drift_yellow < -0.5 or p_drift_yellow > 0.5
+     or p_drift_yellow < p_drift_green then
+    raise exception 'DRIFT_RANGE' using errcode = '22000';
+  end if;
 
   update gs_config set
     rank_green_metro   = p_rank_green_metro,
     rank_green_default = p_rank_green_default,
     rank_yellow_factor = p_rank_yellow_factor,
+    judge_mode         = p_judge_mode,
+    adjusted_combine   = p_adjusted_combine,
+    drift_green        = p_drift_green,
+    drift_yellow       = p_drift_yellow,
     updated_at         = now()
   where id = 1;
 

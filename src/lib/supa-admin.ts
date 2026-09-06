@@ -1,3 +1,4 @@
+import type { AdjustedCombine, JudgeMode } from "./types.ts";
 /**
  * 서버측(스크립트) Supabase 접근.
  *
@@ -113,22 +114,36 @@ export interface ConfigRow {
   rank_green_metro: number;
   rank_green_default: number;
   rank_yellow_factor: number;
+  // 아래 넷은 스키마를 갱신하지 않은 저장소에는 없다. 호출부가 기본값으로
+  // 떨어질 수 있도록 선택 필드로 둔다.
+  judge_mode?: JudgeMode;
+  adjusted_combine?: AdjustedCombine;
+  drift_green?: number;
+  drift_yellow?: number;
 }
 
 export async function fetchConfig(): Promise<ConfigRow | null> {
   if (mode() === "service") {
     const rows = await select<ConfigRow>(
-      "gs_config", "select=rank_green_metro,rank_green_default,rank_yellow_factor&id=eq.1");
+      "gs_config",
+      "select=rank_green_metro,rank_green_default,rank_yellow_factor," +
+      "judge_mode,adjusted_combine,drift_green,drift_yellow&id=eq.1");
     return rows[0] ?? null;
   }
   // anon 경로는 camelCase 로 온다. 호출부가 한 모양만 보게 여기서 맞춰준다.
-  const c = await rpc<{ rankGreenMetro: number; rankGreenDefault: number; rankYellowFactor: number }>(
-    "gs_config_get", { p_token: await token() },
-  );
+  const c = await rpc<{
+    rankGreenMetro: number; rankGreenDefault: number; rankYellowFactor: number;
+    judgeMode?: JudgeMode; adjustedCombine?: AdjustedCombine;
+    driftGreen?: number; driftYellow?: number;
+  }>("gs_config_get", { p_token: await token() });
   return {
     rank_green_metro: c.rankGreenMetro,
     rank_green_default: c.rankGreenDefault,
     rank_yellow_factor: c.rankYellowFactor,
+    judge_mode: c.judgeMode,
+    adjusted_combine: c.adjustedCombine,
+    drift_green: c.driftGreen,
+    drift_yellow: c.driftYellow,
   };
 }
 

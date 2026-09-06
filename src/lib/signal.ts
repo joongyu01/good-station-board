@@ -19,7 +19,8 @@
  * 2167곳) 같은 5위 기준을 적용하면 사실상 아무도 통과하지 못한다. 그래서
  * 서울·경기는 10위, 나머지 시·도는 5위로 둔다.
  */
-import type { SignalColor } from "./types.ts";
+import { DRIFT_GREEN, DRIFT_YELLOW } from "./adjust.ts";
+import type { AdjustedCombine, JudgeMode, SignalColor } from "./types.ts";
 
 /**
  * 초록 기준 순위 — 서울·경기.
@@ -46,12 +47,45 @@ export interface Thresholds {
   rankGreenDefault: number;
   /** 노랑 구간 배수 */
   rankYellowFactor: number;
+
+  /**
+   * 현황판이 기본으로 보여줄 판정 방식.
+   *
+   *   rank      오늘 그 시·도에서 몇 위냐 — 여태 쓰던 방식
+   *   adjusted  선정 시점 대비 시장연동 이탈까지 함께 본다 — adjust.ts 참고
+   *
+   * 집계는 두 방식을 모두 계산해 함께 싣고, 이 값은 어느 쪽을 기본으로 보일지만
+   * 정한다. 관리 화면에서 바꾸며 다음 집계부터 반영된다.
+   */
+  judgeMode?: JudgeMode;
+
+  /**
+   * 보정 판정에서 순위와 이탈률을 어떻게 묶을지.
+   *
+   *   both   둘 다 통과해야 초록 — 가장 엄격하다
+   *   drift  이탈률만 본다 — '선정 뒤에 더 올렸나' 하나만 묻는다
+   *   rank   제외 추정분을 뺀 모집단의 순위만 본다
+   *
+   * 셋의 결과 차이가 크다. 2026-09-05 기준으로 적합이 both 56 · drift 222 ·
+   * rank 101 이었다. 무엇을 묻고 싶은지에 따라 고른다.
+   */
+  adjustedCombine?: AdjustedCombine;
+
+  /** 이탈률이 이 값 이하면 초록. 0 이면 '시장이 오른 만큼만 올렸다'. */
+  driftGreen?: number;
+
+  /** 이탈률이 이 값 이하면 노랑, 넘으면 빨강. */
+  driftYellow?: number;
 }
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
   rankGreenMetro: RANK_GREEN_METRO,
   rankGreenDefault: RANK_GREEN_DEFAULT,
   rankYellowFactor: RANK_YELLOW_FACTOR,
+  judgeMode: "rank",
+  adjustedCombine: "both",
+  driftGreen: DRIFT_GREEN,
+  driftYellow: DRIFT_YELLOW,
 };
 
 /** 임계값을 반영한 초록 기준 순위. */

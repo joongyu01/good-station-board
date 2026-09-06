@@ -1,3 +1,4 @@
+import type { AdjustedMetric } from "./adjust.ts";
 import type { BrandCode } from "./brand.ts";
 import type { Compliance } from "./history.ts";
 
@@ -199,6 +200,15 @@ export interface StationSignal {
    * 그 주유소가 꾸준했는지를 보여준다.
    */
   compliance: Compliance;
+
+  /**
+   * 보정 판정 — 선정 시점 대비 시장연동 이탈. 기준선이 없으면 null.
+   *
+   * 화면이 판정 방식을 바꿀 때마다 전국 1만 건 분포를 다시 셀 수는 없으므로
+   * 집계 단계에서 미리 계산해 함께 싣는다. 세 기준(통합/휘발유/경유)을 미리
+   * 실어 두는 것과 같은 이유다. — adjust.ts 참고
+   */
+  adjusted: AdjustedMetric | null;
 }
 
 /**
@@ -221,6 +231,12 @@ export interface PriceIndex {
   coefficient: number;
 }
 
+/** 신호등을 무엇으로 판정할지. */
+export type JudgeMode = "rank" | "adjusted";
+
+/** 보정 판정에서 순위와 이탈률을 묶는 방식. */
+export type AdjustedCombine = "both" | "drift" | "rank";
+
 /** 현황판이 읽는 최종 산출물 */
 export interface BoardData {
   /** 가격 기준일 YYYYMMDD */
@@ -231,7 +247,27 @@ export interface BoardData {
   summary: {
     total: number;
     matched: number;
-    /** 주유소 단위 신호등 집계 */
+    /** 주유소 단위 신호등 집계 — 현재(순위) 방식 */
     counts: Record<SignalColor, number>;
+    /** 같은 집계를 보정 방식으로 센 것 */
+    adjustedCounts: Record<SignalColor, number>;
   };
+
+  /**
+   * 현황판이 기본으로 보여줄 판정 방식.
+   *
+   * 두 방식의 값을 모두 싣고 이 값으로 어느 쪽을 보일지 고른다. 관리 화면에서
+   * 바꾸며, 임계값과 마찬가지로 다음 집계부터 반영된다.
+   */
+  judgeMode: JudgeMode;
+
+  /** 보정 판정에 쓴 차수별 기준기간과 그 근거. 화면이 한계를 밝히는 데 쓴다. */
+  baseline: {
+    windows: Record<string, string>;
+    confirmedRounds: readonly string[];
+    excludedCount: number;
+    combine: AdjustedCombine;
+    driftGreen: number;
+    driftYellow: number;
+  } | null;
 }

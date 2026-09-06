@@ -8,6 +8,8 @@
  * 프로젝트를 바꿀 수 있어야 하기 때문이다.
  */
 
+import type { AdjustedCombine, JudgeMode } from "@shared/lib/types.ts";
+
 declare global {
   interface Window {
     GS_CONFIG?: { SUPABASE_URL?: string; SUPABASE_ANON_KEY?: string };
@@ -134,6 +136,14 @@ export interface AdminConfig {
   rankGreenDefault: number;
   /** 노랑 구간 배수 */
   rankYellowFactor: number;
+  /** 현황판이 기본으로 보여줄 판정 방식 */
+  judgeMode: JudgeMode;
+  /** 보정 판정에서 순위와 이탈률을 묶는 방식 */
+  adjustedCombine: AdjustedCombine;
+  /** 이탈률 초록 상한 (0 = 시장이 오른 만큼만) */
+  driftGreen: number;
+  /** 이탈률 노랑 상한 */
+  driftYellow: number;
   updatedAt: string;
 }
 
@@ -203,6 +213,10 @@ export const saveConfig = (token: string, c: AdminConfig) =>
     p_rank_green_metro: c.rankGreenMetro,
     p_rank_green_default: c.rankGreenDefault,
     p_rank_yellow_factor: c.rankYellowFactor,
+    p_judge_mode: c.judgeMode,
+    p_adjusted_combine: c.adjustedCombine,
+    p_drift_green: c.driftGreen,
+    p_drift_yellow: c.driftYellow,
   });
 
 export const changeCode = (token: string, newCode: string) =>
