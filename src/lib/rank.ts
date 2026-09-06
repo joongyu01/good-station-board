@@ -11,6 +11,7 @@
  * 전국을 다 실으면 하루 4MB 지만 K=30 이면 16개 시·도 × 3기준 × 30행이라
  * 100KB 안쪽이다.
  */
+import { basisSido } from "./region.ts";
 import { distinctAsc, greenRankWith, type Thresholds } from "./signal.ts";
 import { VIEW_MODES, type ViewMode } from "./types.ts";
 
@@ -84,8 +85,10 @@ export function buildRanks(
     for (const r of rows) {
       const v = valueOf(r, mode);
       if (v == null) continue;
-      const arr = bySido.get(r.sido);
-      if (arr) arr.push({ row: r, v }); else bySido.set(r.sido, [{ row: r, v }]);
+      // 순위는 비교 모집단 단위로 센다. 통합시는 옛 광주·전남으로 갈린다.
+      const basis = basisSido(r.sido, r.sigungu);
+      const arr = bySido.get(basis);
+      if (arr) arr.push({ row: r, v }); else bySido.set(basis, [{ row: r, v }]);
     }
 
     for (const [sido, arr] of bySido) {

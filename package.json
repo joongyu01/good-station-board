@@ -24,7 +24,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "tsc --noEmit",
-    "baseline": "tsx scripts/build-baseline.ts"
+    "baseline": "tsx scripts/build-baseline.ts",
+    "rounds": "tsx scripts/import-rounds.ts"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",

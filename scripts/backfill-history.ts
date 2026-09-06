@@ -136,7 +136,7 @@ async function main() {
   let okDays = 0;
 
   for (const d of local) {
-    const raw = readRaw<{ rows: Array<{ stationId: string; sido: string; gasoline: number | null; diesel: number | null }> }>(RAW_DIR, d);
+    const raw = readRaw<{ rows: Array<{ stationId: string; sido: string; sigungu: string; gasoline: number | null; diesel: number | null }> }>(RAW_DIR, d);
     if (!raw) continue;
     mergeDay(history, d,
       sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
@@ -202,12 +202,13 @@ async function main() {
     }
 
     // 날짜별로 나눠 각각 그날의 시세로 계수를 낸다.
-    const byDate = new Map<string, Array<{ stationId: string; sido: string; gasoline: number | null; diesel: number | null }>>();
+    const byDate = new Map<string, Array<{ stationId: string; sido: string; sigungu: string; gasoline: number | null; diesel: number | null }>>();
     for (const r of rows) {
       const region = normalizeRegion(r.region) ?? normalizeRegion(r.address);
       if (!region) continue;
       const arr = byDate.get(r.date);
-      const row = { stationId: r.stationId, sido: region.sido, gasoline: r.gasoline, diesel: r.diesel };
+      // sigungu 까지 넘긴다. 통합시를 옛 광주·전남으로 가르는 데 쓴다.
+      const row = { stationId: r.stationId, sido: region.sido, sigungu: region.sigungu, gasoline: r.gasoline, diesel: r.diesel };
       if (arr) arr.push(row); else byDate.set(r.date, [row]);
     }
 

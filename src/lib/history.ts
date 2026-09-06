@@ -1,3 +1,4 @@
+import { basisSido } from "./region.ts";
 import { COEF_DIGITS, distinctAsc } from "./signal.ts";
 
 /**
@@ -115,7 +116,7 @@ export function pruneTo(h: History, keep: Set<string>): number {
  * 과거에 소급하면 유가가 전체적으로 오르내린 것까지 개별 주유소 탓으로 보인다.
  */
 export function sampleDay(
-  rows: Array<{ stationId: string; sido: string; gasoline: number | null; diesel: number | null }>,
+  rows: Array<{ stationId: string; sido: string; sigungu: string; gasoline: number | null; diesel: number | null }>,
   targetIds: Set<string>,
   greenRankOf: (sido: string) => number,
   yellowFactor = 2,
@@ -126,8 +127,9 @@ export function sampleDay(
     const g = r.gasoline;
     const d = r.diesel;
     if (g == null || g <= 0 || d == null || d <= 0) continue;
-    const arr = sums.get(r.sido);
-    if (arr) arr.push(g + d); else sums.set(r.sido, [g + d]);
+    const basis = basisSido(r.sido, r.sigungu);
+    const arr = sums.get(basis);
+    if (arr) arr.push(g + d); else sums.set(basis, [g + d]);
   }
 
   // 그날의 커트라인 두 개 — 적합(N위)과 근접(2N위).
@@ -148,7 +150,7 @@ export function sampleDay(
     if (!targetIds.has(r.stationId)) continue;
     const g = r.gasoline && r.gasoline > 0 ? r.gasoline : null;
     const d = r.diesel && r.diesel > 0 ? r.diesel : null;
-    const b = base.get(r.sido);
+    const b = base.get(basisSido(r.sido, r.sigungu));
 
     let coefficient: number | null = null;
     let signal: DaySignal | null = null;

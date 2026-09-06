@@ -31,7 +31,7 @@ import {
   type BoardData, type FuelMetric, type FuelType, type GoodStation,
   type RegionStat, type SignalColor, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
-import { regionKey } from "../src/lib/region.ts";
+import { basisSido, regionKey } from "../src/lib/region.ts";
 import { buildRanks } from "../src/lib/rank.ts";
 import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
@@ -144,8 +144,9 @@ function main() {
     for (const r of raw.rows) {
       const p = r[fuel];
       if (p == null || p <= 0) continue;
-      const arr = buckets.get(r.sido);
-      if (arr) arr.push(p); else buckets.set(r.sido, [p]);
+      const b = basisSido(r.sido, r.sigungu);
+      const arr = buckets.get(b);
+      if (arr) arr.push(p); else buckets.set(b, [p]);
     }
     for (const [sido, values] of buckets) put(sido, fuel, values);
   }
@@ -157,8 +158,9 @@ function main() {
     const g = r.gasoline;
     const d = r.diesel;
     if (g == null || g <= 0 || d == null || d <= 0) continue;
-    const arr = sumBuckets.get(r.sido);
-    if (arr) arr.push(g + d); else sumBuckets.set(r.sido, [g + d]);
+    const b = basisSido(r.sido, r.sigungu);
+    const arr = sumBuckets.get(b);
+    if (arr) arr.push(g + d); else sumBuckets.set(b, [g + d]);
   }
   for (const [sido, values] of sumBuckets) put(sido, "sum", values);
 
@@ -174,8 +176,9 @@ function main() {
       if (excluded.has(r.stationId)) continue;
       const g = r.gasoline, d = r.diesel;
       if (g == null || g <= 0 || d == null || d <= 0) continue;
-      const arr = buckets.get(r.sido);
-      if (arr) arr.push(g + d); else buckets.set(r.sido, [g + d]);
+      const b = basisSido(r.sido, r.sigungu);
+      const arr = buckets.get(b);
+      if (arr) arr.push(g + d); else buckets.set(b, [g + d]);
     }
     for (const [sido, values] of buckets) {
       adjDistinct.set(sido, distinctAsc(values.sort((a, b) => a - b)));
@@ -221,6 +224,9 @@ function main() {
     // 신호등 기준 순위. 서울·경기는 10위, 그 밖의 시·도는 5위 이내가 상위권.
     const greenRank = greenRankWith(effSido, th);
 
+    // 견주는 모집단 키. 통합시는 선정 때와 같이 옛 광주·전남으로 갈린다.
+    const basis = basisSido(effSido, effSigungu);
+
     const prices = {} as Record<FuelType, number | null>;
     for (const fuel of FUEL_TYPES) prices[fuel] = row?.[fuel] ?? null;
 
@@ -235,9 +241,9 @@ function main() {
      */
     function metricFor(kind: ViewMode, value: number | null): FuelMetric {
       const statKey = kind === "sum" ? "sum" : kind;
-      const stat = stats.get(`${effSido}|${statKey}`);
-      const sorted = sortedPrices.get(`${effSido}|${statKey}`) ?? [];
-      const distinct = distinctPrices.get(`${effSido}|${statKey}`) ?? [];
+      const stat = stats.get(`${basis}|${statKey}`);
+      const sorted = sortedPrices.get(`${basis}|${statKey}`) ?? [];
+      const distinct = distinctPrices.get(`${basis}|${statKey}`) ?? [];
       const n = stat?.n ?? 0;
 
       const rank = value != null && distinct.length > 0 ? rankOf(value, distinct) : null;
@@ -275,14 +281,14 @@ function main() {
       const b = stationId ? baseline?.stations[stationId] : undefined;
       if (!baseline || !b || sum == null) return null;
 
-      const m0 = baseline.market[b.window]?.[effSido];
-      const m1 = marketNow.get(effSido);
+      const m0 = baseline.market[b.window]?.[basis];
+      const m1 = marketNow.get(basis);
       if (!m0 || !m1) return null;
 
       const expected = b.base * (m1 / m0);
       const drift = (sum - expected) / expected;
 
-      const distinct = adjDistinct.get(effSido) ?? [];
+      const distinct = adjDistinct.get(basis) ?? [];
       const rank = distinct.length > 0 ? rankOf(sum, distinct) : null;
       const greenBase = greenBaseOf(distinct, greenRank);
       const idx = coefficientOf(sum, greenBase);

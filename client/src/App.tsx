@@ -14,6 +14,7 @@ import {
   type BoardData, type GeoCollection, type RegionSummary, type SignalColor,
   type StationSignal, type ViewMode,
 } from "./lib/board.ts";
+import { basisSido } from "@shared/lib/region.ts";
 
 /** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
 const LOGO = new URL("logo.png", document.baseURI).toString();
@@ -583,9 +584,12 @@ export default function App() {
       )}
 
       {rankOpen && (
+        // 순위표는 비교 모집단 단위라 통합시 이름으로는 찾지 못한다. 시·군·구까지
+        // 들어와 있으면 그것으로 갈리고, 시·도 단계에서는 옛 전남으로 연다 —
+        // 통합시 스물일곱 곳 중 스물둘이 그쪽이다.
         <RankWindow
           date={board.date}
-          sido={activeSido}
+          sido={activeSido ? basisSido(activeSido, activeRegion ?? "") : null}
           mode={mode}
           onClose={() => setRankOpen(false)}
         />

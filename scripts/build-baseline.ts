@@ -47,6 +47,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { basisSido } from "../src/lib/region.ts";
 import { readRaw } from "../src/lib/raw.ts";
 import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
 import { DEFAULT_ROUND_WINDOWS, median, type Baseline } from "../src/lib/adjust.ts";
@@ -75,13 +76,16 @@ function readWindow(yyyymm: string) {
       if (r.diesel == null || r.diesel <= 0) continue;
       const v = r.gasoline + r.diesel;
 
+      // 견주는 모집단 키. 통합시는 선정 때와 같이 옛 광주·전남으로 갈린다.
+      const basis = basisSido(r.sido, r.sigungu);
+
       let a = perStation.get(r.stationId);
-      if (!a) perStation.set(r.stationId, (a = { sido: r.sido, sum: 0, days: 0 }));
+      if (!a) perStation.set(r.stationId, (a = { sido: basis, sum: 0, days: 0 }));
       a.sum += v;
       a.days++;
 
-      const arr = perSido.get(r.sido);
-      if (arr) arr.push(v); else perSido.set(r.sido, [v]);
+      const arr = perSido.get(basis);
+      if (arr) arr.push(v); else perSido.set(basis, [v]);
     }
   }
 
@@ -125,6 +129,26 @@ function main() {
   );
   const goodIds = new Set(good.map((g) => g.stationId).filter((v): v is string => !!v));
 
+  /**
+   * 명단 원본에서 들여온 차수 정보. 없으면 stations.csv 의 최초 차수만 쓴다.
+   *
+   * 기준선은 **마지막** 선정차수를 따라야 한다. 한 주유소가 여러 차수에 걸쳐
+   * 다시 뽑히기 때문이다(172곳). 최초 차수로 잡으면 9차에 다시 뽑힌 곳을 1차
+   * 기준으로 재게 된다 — 마지막 차수로 세면 9차가 37곳이 아니라 93곳이다.
+   */
+  const roundsPath = path.join(DATA, "station-rounds.json");
+  const src: {
+    stations: Record<string, { first: string; last: string; rounds: string[] }>;
+    removed: Record<string, { by: string; date: string | null }>;
+  } | null = existsSync(roundsPath) ? JSON.parse(readFileSync(roundsPath, "utf8")) : null;
+  if (!src) {
+    console.warn("[baseline] data/station-rounds.json 이 없습니다. 최초 선정차수로 갈음합니다 — npm run rounds");
+  }
+
+  /** 그 주유소의 기준이 될 차수. 다시 뽑힌 곳은 마지막 차수다. */
+  const roundOf = (g: GoodStation): string | null =>
+    (g.stationId ? src?.stations[g.stationId]?.last : null) ?? g.round;
+
   // 차수별 기준기간. 관리 화면에서 고친 값이 있으면 그것을 쓴다.
   const cfgPath = path.join(DATA, "round-windows.json");
   const windows: Record<string, string> = existsSync(cfgPath)
@@ -154,13 +178,15 @@ function main() {
   const stations: Baseline["stations"] = {};
   let missing = 0;
   for (const g of good) {
-    if (!g.stationId || !g.round) continue;
-    const w = windows[g.round];
+    if (!g.stationId) continue;
+    const round = roundOf(g);
+    if (!round) { missing++; continue; }
+    const w = windows[round];
     const src = w ? loaded.get(w) : undefined;
     const a = src?.perStation.get(g.stationId);
     if (!w || !a || a.days === 0) { missing++; continue; }
     stations[g.stationId] = {
-      round: g.round,
+      round,
       window: w,
       base: Math.round((a.sum / a.days) * 100) / 100,
       days: a.days,
@@ -177,13 +203,21 @@ function main() {
     const src = w ? loaded.get(w) : undefined;
     if (!src) continue;
     const ids = new Set(
-      good.filter((g) => g.round === round && g.stationId).map((g) => g.stationId!),
+      good.filter((g) => roundOf(g) === round && g.stationId).map((g) => g.stationId!),
     );
     if (!ids.size) continue;
     const got = inferExcluded(src, ids, goodIds);
     for (const id of got) excluded.add(id);
     console.log(`[baseline] ${round}(${w}) 역산 — 제외 추정 ${got.length}곳`);
   }
+
+  // 제외요청으로 명단에서 빠진 곳도 오늘의 후보가 아니다. 역산분과 합친다.
+  //
+  // 둘은 성격이 다르다. 역산은 '애초에 후보가 아니었던 곳', 제외요청은 '뽑혔다가
+  // 빠진 곳' 이다. 실제로 겹치는 것은 다섯 곳뿐이고, 그 다섯은 모두 8·9차 선정
+  // **전에** 빠져서 그때 이미 후보가 아니었다.
+  const inferredCount = excluded.size;
+  for (const id of Object.keys(src?.removed ?? {})) excluded.add(id);
 
   const out: Baseline = {
     generatedAt: new Date().toISOString(),
@@ -196,7 +230,7 @@ function main() {
   const changed = writeJsonIfChanged(path.join(DATA, "baseline.json"), out, ["generatedAt"]);
   console.log(`[baseline] 완료 — 기준선 ${Object.keys(stations).length}곳` +
     (missing ? ` (기준기간 원본이 없어 빠진 곳 ${missing})` : ""));
-  console.log(`  제외 추정 ${out.excluded.length}곳`);
+  console.log(`  모집단에서 뺀 곳 ${out.excluded.length} — 역산 ${inferredCount} · 제외요청 ${Object.keys(src?.removed ?? {}).length} (겹침 포함)`);
   console.log(`  data/baseline.json${changed ? "" : "  그대로 (내용이 같아 다시 쓰지 않음)"}`);
 }
 
