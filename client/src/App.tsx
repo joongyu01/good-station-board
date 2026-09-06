@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
@@ -69,6 +69,26 @@ export default function App() {
 
   // 화면이 넓어지면 전체화면은 의미가 없다. PC 로 돌아가면 닫는다.
   useEffect(() => { if (!narrow) { setMapOpen(false); setListOpen(false); } }, [narrow]);
+
+  /**
+    * 미리보기 지도를 통째로 재운다.
+    *
+    * 미리보기는 눌러서 전체화면으로 넘어가는 자리다. 그런데 안쪽 지도에는
+    * 시·도 배지 버튼이 들어 있어, 그냥 두면 탭 키가 그 버튼들을 하나씩 훑는다.
+    * 눌러도 뒤에서 드릴다운만 일어나고 보이는 화면은 그대로다.
+    *
+    * `pointer-events: none` 은 손가락만 막지 키보드는 못 막는다. `inert` 가
+    * 초점·클릭·접근성 트리에서 통째로 빼 준다. React 18 은 이 속성을 그대로
+    * 넘기지 못해 직접 붙인다.
+    *
+    * `useEffect` 가 아니라 콜백 ref 인 이유 — 미리보기는 자료를 받아온 **뒤에**
+    * 붙는다. `narrow`·`mapOpen` 을 의존성으로 걸면 그때 둘 다 그대로여서
+    * 효과가 다시 돌지 않고 속성이 영영 안 붙는다. 콜백 ref 는 노드가 붙는
+    * 순간에 정확히 한 번 불린다.
+    */
+  const sleepPreview = useCallback((el: HTMLDivElement | null) => {
+    el?.toggleAttribute("inert", true);
+  }, []);
 
   const [activeSido, setActiveSido] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
@@ -422,15 +442,23 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                className="map-preview"
-                onClick={() => setMapOpen(true)}
-                aria-label="지도 전체화면으로 보기"
-              >
-                {mapNode}
-                <span className="map-preview-hint">눌러서 지도 보기</span>
-              </button>
+              // 지도를 `<button>` 안에 통째로 넣으면 배지 버튼이 버튼 안에
+              // 들어가 HTML 이 깨진다 — 브라우저가 바깥 버튼을 제멋대로 끊어
+              // 놓고, React 도 validateDOMNesting 으로 경고한다. 지도는 재워
+              // 두고 위에 덮개 버튼 하나만 얹는다.
+              <div className="map-preview">
+                <div className="map-preview-canvas" ref={sleepPreview} aria-hidden="true">
+                  {mapNode}
+                </div>
+                <button
+                  type="button"
+                  className="map-preview-open"
+                  onClick={() => setMapOpen(true)}
+                  aria-label="지도 전체화면으로 보기"
+                >
+                  <span className="map-preview-hint">눌러서 지도 보기</span>
+                </button>
+              </div>
             )
           ) : mapNode}
 
