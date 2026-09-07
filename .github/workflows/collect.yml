@@ -27,6 +27,22 @@ on:
     #
     # 오피넷은 당일분을 하루에 걸쳐 채운다. 9월 5일 17시에 이미 10,223건으로
     # 전날(10,237건)과 거의 같았다. 그래서 당일분을 노리는 자리를 오후에 둔다.
+  # 코드가 바뀌면 바로 배포한다.
+  #
+  # 여태 트리거가 예약과 수동뿐이라, 화면 코드를 고쳐 올려도 다음 크론이 뜨기
+  # 전까지 배포되지 않았다. 그 크론이 세 시간씩 밀리기도 하니 반나절을 옛 화면
+  # 으로 보낸 셈이다.
+  #
+  # 이때는 **수집을 건너뛴다.** 가격은 하루 네 번이면 충분하고, 오피넷은
+  # NetFunnel 대기열이라 코드를 고칠 때마다 두드릴 이유가 없다.
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "**.pdf"
+      - "**.docx"
+      - ".gitignore"
+
   workflow_dispatch:
     inputs:
       date:
@@ -54,6 +70,9 @@ jobs:
     timeout-minutes: 45
     # 잡 수준에 둬야 step의 if 조건에서 볼 수 있다.
     env:
+      # 수집을 건너뛸지. 수동 실행에서 고르거나, push 로 뜬 것이면 언제나 건너뛴다.
+      # 문자열 'true'/'false' 로 들어오므로 비교도 문자열로 한다.
+      SKIP_COLLECT: ${{ inputs.skip_collect || github.event_name == 'push' }}
       OPINET_API_KEY: ${{ secrets.OPINET_API_KEY }}
       VWORLD_API_KEY: ${{ secrets.VWORLD_API_KEY }}
       SUPABASE_URL: ${{ vars.SUPABASE_URL }}
@@ -90,13 +109,15 @@ jobs:
 
       - run: npm ci
 
+      # 오피넷 스크래퍼만 쓴다. 수집을 건너뛰는 판이면 받을 이유가 없다.
       - name: Playwright 크로미움 설치
+        if: env.SKIP_COLLECT != 'true'
         run: npx playwright install --with-deps chromium
 
       # 명단·임계값·오피넷 키를 Supabase 에서 내려받는다. 미설정이면 저장소에
       # 커밋된 파일을 그대로 쓴다. 실패해도 파이프라인을 세우지 않는다.
       - name: Supabase 에서 명단·설정 내려받기
-        if: ${{ !inputs.skip_collect }}
+        if: env.SKIP_COLLECT != 'true'
         continue-on-error: true
         run: npm run supabase:pull
 
@@ -108,7 +129,7 @@ jobs:
       # (outcome 이 'success' 가 아니게 된다) 빌드·배포만 돌아간다.
       - name: 전국 주유소 가격 수집
         id: collect
-        if: ${{ !inputs.skip_collect }}
+        if: env.SKIP_COLLECT != 'true'
         continue-on-error: true
         run: npm run collect ${{ inputs.date }}
 
@@ -175,11 +196,11 @@ jobs:
           exit 1
 
       - name: 수집 건너뜀 안내
-        if: ${{ inputs.skip_collect }}
-        run: echo "::notice::수집을 건너뛰고 커밋된 데이터로 배포합니다."
+        if: env.SKIP_COLLECT == 'true'
+        run: echo "::notice::수집을 건너뛰고 커밋된 데이터로 빌드·배포합니다 (${{ github.event_name }})."
 
       - name: 수집 실패 알림
-        if: ${{ !inputs.skip_collect && steps.collect.outcome != 'success' }}
+        if: env.SKIP_COLLECT != 'true' && steps.collect.outcome != 'success'
         run: |
           echo "::warning::오피넷 수집에 실패했습니다. 직전 데이터로 현황판이 유지됩니다."
 
