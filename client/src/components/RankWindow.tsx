@@ -5,8 +5,8 @@
  * 나오니 그 값이 맞는지 확인할 길이 없었다. 여기서 그날 그 시·도의 줄 세운
  * 결과를 그대로 펼쳐 커트라인이 어디서 잘렸는지 보여준다.
  *
- * 전국 원본은 무거워 시·도별 상위 K건만 싣는다(scripts/build-ranks.ts).
- * 커트라인은 N위·2N위라 K=30 안에 반드시 들어온다.
+ * 전국 원본은 무거워 시·도별 상위 몇 줄만 싣는다(scripts/build-ranks.ts).
+ * 자를 때 행 수가 아니라 **조밀 순위**로 세므로 동점이 몰려도 커트라인까지 닿는다.
  */
 import { useEffect, useMemo, useState } from "react";
 import { fetchData, formatPrice, sidoLabel } from "../lib/board.ts";
@@ -114,6 +114,24 @@ export default function RankWindow({ date, sido, mode, judging, onClose }: Props
     };
   }, [stored, active, judging]);
 
+  /**
+   * 커트라인이 놓이는 줄.
+   *
+   * 그 순위와 **값이 같은 마지막 줄**이다. 동점이 열 줄이면 열 줄 모두가 그
+   * 순위라, 각 줄에 선을 그으면 경계가 아니라 줄무늬가 된다. 그 순위가 아예
+   * 없으면(값이 건너뛴 경우) 그보다 앞선 마지막 줄에 긋는다.
+   */
+  const cutAt = (rank: number): number => {
+    if (!table) return -1;
+    let at = -1;
+    for (let i = 0; i < table.rows.length; i++) if (table.rows[i].r <= rank) at = i;
+    return at;
+  };
+  const greenCutAt = table ? cutAt(table.greenRank) : -1;
+  const yellowCutAt = table ? cutAt(table.yellowRank) : -1;
+  /** 줄 수 상한에 걸려 실으려던 순위까지 못 간 경우. */
+  const cutShort = !!table && !!file && (table.shownRank ?? 0) > 0 && table.shownRank < file.topRank;
+
   return (
     <>
       <div className="rank-back" onClick={onClose} role="presentation" />
@@ -184,14 +202,18 @@ export default function RankWindow({ date, sido, mode, judging, onClose }: Props
               </div>
               <div>
                 <dt>보여주는 범위</dt>
-                <dd>상위 {Math.min(file!.topK, table.n)}위</dd>
+                <dd>
+                  상위 {table.shownRank ?? file!.topRank}위 · {table.rows.length.toLocaleString("ko-KR")}줄
+                  {cutShort && <span className="muted"> (줄 수 상한)</span>}
+                </dd>
               </div>
             </dl>
 
             <table className="rank-table">
               <thead>
                 <tr>
-                  <th className="num">순위</th>
+                  <th className="num" title="위에서부터 센 줄 번호. 동점이 있으면 순위와 어긋난다">순번</th>
+                  <th className="num" title="같은 값이면 같은 순위(조밀 순위). 계수와 커트라인은 이 순위로 센다">순위</th>
                   <th>주유소</th>
                   <th>시·군·구</th>
                   <th className="num">휘발유</th>
@@ -202,14 +224,16 @@ export default function RankWindow({ date, sido, mode, judging, onClose }: Props
               </thead>
               <tbody>
                 {table.rows.map((r, i) => {
-                  // 커트라인 바로 아래 줄에 선을 그어 경계를 눈에 보이게 한다.
+                  // 커트라인 **마지막 줄**에만 선을 긋는다. 동점이 열 줄이면
+                  // 열 줄 모두에 그어져 표 전체가 줄무늬가 됐다.
                   const cls = [
                     r.good ? "is-good" : "",
-                    r.r === table.greenRank ? "is-cut-g" : "",
-                    r.r === table.yellowRank ? "is-cut-y" : "",
+                    i === greenCutAt ? "is-cut-g" : "",
+                    i === yellowCutAt ? "is-cut-y" : "",
                   ].filter(Boolean).join(" ");
                   return (
                     <tr key={`${r.stationId}-${i}`} className={cls}>
+                      <td className="num muted">{i + 1}</td>
                       <td className="num">{r.r}</td>
                       <td className="col-name">
                         {r.name}

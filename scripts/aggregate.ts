@@ -512,11 +512,27 @@ function main() {
     .reverse();
 
   const stale = all.slice(KEEP_DAYS);
-  for (const d of stale) {
-    rmSync(path.join(OUT_DIR, `board-${d}.json`), { force: true });
-    rmSync(path.join(OUT_DIR, `rank-${d}.json`), { force: true });
-  }
+  for (const d of stale) rmSync(path.join(OUT_DIR, `board-${d}.json`), { force: true });
   if (stale.length) console.log(`[aggregate] 오래된 스냅샷 ${stale.length}건 정리 (보관 ${KEEP_DAYS}일)`);
+
+  /**
+   * 순위표도 같은 기간만 남긴다.
+   *
+   * 예전에는 board 날짜 목록으로 지웠는데, `npm run ranks` 는 보관 원본 전체를
+   * 대상으로 도는 반면 board 는 집계가 돈 날만 생긴다. 그래서 순위표만 191일치가
+   * 쌓여 있었다. 자기 날짜로 세야 맞다. 지운 날도 원본이 있으니
+   * `npm run ranks 20260315` 로 언제든 다시 만든다.
+   */
+  const rankDates = readdirSync(OUT_DIR)
+    .filter((f) => /^rank-\d{8}\.json$/.test(f))
+    .map((f) => f.slice(5, 13))
+    .sort()
+    .reverse();
+  const staleRanks = rankDates.slice(KEEP_DAYS);
+  for (const d of staleRanks) rmSync(path.join(OUT_DIR, `rank-${d}.json`), { force: true });
+  if (staleRanks.length) {
+    console.log(`[aggregate] 오래된 순위표 ${staleRanks.length}건 정리 (보관 ${KEEP_DAYS}일)`);
+  }
 
   const available = all.slice(0, KEEP_DAYS);
   // 순위표는 파일이 실제로 있는 날짜만 싣는다. 화면의 날짜 선택이 이 목록을 쓴다.

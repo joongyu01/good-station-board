@@ -6,18 +6,32 @@
  * 저장소에 남기지 않는다(하루 4MB). 그래서 화면에서는 계수가 맞는지 확인할
  * 방법이 없었다.
  *
- * 여기서 **시·도별 상위 K건**만 뽑아 따로 실어 둔다. 커트라인(N위·2N위)이
- * 그 안에 들어가므로 "이 값이 왜 커트라인인지" 를 눈으로 확인할 수 있다.
- * 전국을 다 실으면 하루 4MB 지만 K=30 이면 16개 시·도 × 3기준 × 30행이라
- * 100KB 안쪽이다.
+ * 여기서 시·도별 상위 몇 줄만 뽑아 따로 실어 둔다. 커트라인(N위·2N위)이 그
+ * 안에 들어가야 "이 값이 왜 커트라인인지" 를 눈으로 확인할 수 있다.
+ *
+ * 자를 때 **행 수가 아니라 조밀 순위로 센다.** 예전에는 시·도마다 30행씩 실었는데
+ * 동점이 많아 서울 30행이 조밀 10위까지밖에 못 갔다. 2N=20위 커트라인이 목록
+ * 밖이라 정작 확인하려던 줄이 없었다. 순위로 자르면 동점이 몇이든 커트라인까지
+ * 닿는다.
  */
 import { basisSido } from "./region.ts";
 import { cutoffsOf } from "./judge.ts";
 import { distinctAsc, greenRankWith, type Thresholds } from "./signal.ts";
 import { VIEW_MODES, type ViewMode } from "./types.ts";
 
-/** 시·도마다 실어 둘 상위 건수. 2N(서울·경기 20위)보다 넉넉해야 커트라인 전후가 보인다. */
-export const RANK_TOP_K = 30;
+/**
+ * 시·도마다 실어 둘 조밀 순위. 2N(서울·경기 20위)보다 넉넉해야 커트라인 전후가 보인다.
+ */
+export const RANK_TOP_RANK = 25;
+
+/**
+ * 한 시·도·기준이 가질 수 있는 최대 행 수.
+ *
+ * 순위로만 자르면 경기처럼 동점이 몰리는 곳이 700행을 넘어 파일이 4메가가 된다.
+ * 커트라인 전후를 보는 것이 목적이라 그렇게까지 필요하지 않다. 상한에 걸리면
+ * 화면이 "여기까지만 실렸다" 고 밝힌다.
+ */
+export const RANK_MAX_ROWS = 120;
 
 export interface RankRow {
   /** 순위. 같은 값이면 같은 순위 */
@@ -36,6 +50,8 @@ export interface RankRow {
 export interface RankRegion {
   /** 그 기준으로 비교 가능한 주유소 수 (전국 원본 기준) */
   n: number;
+  /** 실린 줄이 닿는 조밀 순위. 상한에 걸려 잘렸으면 RANK_TOP_RANK 보다 작다 */
+  shownRank: number;
   greenRank: number;
   yellowRank: number;
   /** 계수 1 이 되는 값 */
@@ -59,7 +75,10 @@ export interface RankRegion {
 export interface RankFile {
   date: string;
   generatedAt: string;
-  topK: number;
+  /** 실으려 한 조밀 순위 */
+  topRank: number;
+  /** 시·도·기준마다의 행 수 상한 */
+  maxRows: number;
   /** 시·도 → 기준 → 순위표 */
   regions: Record<string, Partial<Record<ViewMode, RankRegion>>>;
 }
@@ -87,7 +106,8 @@ export function buildRanks(
   goodIds: Set<string>,
   th: Thresholds,
   date: string,
-  topK = RANK_TOP_K,
+  topRank = RANK_TOP_RANK,
+  maxRows = RANK_MAX_ROWS,
 ): RankFile {
   const regions: RankFile["regions"] = {};
 
@@ -113,10 +133,13 @@ export function buildRanks(
       const at = (k: number) => (distinct.length ? distinct[Math.min(k, distinct.length) - 1] : null);
 
       const out: RankRow[] = [];
-      for (let i = 0; i < Math.min(topK, arr.length); i++) {
+      for (let i = 0; i < arr.length; i++) {
         const { row, v } = arr[i];
         // 조밀 순위 — 동점은 같은 등수, 다음 값은 바로 다음 등수.
-        let r = i === 0 ? 1 : (arr[i - 1].v === v ? out[i - 1].r : out[i - 1].r + 1);
+        const r = i === 0 ? 1 : (arr[i - 1].v === v ? out[i - 1].r : out[i - 1].r + 1);
+        // 순위로 자른다. 같은 등수는 통째로 넣거나 통째로 빼야 경계가 흐려지지 않는다.
+        if (r > topRank) break;
+        if (out.length >= maxRows && r !== out[out.length - 1].r) break;
         out.push({
           r,
           stationId: row.stationId,
@@ -131,6 +154,7 @@ export function buildRanks(
 
       (regions[sido] ??= {})[mode] = {
         n: arr.length,
+        shownRank: out.length ? out[out.length - 1].r : 0,
         greenRank,
         yellowRank,
         greenBase: at(greenRank),
@@ -141,5 +165,5 @@ export function buildRanks(
     }
   }
 
-  return { date, generatedAt: new Date().toISOString(), topK, regions };
+  return { date, generatedAt: new Date().toISOString(), topRank, maxRows, regions };
 }

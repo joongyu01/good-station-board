@@ -152,7 +152,7 @@ Node 스크립트와 Playwright 만 돌립니다. LLM 호출도, API 키도 없�
 | `client/public/data/latest.json` | O | 화면이 읽는 판정 결과 |
 | `client/public/data/history.json` | O | 차트가 읽는 시계열 |
 | `client/public/data/board-{날짜}.json` | O | 그날의 판정 스냅샷 (최근 30일) |
-| `client/public/data/rank-{날짜}.json` | O | 계수 검증용 순위표 (하루 200KB) |
+| `client/public/data/rank-{날짜}.json` | O | 계수 검증용 순위표 (하루 743KB · 30일 보관) |
 | `client/public/data/index.json` | O | 보유 날짜 목록 `{dates, ranks}` |
 | `client/public/data/geo-*.json` | O | 단순화한 행정구역 경계 |
 
@@ -214,7 +214,7 @@ src/lib/                   화면과 스크립트가 공유
   adjust.ts                보정 판정 — 기준기간·이탈률·결합 방식
   stable-write.ts          내용이 같으면 다시 쓰지 않는다 (헛커밋 방지)
   history.ts               시계열 · 기준 충족 일수 (COMPLIANCE_FROM)
-  rank.ts                  검증용 순위표 (RANK_TOP_K)
+  rank.ts                  검증용 순위표 (RANK_TOP_RANK · RANK_MAX_ROWS)
   raw.ts                   원본 gzip 보관
   region.ts                주소 → 시·도/시·군·구 정규화 · basisSido(비교 모집단)
   station-csv.ts           명단 파서 (빌드·관리화면 공용)
@@ -295,13 +295,17 @@ SUPABASE_URL=... SUPABASE_ANON_KEY=... GS_ACCESS_CODE=... npm run supabase:seed
 **실제 등록 주소는 부흥로 1809** 입니다. 좌표는 `data/manual-coords.json` 으로
 맞춰 뒀지만 원본을 고치는 편이 좋습니다.
 
-### 🟡 순위표가 정리되지 않고 쌓인다
+### ~~🟡 순위표가 정리되지 않고 쌓인다~~ — 고쳤습니다
 
-`aggregate` 의 보관 정리(`KEEP_DAYS = 30`)는 **`board-*.json` 이 있는 날짜만**
-훑습니다. 백필로 만든 순위표는 짝이 되는 스냅샷이 없어 영원히 남습니다 — 지금
-67개 14MB 이고 하루 200KB 씩 늡니다(연 73MB). 배포되는 사이트 용량이라 언젠가는
-손봐야 합니다. `rank-*.json` 목록을 직접 훑어 자르거나, 검증용이니 보관 기간을
-따로 두면 됩니다.
+보관 정리가 `board-*.json` 날짜만 훑던 탓에 백필로 만든 순위표가 영원히
+남았습니다(191개 42MB). 이제 `rank-*.json` 목록을 자기 날짜로 세어 30일만
+남깁니다. 지운 날도 원본이 있으니 `npm run ranks 20260315` 로 언제든 다시 만듭니다.
+
+같이 줄 자르는 방식도 바꿨습니다. 예전에는 시·도마다 **30행**을 실었는데 동점이
+많아 서울 30행이 조밀 **10위**까지밖에 못 갔습니다. 2N=20위 커트라인이 목록 밖이라
+정작 확인하려던 줄이 없었습니다. 이제 행이 아니라 **조밀 순위 25위**까지 싣습니다
+(시·도·기준마다 120행 상한). 하루 743KB 로 늘었지만 30일치라 22MB 로, 전보다
+줄었습니다.
 
 ### ⚪ 유종별 계수 추이 (미구현)
 
