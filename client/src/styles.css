@@ -378,9 +378,13 @@ button.stat + button.stat { margin-left: 4px; }
   괄호만으로 묶고 색을 죽인다. 다섯 차수까지 붙는 곳이 있어 테두리를 두르면
   상호보다 요란해진다.
 */
-.rounds { margin-left: 4px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.rounds b { font-weight: 600; }
-.rounds b + b { margin-left: 2px; }
+.rounds { display: inline-flex; align-items: center; gap: 2px; margin-left: 5px; vertical-align: middle; white-space: nowrap; font-size: 11px; color: var(--muted); }
+.rounds b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: rgba(47, 111, 181, .12); color: #2F6FB5;
+  font-size: 9.5px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+}
 
 .badge-warn { background: var(--warn-bg); color: var(--warn); }
 .badge-gap { background: rgba(138, 148, 166, .16); color: #5C6779; }

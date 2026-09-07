@@ -308,7 +308,9 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     .map((r) => `${r}${windows?.[r] ? ` ${periodLabel(windows[r])}` : ""}`)
                     .join(" · ")}
                 >
-                  {station.rounds.map((r) => <b key={r}>({r})</b>)} 선정
+                  {station.rounds.map((r) => (
+                    <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>
+                  ))} 선정
                 </span>
               )}
               {chart && <> · {fmtDate(chart.from)} ~ {fmtDate(chart.to)}</>}

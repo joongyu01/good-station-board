@@ -191,17 +191,21 @@ export default function StationTable({
 }
 
 /**
- * 선정차수 — 뽑힌 차수를 **모두** 적는다.
+ * 선정차수 — 뽑힌 차수를 **모두**, 숫자 아이콘으로.
  *
  * 한 곳이 여러 차수에 걸쳐 다시 뽑히는 일이 절반을 넘는데, 마지막 것만 적으면
- * 꾸준히 뽑혀 온 곳과 이번에 처음 든 곳이 똑같아 보인다. 괄호로 나열하면 길이가
- * 곧 이력이 된다.
+ * 꾸준히 뽑혀 온 곳과 이번에 처음 든 곳이 똑같아 보인다. 그렇다고 `(4차)(5차)
+ * (6차)(7차)(8차)` 처럼 늘어놓으면 상호보다 길어진다. 숫자만 남긴 작은 동그라미로
+ * 줄이면 개수가 곧 이력이 되고 자리도 차지하지 않는다.
+ *
+ * 색은 그래프의 선정 구간 띠와 같은 파랑이다 — 목록에서 본 동그라미와 그래프에서
+ * 본 띠가 같은 것을 가리킨다는 게 색으로 읽힌다.
  */
 function RoundBadge({ rounds }: { rounds?: string[] }) {
   if (!rounds || rounds.length === 0) return null;
   return (
     <span className="rounds" title={`${rounds.join(" · ")} 선정 (${rounds.length}회)`}>
-      {rounds.map((r) => <b key={r}>({r})</b>)}
+      {rounds.map((r) => <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>)}
     </span>
   );
 }
