@@ -37,30 +37,69 @@
 import type { SignalColor } from "./types.ts";
 
 /**
- * 차수별 선정 기준기간 (YYYYMM).
+ * 차수별 선정 기준기간 — `YYYYMMDD~YYYYMMDD`.
  *
- * 8차·9차는 보관 원본으로 확인했다 — 8차는 7월 기준 충족률 80%(순위 중앙값
- * 3위), 9차는 8월 기준 59% 로 각각 그 달에 몰려 있다.
+ * 예전에는 달(YYYYMM) 단위였고 1~8차가 전부 7월이었다. 보관 원본이 7월부터라
+ * 그 이전을 볼 수 없었기 때문이다. 지금은 3월 1일부터 전부 있어 기간을 직접
+ * 추산했다 — 근거와 수치는 ROUNDS.md §4, 재현은 `npm run rounds:estimate`.
  *
- * 1~7차는 보관 원본이 7월부터라 그 이전을 볼 수 없어 7월로 둔다. 그 차수들은
- * **'관측을 시작한 7월 대비' 이탈**을 재는 셈이라, 7월 이전에 이미 올린 몫은
- * 잡히지 않는다. 실제보다 후하게 나온다는 뜻이라 화면에 그렇게 밝힌다.
- * 실제 기간을 알게 되면 `data/round-windows.json` 으로 덮어쓴다.
+ * 격주 차수(1~7차)는 공시일이 아니라 **공시 나흘 전**에 마감한 것으로 잡는다.
+ * 월간 차수가 그 시차를 그대로 보여준다 — 8차는 7/31 마감에 8/4 공시, 9차는
+ * 8/31 마감에 9/3 공시다. 같은 시차를 격주 차수에 적용하면 충족률이 71%에서
+ * 77%로 오른다. 다만 k=2~5 사이 차이가 크지 않아 **경계는 ±4일쯤 무르다.**
+ *
+ * 1차는 추산되지 않는다. 어느 기간을 갖다 대도 충족률이 2~3% 라 그때는 가격
+ * 순위로 뽑은 것이 아니다. 여기 적힌 값은 격주 주기만 맞춘 것이다.
+ *
+ * 바꾸려면 `data/round-windows.json` 으로 덮어쓴다.
  */
 export const DEFAULT_ROUND_WINDOWS: Record<string, string> = {
-  "1차": "202607",
-  "2차": "202607",
-  "3차": "202607",
-  "4차": "202607",
-  "5차": "202607",
-  "6차": "202607",
-  "7차": "202607",
-  "8차": "202607",
-  "9차": "202608",
+  "1차": "20260315~20260327",
+  "2차": "20260328~20260409",
+  "3차": "20260410~20260423",
+  "4차": "20260424~20260507",
+  "5차": "20260508~20260522",
+  "6차": "20260523~20260604",
+  "7차": "20260605~20260618",
+  "8차": "20260701~20260731",
+  "9차": "20260801~20260831",
 };
 
-/** 기준기간이 데이터로 확인된 차수. 나머지는 화면에서 '추정' 으로 밝힌다. */
-export const CONFIRMED_ROUNDS: readonly string[] = ["8차", "9차"];
+/**
+ * 기준기간이 데이터로 확인된 차수. 나머지는 화면에서 '추정' 으로 밝힌다.
+ *
+ * 4차부터는 그 차수에 뽑힌 곳의 73~84% 가 자기 기간에 시·도 상위 N위였다.
+ * 1~3차는 기간을 옳게 짚어도 그 값이 5~13% 에 그친다 — 그때는 가격 순위로
+ * 뽑지 않았기 때문이다(ROUNDS.md §4.2). 기간의 확실함이 다르므로 갈라 둔다.
+ */
+export const CONFIRMED_ROUNDS: readonly string[] = ["4차", "5차", "6차", "7차", "8차", "9차"];
+
+/** 기간 문자열이 덮는 날짜들 (YYYYMMDD 오름차순). */
+export function periodDays(period: string): string[] {
+  const [from, to] = period.split("~");
+  if (!from || !to) return [];
+  const iso = (s: string) => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}T00:00:00Z`;
+  const out: string[] = [];
+  const d = new Date(iso(from)), end = new Date(iso(to));
+  while (d <= end) {
+    out.push(d.toISOString().slice(0, 10).replace(/-/g, ""));
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  return out;
+}
+
+/**
+ * 화면 표기 — `20260424~20260507` → `4월 24일~5월 7일`.
+ *
+ * 달 단위(`202607`)도 받는다. 브라우저가 옛 latest.json 을 캐시하고 있으면
+ * 그 표기가 그대로 올라오기 때문이다.
+ */
+export function periodLabel(period: string): string {
+  const day = (s: string) => `${Number(s.slice(4, 6))}월 ${Number(s.slice(6))}일`;
+  const [from, to] = period.split("~");
+  if (!to) return /^\d{6}$/.test(from) ? `${from.slice(0, 4)}년 ${Number(from.slice(4, 6))}월` : from;
+  return `${day(from)}~${day(to)}`;
+}
 
 /** 이탈률 임계값 — 이 값 이하면 초록. 0 이면 '시장만큼만 올렸다'. */
 export const DRIFT_GREEN = 0;
@@ -78,7 +117,7 @@ export function median(values: number[]): number {
 /** build-baseline 이 만드는 파일. */
 export interface Baseline {
   generatedAt: string;
-  /** 차수 → 기준기간 YYYYMM */
+  /** 차수 → 기준기간 `YYYYMMDD~YYYYMMDD` */
   windows: Record<string, string>;
   /** 기준기간 → 시·도 → 합계 중앙값 */
   market: Record<string, Record<string, number>>;
@@ -90,7 +129,7 @@ export interface Baseline {
 
 /** 보정 판정 한 건. */
 export interface AdjustedMetric {
-  /** 선정 기준기간 YYYYMM */
+  /** 선정 기준기간 `YYYYMMDD~YYYYMMDD` */
   window: string;
   /** 그 기간이 데이터로 확인된 것인지. false 면 화면에 '추정' 을 붙인다. */
   windowConfirmed: boolean;

@@ -3,6 +3,7 @@ import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
+import { compileQuery, QUERY_HINT } from "./lib/query.ts";
 import MobileSheet from "./components/MobileSheet.tsx";
 import RankWindow from "./components/RankWindow.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
@@ -51,6 +52,8 @@ export default function App() {
   const [sort, setSort] = useState<SortState | null>(null);
   /** 요약 띠에서 고른 판정. null 이면 전체를 보여준다. */
   const [filter, setFilter] = useState<SignalColor | null>(null);
+  /** 검색어 — 낱말과 조건을 섞어 쓴다. query.ts 참고 */
+  const [q, setQ] = useState("");
   /** 계수 검증용 순위표 창 */
   const [rankOpen, setRankOpen] = useState(false);
   /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
@@ -278,18 +281,29 @@ export default function App() {
    * 지역 드릴다운 **위에** 얹는다. 경북을 고른 상태에서 '가격기준 초과' 를
    * 누르면 경북의 초과 건만 남는다.
    */
+  const match = useMemo(() => compileQuery(q), [q]);
+
   const view = useMemo(() => {
-    if (!filter) return panel;
-    const list = panel.stations.filter((s) => s.signal === filter);
+    const term = q.trim();
+    const searched = term ? panel.stations.filter((s) => match(s, mode)) : panel.stations;
+    const list = filter ? searched.filter((s) => s.signal === filter) : searched;
+    if (!term && !filter) return panel;
+
+    const notes = [
+      term ? `“${term}” 검색` : null,
+      filter ? `${SIGNAL_LABELS[filter]}만 보는 중 (다시 누르면 전체)` : null,
+    ].filter(Boolean);
     return {
       ...panel,
       stations: list,
-      title: `${panel.title} · ${SIGNAL_LABELS[filter]}`,
-      subtitle: `${list.length}곳 · ${SIGNAL_LABELS[filter]}만 보는 중 (다시 누르면 전체)`,
-      scope: `${panel.scope}_${SIGNAL_LABELS[filter]}`,
-      empty: `${SIGNAL_LABELS[filter]}인 착한주유소가 없습니다.`,
+      title: filter ? `${panel.title} · ${SIGNAL_LABELS[filter]}` : panel.title,
+      subtitle: `${list.length}곳 · ${notes.join(" · ")}`,
+      scope: [panel.scope, filter ? SIGNAL_LABELS[filter] : null, term || null].filter(Boolean).join("_"),
+      empty: term
+        ? `“${term}” 에 맞는 착한주유소가 없습니다.`
+        : `${SIGNAL_LABELS[filter!]}인 착한주유소가 없습니다.`,
     };
-  }, [panel, filter]);
+  }, [panel, filter, q, match, mode]);
 
   const totals = useMemo(() => summarize(stations, "전국", ""), [stations]);
 
@@ -301,6 +315,7 @@ export default function App() {
     setChartOf(null);
     setSort(null);
     setFilter(null);
+    setQ("");
     setRankOpen(false);
     setMode("sum");
     setMapOpen(false);
@@ -312,6 +327,28 @@ export default function App() {
 
   /** 표에 보이는 순서 그대로. CSV 도 이 배열을 쓴다. */
   const rows = useMemo(() => sortStations(view.stations, sort), [view.stations, sort]);
+
+  /**
+   * 검색 상자. 목록이 보이는 곳마다 같은 것을 놓는다 — PC 패널과 모바일 시트.
+   *
+   * 거르기는 `panel` 위에 얹히므로 지도 드릴다운·판정 거르기와 함께 걸린다.
+   */
+  const searchBox = (
+    <div className="panel-search">
+      <input
+        type="search"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="검색"
+        title={`낱말을 띄어 쓰면 모두 만족하는 곳만 남습니다 — ${QUERY_HINT}`}
+        aria-label="주유소 검색"
+      />
+      {q && (
+        <button type="button" className="search-clear" onClick={() => setQ("")} aria-label="검색 지우기">✕</button>
+      )}
+      <span className="search-hint">{QUERY_HINT}</span>
+    </div>
+  );
 
   if (hash.startsWith("#/admin")) {
     return <Admin onExit={() => { window.location.hash = ""; }} />;
@@ -531,6 +568,7 @@ export default function App() {
               </button>
             </div>
           </div>
+          {searchBox}
           <div className="panel-body">
             {narrow ? (
               listOpen ? (
@@ -593,6 +631,7 @@ export default function App() {
           head={<>
             <h2 className="sheet-title">{view.title}</h2>
             <p className="panel-sub">{view.subtitle}</p>
+            {searchBox}
           </>}
           onClose={() => setListOpen(false)}
           foot={
@@ -631,7 +670,13 @@ export default function App() {
         />
       )}
 
-      {chartOf && <PriceChart station={chartOf} onClose={() => setChartOf(null)} />}
+      {chartOf && (
+        <PriceChart
+          station={chartOf}
+          windows={board.baseline?.windows}
+          onClose={() => setChartOf(null)}
+        />
+      )}
 
       {/* kpetrosafety 와 동일한 표기를 유지한다 */}
       <div className="copyright">

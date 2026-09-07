@@ -83,6 +83,17 @@ function main() {
   const mapping: Record<string, { stationId: string }> = existsSync(mappingPath)
     ? JSON.parse(readFileSync(mappingPath, "utf8")) : {};
 
+  /**
+   * 명단 원본에서 들여온 차수. 화면이 상호 옆에 붙이고 그래프에 선정 시점을 긋는다.
+   *
+   * 없으면 CSV 의 최초 차수 하나로 갈음한다 — 다시 뽑힌 이력은 그 파일에만 있다.
+   */
+  const roundsPath = path.join(DATA, "station-rounds.json");
+  const roundSrc: { stations: Record<string, { rounds: string[] }> } | null =
+    existsSync(roundsPath) ? JSON.parse(readFileSync(roundsPath, "utf8")) : null;
+  const roundsOf = (g: GoodStation): string[] =>
+    (g.stationId ? roundSrc?.stations[g.stationId]?.rounds : null) ?? (g.round ? [g.round] : []);
+
   // 관리 화면에서 바꾼 임계값. 없으면 코드 기본값을 쓴다.
   const thPath = path.join(DATA, "thresholds.json");
   const th: Thresholds = existsSync(thPath)
@@ -330,6 +341,7 @@ function main() {
       district,
       lat: coord?.lat ?? null,
       lng: coord?.lng ?? null,
+      rounds: roundsOf(g),
       prices,
       metrics,
 
@@ -387,16 +399,29 @@ function main() {
   let gapCount = 0;
   let staleCount = 0;
   for (const sig of signals) {
+    /**
+     * 신고를 거른 날 수 — **기본 구간(8월 1일~) 안에서만** 센다.
+     *
+     * 시계열이 3월까지 늘어나면서 전 구간을 훑었더니 과거 미신고가 20곳에서
+     * 54곳으로 늘었다. 다섯 달 전 하루를 걸렀다는 이유로 오늘 판정을 못 하는
+     * 것은 뜻이 없다 — 이 표시는 '지금 이 가격을 믿고 순위를 매겨도 되는가' 를
+     * 묻는 것이라 최근 이력이라야 답이 된다.
+     *
+     * 그래프는 이것과 무관하게 3월치부터 다 그린다. 판정을 접는 범위와 보여줄
+     * 범위는 다른 이야기다.
+     */
     const series = sig.stationId ? history.stations[sig.stationId] : undefined;
     let gaps = 0;
     if (series) {
       for (let i = 0; i < history.dates.length; i++) {
+        if (history.dates[i] < COMPLIANCE_FROM) continue;
         const g = series.g[i];
         const d = series.d[i];
         if (g == null || d == null || g === 0 || d === 0) gaps++;
       }
     } else {
-      gaps = history.dates.length; // 시계열조차 없으면 전부 결측으로 본다
+      // 시계열조차 없으면 전부 결측으로 본다
+      gaps = history.dates.filter((x) => x >= COMPLIANCE_FROM).length;
     }
 
     sig.dataGapDays = gaps;

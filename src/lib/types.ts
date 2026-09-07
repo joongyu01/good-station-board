@@ -163,6 +163,14 @@ export interface StationSignal {
   district: string | null;
   lat: number | null;
   lng: number | null;
+  /**
+   * 선정차수 — 뽑힌 적 있는 차수를 모두, 차수 순으로.
+   *
+   * 절반이 넘는 곳이 여러 차수에 걸쳐 다시 뽑혔다. 하나만 실으면 "1차 주유소"
+   * 인데 실은 9차에도 뽑힌 곳을 옛날 것으로 오해하게 된다. 그래프에 선정 시점을
+   * 표시할 때도 전부 필요하다 — 기간은 `baseline.windows[차수]` 에 있다.
+   */
+  rounds: string[];
   /** 유종별 판매가 (원/L). 취급하지 않으면 null */
   prices: Record<FuelType, number | null>;
   /** 세 기준의 성적. 화면이 고른 기준을 꺼내 쓴다. */

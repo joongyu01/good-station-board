@@ -373,6 +373,15 @@ button.stat + button.stat { margin-left: 4px; }
 }
 .badge-low { background: var(--good-bg); color: var(--good); }
 .badge-self { background: rgba(47, 111, 181, .12); color: #2F6FB5; }
+/*
+  선정차수. 상호 옆에 붙으므로 눈에 먼저 걸리면 안 된다 — 배지 테두리 없이
+  괄호만으로 묶고 색을 죽인다. 다섯 차수까지 붙는 곳이 있어 테두리를 두르면
+  상호보다 요란해진다.
+*/
+.rounds { margin-left: 4px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rounds b { font-weight: 600; }
+.rounds b + b { margin-left: 2px; }
+
 .badge-warn { background: var(--warn-bg); color: var(--warn); }
 .badge-gap { background: rgba(138, 148, 166, .16); color: #5C6779; }
 
@@ -623,6 +632,17 @@ button.stat + button.stat { margin-left: 4px; }
 .ch-axis { fill: var(--ink-soft); font-size: 10.5px; font-variant-numeric: tabular-nums; }
 .ch-cutoff { stroke: #C6402E; stroke-width: 1.2; stroke-dasharray: 5 4; opacity: .65; }
 .ch-cutoff-label { fill: #C6402E; font-size: 10px; font-weight: 700; opacity: .85; }
+
+/*
+  선정 시점 — 그 차수의 평가기간을 띠로, 마감일을 절취선으로.
+
+  띠는 아주 옅게 깐다. 값을 읽는 데 방해가 되면 안 되고, 여러 차수에 걸쳐 뽑힌
+  곳은 띠가 서너 개 겹치기 때문이다. 겹친 만큼 진해져 자주 뽑힌 구간이 저절로
+  드러난다.
+*/
+.ch-round { fill: #2F6FB5; opacity: .07; }
+.ch-round-edge { stroke: #2F6FB5; stroke-width: 1.2; stroke-dasharray: 3 3; opacity: .5; }
+.ch-round-label { fill: #2F6FB5; font-size: 9.5px; font-weight: 700; opacity: .75; }
 .ch-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 
 .chart-legend {
@@ -696,6 +716,25 @@ button.stat + button.stat { margin-left: 4px; }
 
 /* ── CSV 내려받기 ───────────────────────────────────────── */
 .panel-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; }
+
+/*
+  검색 상자.
+
+  도움말을 placeholder 가 아니라 상자 아래에 따로 둔다. placeholder 에 넣으면
+  글자를 한 자 치는 순간 사라져, 정작 조건 문법이 필요한 때에 없다.
+*/
+.panel-search { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0 18px 12px; }
+.panel-search input {
+  flex: 1 1 220px; min-width: 0; padding: 7px 28px 7px 10px;
+  border: 1px solid var(--line); border-radius: 6px; font-size: 13px; background: #fff;
+}
+.panel-search input:focus { outline: 2px solid rgba(47, 111, 181, .35); outline-offset: -1px; border-color: #2F6FB5; }
+.search-clear {
+  position: absolute; left: auto; right: 26px; top: 7px;
+  border: 0; background: transparent; cursor: pointer; color: var(--muted); font-size: 12px; padding: 2px 4px;
+}
+.search-clear:hover { color: var(--ink); }
+.search-hint { flex: 1 1 100%; font-size: 11px; color: var(--muted); }
 .panel-title { min-width: 0; flex: 1; }
 .btn-csv {
   flex: none; border: 1px solid var(--line); background: var(--card);

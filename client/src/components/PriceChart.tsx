@@ -20,6 +20,7 @@ import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../li
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
 import { COEF_DIGITS } from "@shared/lib/signal.ts";
+import { periodLabel } from "@shared/lib/adjust.ts";
 
 /**
  * viewBox 너비. 모바일에서는 좁게 잡는다.
@@ -71,20 +72,29 @@ function loadHistory(): Promise<History> {
 
 interface Props {
   station: StationSignal;
+  /**
+   * 차수 → 선정 기준기간 (`YYYYMMDD~YYYYMMDD`). `board.baseline.windows` 그대로다.
+   *
+   * 이게 있어야 그래프에 "언제 뽑힌 곳인지" 를 그을 수 있다. 없으면 선만 빠지고
+   * 나머지는 그대로 그린다 — 옛 latest.json 을 캐시한 브라우저도 화면은 떠야 한다.
+   */
+  windows?: Record<string, string>;
   onClose: () => void;
 }
 
-export default function PriceChart({ station, onClose }: Props) {
+export default function PriceChart({ station, windows, onClose }: Props) {
   const [history, setHistory] = useState<History | null>(null);
   const [error, setError] = useState<string | null>(null);
   const narrow = useNarrow();
   /**
-   * 조회 시작일. 기본은 8월 1일이고 끝은 늘 최신일이다.
+   * 조회 시작일. 기본은 **가진 자료의 처음**이고 끝은 늘 최신일이다.
    *
-   * 한 달치면 꾸준했는지 보기에 충분하고, 두 달치를 다 그리면 최근 흐름이
-   * 뭉개진다. 그 이전까지 보고 싶으면 '전체' 로 넓힌다.
+   * 예전에는 8월 1일이 기본이었다. 시계열이 7월부터였고 두 달치를 다 그리면
+   * 최근 흐름이 뭉개졌기 때문이다. 지금은 3월치부터 있고 그 구간에 선정 시점이
+   * 들어 있다 — 언제 뽑혔고 그 뒤로 어떻게 움직였는지가 이 그래프의 요점이라
+   * 처음부터 보여준다. 최근만 보려면 '8월 1일부터' 로 좁힌다.
    */
-  const [from, setFrom] = useState<string>(COMPLIANCE_FROM);
+  const [from, setFrom] = useState<string>("");
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -195,8 +205,29 @@ export default function PriceChart({ station, onClose }: Props) {
 
     const last = idx.at(-1)!;
 
+    /**
+     * 선정 시점 — 그 차수의 평가기간을 띠와 절취선으로 얹는다.
+     *
+     * 그래프에 이게 없으면 "이 주유소가 원래 쌌는지, 뽑히고 나서 올렸는지" 를
+     * 눈으로 가를 수 없다. 띠가 평가기간이고 오른쪽 절취선이 마감일이다.
+     * 그 뒤로 선이 올라가면 뽑힌 다음 올린 것이다.
+     */
+    function xOfDate(target: string): number {
+      if (target <= dates[idx[0]]) return x(0);
+      if (target >= dates[last]) return x(idx.length - 1);
+      for (let k = 0; k < idx.length; k++) if (dates[idx[k]] >= target) return x(k);
+      return x(idx.length - 1);
+    }
+    const marks = (station.rounds ?? []).flatMap((round) => {
+      const period = windows?.[round];
+      const [a, b] = (period ?? "").split("~");
+      // 기간이 화면 구간과 아예 겹치지 않으면 긋지 않는다.
+      if (!a || !b || b < dates[idx[0]] || a > dates[last]) return [];
+      return [{ round, x1: xOfDate(a), x2: xOfDate(b), label: periodLabel(period!) }];
+    });
+
     return {
-      idx, x, yP, yC,
+      idx, x, yP, yC, marks,
       gasoline: line(series.g, yP), diesel: line(series.d, yP), coef: line(series.c, yC),
       gasolineDots: dots(series.g, yP), dieselDots: dots(series.d, yP), coefDots: dots(series.c, yC),
       ticks,
@@ -218,7 +249,7 @@ export default function PriceChart({ station, onClose }: Props) {
         .filter((r) => r.date >= from)
         .reverse(),
     };
-  }, [history, series, from, W, H_PRICE, H_COEF]);
+  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows]);
 
   /** 고른 구간의 적합·근접·초과 일수. */
   const days = useMemo(
@@ -242,9 +273,15 @@ export default function PriceChart({ station, onClose }: Props) {
     return COMPLIANCE_FROM;
   }, [history]);
 
-  /** 고를 수 있는 구간. 판정이 8월부터만 있으면 '전체' 는 뜻이 없어 감춘다. */
-  const ranges: Array<[string, string]> = [[COMPLIANCE_FROM, "8월 1일부터"]];
-  if (earliest < COMPLIANCE_FROM) ranges.push([earliest, "전체"]);
+  /**
+   * 고를 수 있는 구간. 기본은 전체(`""`)다.
+   *
+   * 전체를 빈 문자열로 두면 시계열이 더 이른 날까지 늘어나도 버튼을 손댈 일이
+   * 없다. 판정이 8월부터만 있으면 전체가 곧 8월이라 버튼 하나만 남긴다.
+   */
+  const ranges: Array<[string, string]> = [];
+  if (earliest < COMPLIANCE_FROM) ranges.push(["", `${Number(earliest.slice(4, 6))}월부터 전체`]);
+  ranges.push([COMPLIANCE_FROM, "8월 1일부터"]);
 
   return (
     <div className="chart-backdrop" onClick={onClose} role="presentation">
@@ -264,6 +301,16 @@ export default function PriceChart({ station, onClose }: Props) {
             <p className="chart-sub">
               {station.sido} {station.sigungu}
               {station.isSelf && <span className="badge badge-self">셀프</span>}
+              {station.rounds?.length > 0 && (
+                <span
+                  className="rounds"
+                  title={station.rounds
+                    .map((r) => `${r}${windows?.[r] ? ` ${periodLabel(windows[r])}` : ""}`)
+                    .join(" · ")}
+                >
+                  {station.rounds.map((r) => <b key={r}>({r})</b>)} 선정
+                </span>
+              )}
               {chart && <> · {fmtDate(chart.from)} ~ {fmtDate(chart.to)}</>}
             </p>
           </div>
@@ -319,6 +366,19 @@ export default function PriceChart({ station, onClose }: Props) {
                   <h4 className="chart-panel-title">판매가 <span>원/L</span></h4>
                   <svg viewBox={`0 0 ${W} ${H_PRICE}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 휘발유·경유 판매가 추이`}>
+                    {/* 선정 시점 — 선 뒤에 깔아야 값을 가리지 않는다 */}
+                    {chart.marks.map((m) => (
+                      <g key={`mp${m.round}`}>
+                        <rect className="ch-round" x={m.x1} y={PAD.top}
+                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.priceH}>
+                          <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
+                        </rect>
+                        <line className="ch-round-edge" x1={m.x2} x2={m.x2}
+                          y1={PAD.top} y2={PAD.top + chart.priceH} />
+                        <text className="ch-round-label" x={(m.x1 + m.x2) / 2} y={PAD.top - 5}
+                          textAnchor="middle">{m.round}</text>
+                      </g>
+                    ))}
                     {chart.priceTicks.map((v) => (
                       <g key={`p${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
@@ -356,6 +416,16 @@ export default function PriceChart({ station, onClose }: Props) {
                   </h4>
                   <svg viewBox={`0 0 ${W} ${H_COEF}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합산 계수 추이`}>
+                    {chart.marks.map((m) => (
+                      <g key={`mc${m.round}`}>
+                        <rect className="ch-round" x={m.x1} y={PAD.top}
+                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.coefH}>
+                          <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
+                        </rect>
+                        <line className="ch-round-edge" x1={m.x2} x2={m.x2}
+                          y1={PAD.top} y2={PAD.top + chart.coefH} />
+                      </g>
+                    ))}
                     {chart.coefTicks.map((v) => (
                       <g key={`c${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}

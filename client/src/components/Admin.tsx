@@ -18,6 +18,7 @@ import { fetchData, SIGNAL_LABELS } from "../lib/board.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
 import { parseStationCsv } from "@shared/lib/station-csv.ts";
 import { BRAND_LABELS, type BrandCode } from "@shared/lib/brand.ts";
+import { periodLabel } from "@shared/lib/adjust.ts";
 import { applyJudging } from "@shared/lib/judge.ts";
 import type { AdjustedCombine, BoardData, JudgeMode, SignalColor } from "@shared/lib/types.ts";
 
@@ -438,9 +439,10 @@ function JudgeCompare({ c }: { c: AdminConfig }) {
           {" "}선정 때 후보에서 빠졌던 것으로 보이는 주유소 {board.baseline.excludedCount}곳을 모집단에서 뺐습니다.
         </>}
         {unconfirmed.length > 0 && board.baseline && <>
-          {" "}<b>{unconfirmed.join("·")}</b> 는 선정 기준기간을 확인하지 못해{" "}
-          {board.baseline.windows[unconfirmed[0]]?.slice(0, 4)}년 {board.baseline.windows[unconfirmed[0]]?.slice(4, 6)}월로
-          두었습니다 — 그 이전에 올린 몫은 잡히지 않아 실제보다 후하게 나옵니다.
+          {" "}<b>{unconfirmed.join("·")}</b> 의 기준기간은 확실하지 않습니다. 공시 주기로 잡아{" "}
+          {unconfirmed.map((r) => `${r} ${periodLabel(board.baseline!.windows[r] ?? "")}`).join(", ")}
+          {" "}로 두었지만, 그 차수들은 가격 순위로 뽑은 것이 아니라 기간을 옳게 짚어도
+          그때 성적이 낮게 나옵니다.
         </>}
       </p>
     </div>

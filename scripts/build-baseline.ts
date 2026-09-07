@@ -10,16 +10,15 @@
  * 상위 N위' 라는 한 잣대로 잰다. 선정된 지 오래된 차수가 뒤로 밀리는 것은
  * 그 주유소 사정이 아니라 잣대가 묻는 질문이 달라서다.
  *
- * 보관 원본으로 확인한 차수별 성적이다(합계 기준, 시·도 조밀 순위).
+ * 기준기간은 보관 원본에서 추산했다. 그 차수에 뽑힌 곳들이 자기 기간에 시·도
+ * 상위 N위였던 비율이다.
  *
- *   차수   7월 기준 충족   8월 기준 충족   7월 시·도 백분위 중앙값
- *   1차          3%             2%              상위 41%
- *   2차          2%             0%              상위 65%
- *   3차          1%             3%              상위 33%
- *   8차         80%            48%              상위 0.5%
- *   9차          5%            59%              상위 2.5%
+ *   차수    1차   2차   3차   4차   5차   6차   7차   8차   9차
+ *   충족률   2%    5%   13%   75%   73%   77%   84%   80%   81%
  *
- * 8차는 7월에, 9차는 8월에 몰려 있다. 차수가 곧 선정 기준기간이다.
+ * 4차부터는 그 기간이 곧 선정 기준기간이다. 1~3차는 기간을 옳게 짚어도 값이
+ * 낮은데, 그때는 가격 순위로 뽑지 않았기 때문이다 — 근거는 ROUNDS.md §4,
+ * 재현은 `npm run rounds:estimate`.
  *
  * ## 무엇을 만드나
  *
@@ -50,7 +49,7 @@ import { fileURLToPath } from "node:url";
 import { basisSido } from "../src/lib/region.ts";
 import { readRaw } from "../src/lib/raw.ts";
 import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
-import { DEFAULT_ROUND_WINDOWS, median, type Baseline } from "../src/lib/adjust.ts";
+import { DEFAULT_ROUND_WINDOWS, median, periodDays, type Baseline } from "../src/lib/adjust.ts";
 import type { GoodStation } from "../src/lib/types.ts";
 import type { EnrichedRow } from "./collect.ts";
 
@@ -58,14 +57,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "data");
 const RAW_DIR = path.join(DATA, "raw");
 
-/** 한 달치 원본에서 주유소별 평균 합계와 시·도 중앙값을 낸다. */
-function readWindow(yyyymm: string) {
+/** 한 기준기간 원본에서 주유소별 평균 합계와 시·도 중앙값을 낸다. */
+function readWindow(period: string) {
   const perStation = new Map<string, { sido: string; sum: number; days: number }>();
   const perSido = new Map<string, number[]>();
   let files = 0;
 
-  for (let d = 1; d <= 31; d++) {
-    const date = `${yyyymm}${String(d).padStart(2, "0")}`;
+  for (const date of periodDays(period)) {
     const raw = readRaw<{ rows: EnrichedRow[] }>(RAW_DIR, date);
     if (!raw) continue;
     files++;
@@ -164,7 +162,7 @@ function main() {
       continue;
     }
     loaded.set(w, r);
-    console.log(`[baseline] ${w} — ${r.files}일 · 주유소 ${r.perStation.size}곳`);
+    console.log(`[baseline] ${w} — ${r.files}/${periodDays(w).length}일 · 주유소 ${r.perStation.size}곳`);
   }
 
   // ── 시장 중앙값 ─────────────────────────────────────────────────────

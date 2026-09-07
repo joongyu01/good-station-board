@@ -143,6 +143,7 @@ export default function StationTable({
               >
                 {withBrand(s.name, s.brand)}
               </button>
+              <RoundBadge rounds={s.rounds} />
               {s.isSelf && <span className="badge badge-self">셀프</span>}
               {s.isRegionLowest && <span className="badge badge-low">시·도 최저</span>}
               {s.dataGapDays > 0 && (
@@ -186,6 +187,22 @@ export default function StationTable({
       </tbody>
     </table>
     </>
+  );
+}
+
+/**
+ * 선정차수 — 뽑힌 차수를 **모두** 적는다.
+ *
+ * 한 곳이 여러 차수에 걸쳐 다시 뽑히는 일이 절반을 넘는데, 마지막 것만 적으면
+ * 꾸준히 뽑혀 온 곳과 이번에 처음 든 곳이 똑같아 보인다. 괄호로 나열하면 길이가
+ * 곧 이력이 된다.
+ */
+function RoundBadge({ rounds }: { rounds?: string[] }) {
+  if (!rounds || rounds.length === 0) return null;
+  return (
+    <span className="rounds" title={`${rounds.join(" · ")} 선정 (${rounds.length}회)`}>
+      {rounds.map((r) => <b key={r}>({r})</b>)}
+    </span>
   );
 }
 
