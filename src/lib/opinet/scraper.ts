@@ -101,9 +101,24 @@ async function attemptDownload(
       throw new Error(`날짜 설정 실패 — 기대 ${startDate}~${endDate}, 실제 ${set.start}~${set.end}`);
     }
 
-    console.log("[scraper] fn_Download(6) 호출, 다운로드 대기 (최대 600초)...");
+    console.log("[scraper] fn_Download(6) 호출, 다운로드 대기 (최대 90초)...");
+
+    const downloadPromise = page.waitForEvent("download", { timeout: 90_000 });
+
+    const errorPromise = new Promise<never>((_, reject) => {
+      page.on("response", (res) => {
+        if (res.url().includes("error.jsp")) {
+          reject(new Error("NetFunnel 대기열 실패 또는 error.jsp 발생"));
+        }
+        const ct = res.headers()["content-type"] ?? "";
+        if (res.url().includes("main_download_csv_big.do") && ct.includes("text/html")) {
+          reject(new Error("다운로드 실패: 오피넷 에러 페이지 반환(The service is not available)"));
+        }
+      });
+    });
+
     const [download] = await Promise.all([
-      page.waitForEvent("download", { timeout: 600_000 }),
+      Promise.race([downloadPromise, errorPromise]),
       page.evaluate(() => { (window as any).fn_Download(6); }),
     ]);
 
@@ -128,14 +143,14 @@ async function attemptDownload(
 export async function downloadOilPrice(
   startDate: string,
   endDate: string = startDate,
-  attempts = 3,
+  attempts = 2,
 ): Promise<DownloadResult | null> {
   for (let i = 1; i <= attempts; i++) {
     console.log(`[scraper] 시도 ${i}/${attempts}`);
     const result = await attemptDownload(startDate, endDate);
     if (result) return result;
     if (i < attempts) {
-      const waitMs = 30_000 * i;
+      const waitMs = 10_000 * i;
       console.log(`[scraper] ${waitMs / 1000}초 후 재시도`);
       await new Promise((r) => setTimeout(r, waitMs));
     }
