@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
@@ -10,11 +10,12 @@ import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.
 import { useNarrow } from "./lib/useNarrow.ts";
 import {
   applyMode, fetchData, formatCollectedAt, formatDate, groupByRegion, summarize,
-  applyJudgeMode, SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
-  type BoardData, type GeoCollection, type RegionSummary, type SignalColor,
+  judgeBoard, SIGNAL_COLORS, SIGNAL_LABELS, sidoLabel, VIEW_MODES, VIEW_MODE_LABELS,
+  type BoardData, type GeoCollection, type Judging, type RegionSummary, type SignalColor,
   type StationSignal, type ViewMode,
 } from "./lib/board.ts";
 import { basisSido } from "@shared/lib/region.ts";
+import { getJudging } from "./lib/supabase.ts";
 
 /** 로고는 public/ 에 있어 번들 해시가 붙지 않는다. base 경로를 붙여 쓴다. */
 const LOGO = new URL("logo.png", document.baseURI).toString();
@@ -33,7 +34,10 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  const [board, setBoard] = useState<BoardData | null>(null);
+  /** 받아 온 그대로의 자료. 판정은 아래 `board` 에서 설정을 입혀 낸다. */
+  const [raw, setRaw] = useState<BoardData | null>(null);
+  /** 관리 화면에서 정한 판정 설정. null 이면 집계가 박아 둔 판정을 쓴다. */
+  const [judging, setJudging] = useState<Judging | null>(null);
   const [sidoGeo, setSidoGeo] = useState<GeoCollection | null>(null);
   const [sigunguGeo, setSigunguGeo] = useState<GeoCollection | null>(null);
   const [districtGeo, setDistrictGeo] = useState<GeoCollection>(EMPTY_GEO);
@@ -102,12 +106,42 @@ export default function App() {
       fetchData("geo-sigungu.json").then((r) => r.json()),
       // 일반구 레이어는 없어도 동작한다. 구 단계만 사라진다.
       fetchData("geo-district.json").then((r) => r.json()).catch(() => EMPTY_GEO),
+      // 판정 설정. Supabase 를 못 읽어도 화면은 떠야 하므로 실패는 여기서 삼키고,
+      // 그때는 집계가 박아 둔 판정을 그대로 쓴다.
+      getJudging().catch(() => null),
     ])
-      .then(([b, s, g, d]) => {
-        setBoard(applyJudgeMode(b)); setSidoGeo(s); setSigunguGeo(g); setDistrictGeo(d ?? EMPTY_GEO);
+      .then(([b, s, g, d, j]) => {
+        setRaw(b); setJudging(j); setSidoGeo(s); setSigunguGeo(g); setDistrictGeo(d ?? EMPTY_GEO);
       })
       .catch((e) => setError(String(e)));
   }, []);
+
+  /**
+   * 관리 화면에서 나오면 설정을 다시 읽는다.
+   *
+   * 설정을 바꾸고 현황판으로 돌아왔는데 옛 판정이 보이면 저장이 안 된 것처럼
+   * 보인다. 화면 전환은 해시 하나뿐이라 여기서 잡는 것이 가장 확실하다.
+   *
+   * 첫 화면은 위에서 이미 받았으므로 건너뛴다. 안 그러면 열 때마다 같은 요청이
+   * 두 번 나간다.
+   */
+  const seenAdmin = useRef(false);
+  useEffect(() => {
+    if (hash.startsWith("#/admin")) { seenAdmin.current = true; return; }
+    if (!seenAdmin.current) return;
+    getJudging().then(setJudging).catch(() => { /* 못 읽으면 쓰던 값을 그대로 둔다 */ });
+  }, [hash]);
+
+  /**
+   * 자료에 설정을 입힌 것. 설정만 바뀌면 여기서 다시 판정한다.
+   *
+   * 집계를 다시 돌리지 않고도 색·계수·요약이 한꺼번에 맞아떨어진다 —
+   * src/lib/judge.ts 참고.
+   */
+  const board = useMemo(
+    () => (raw ? judgeBoard(raw, judging) : null),
+    [raw, judging],
+  );
 
   // 판정은 주유소 단위다. 한 주유소에 신호등 하나.
   //
@@ -430,7 +464,8 @@ export default function App() {
           */}
           {board.judgeMode === "adjusted" && mode === "sum"
             ? " 선정 시점 대비 보정 기준 · 그 사이 시·도 시장이 오른 만큼을 빼고도 더 올렸는지로 판정"
-            : " 시·도 순위 기준 · 서울·경기 10위, 그 외 5위 이내는 상위권"}
+            : ` 시·도 순위 기준 · 서울·경기 ${judging?.rankGreenMetro ?? 10}위, ` +
+              `그 외 ${judging?.rankGreenDefault ?? 5}위 이내는 상위권`}
         </div>
       </div>
 
@@ -591,6 +626,7 @@ export default function App() {
           date={board.date}
           sido={activeSido ? basisSido(activeSido, activeRegion ?? "") : null}
           mode={mode}
+          judging={judging}
           onClose={() => setRankOpen(false)}
         />
       )}

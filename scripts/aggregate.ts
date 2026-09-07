@@ -33,6 +33,7 @@ import {
 } from "../src/lib/types.ts";
 import { basisSido, regionKey } from "../src/lib/region.ts";
 import { buildRanks } from "../src/lib/rank.ts";
+import { cutoffsOf } from "../src/lib/judge.ts";
 import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
   COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, pruneTo, sampleDay,
@@ -430,11 +431,28 @@ function main() {
   // 시·도 통계는 전부 실어도 50건이 안 된다.
   const regions: RegionStat[] = [...stats.values()];
 
+  // ── 순위별 커트라인 ─────────────────────────────────────────────────
+  //
+  // 관리 화면에서 기준 순위를 바꾸면 계수의 분모가 함께 바뀐다. 그런데 그 분모는
+  // 전국 분포에서 뽑는 것이라 화면에는 없다. 그래서 시·도별로 앞쪽 몇 개를
+  // 미리 잘라 싣는다 — 이것만 있으면 화면이 다음 집계를 기다리지 않고 계수를
+  // 다시 낼 수 있다. 16개 시·도 × 3기준 × 40개라 12KB 남짓이다.
+  const cutoffs: BoardData["cutoffs"] = {};
+  for (const [key, distinct] of distinctPrices) {
+    const [sido, kind] = key.split("|");
+    if (!VIEW_MODES.includes(kind as ViewMode)) continue;
+    (cutoffs[sido] ??= {})[kind as ViewMode] = cutoffsOf(distinct);
+  }
+  const adjustedCutoffs: BoardData["adjustedCutoffs"] = {};
+  for (const [sido, distinct] of adjDistinct) adjustedCutoffs[sido] = cutoffsOf(distinct);
+
   const board: BoardData = {
     date,
     generatedAt: new Date().toISOString(),
     stations: signals,
     regions,
+    cutoffs,
+    adjustedCutoffs,
     summary: { total: good.length, matched: matchedCount, counts, adjustedCounts },
     judgeMode: th.judgeMode ?? "rank",
     baseline: baseline

@@ -12,7 +12,8 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchData, formatPrice, sidoLabel } from "../lib/board.ts";
 import { VIEW_MODES, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
 import type { RankFile } from "@shared/lib/rank.ts";
-import { COEF_DIGITS } from "@shared/lib/signal.ts";
+import { COEF_DIGITS, greenRankWith } from "@shared/lib/signal.ts";
+import { baseAt, type Judging } from "@shared/lib/judge.ts";
 
 interface Props {
   /** 열릴 때 고를 날짜 — 현황판이 보고 있는 기준일 */
@@ -20,6 +21,8 @@ interface Props {
   /** 처음 보여줄 시·도. 드릴다운 중이면 그 지역 */
   sido: string | null;
   mode: ViewMode;
+  /** 지금 적용 중인 판정 설정. 커트라인을 이 값으로 다시 잡는다. */
+  judging: Judging | null;
   onClose: () => void;
 }
 
@@ -37,7 +40,7 @@ function loadRank(date: string): Promise<RankFile> {
   return p;
 }
 
-export default function RankWindow({ date, sido, mode, onClose }: Props) {
+export default function RankWindow({ date, sido, mode, judging, onClose }: Props) {
   const [dates, setDates] = useState<string[]>([date]);
   const [day, setDay] = useState(date);
   const [region, setRegion] = useState<string | null>(sido);
@@ -85,7 +88,31 @@ export default function RankWindow({ date, sido, mode, onClose }: Props) {
 
   // 고른 시·도가 그날 자료에 없으면 첫 번째로 물러선다.
   const active = region && file?.regions[region] ? region : sidos[0] ?? null;
-  const table = active ? file?.regions[active]?.[view] ?? null : null;
+  const stored = active ? file?.regions[active]?.[view] ?? null : null;
+
+  /**
+   * 커트라인을 지금 설정으로 다시 잡는다.
+   *
+   * 순위표 파일은 집계가 만들 때의 기준 순위로 커트라인을 박아 둔다. 그런데
+   * 관리 화면에서 기준 순위를 바꾸면 현황판의 계수는 바로 따라 움직이므로,
+   * 여기를 그대로 두면 **검증하러 연 창이 화면과 어긋난다.**
+   *
+   * 파일에 실린 커트라인 목록에서 찾는다. 보이는 줄에서 세면 안 된다 — 동점이
+   * 많으면 30줄이 조밀 순위 열몇 위까지밖에 못 가 2N위가 목록 밖으로 나간다.
+   */
+  const table = useMemo(() => {
+    if (!stored || !active || !judging) return stored;
+    const greenRank = greenRankWith(active, judging);
+    const yellowRank = greenRank * judging.rankYellowFactor;
+    if (greenRank === stored.greenRank && yellowRank === stored.yellowRank) return stored;
+    return {
+      ...stored,
+      greenRank,
+      yellowRank,
+      greenBase: baseAt(stored.cutoffs, greenRank),
+      yellowBase: baseAt(stored.cutoffs, yellowRank),
+    };
+  }, [stored, active, judging]);
 
   return (
     <>

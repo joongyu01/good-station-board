@@ -18,7 +18,7 @@ import { fetchData, SIGNAL_LABELS } from "../lib/board.ts";
 import { normalizeRegion } from "@shared/lib/region.ts";
 import { parseStationCsv } from "@shared/lib/station-csv.ts";
 import { BRAND_LABELS, type BrandCode } from "@shared/lib/brand.ts";
-import { worseOf } from "@shared/lib/adjust.ts";
+import { applyJudging } from "@shared/lib/judge.ts";
 import type { AdjustedCombine, BoardData, JudgeMode, SignalColor } from "@shared/lib/types.ts";
 
 const LOGO = new URL("logo.png", document.baseURI).toString();
@@ -402,23 +402,13 @@ function JudgeCompare({ c }: { c: AdminConfig }) {
   // 현황판 요약 띠와 같은 순서. 두 곳이 다르면 견주다 헷갈린다.
   const cols: SignalColor[] = ["green", "yellow", "red", "unknown", "stale"];
 
-  const tallies = JUDGE_CHOICES.map((o) => {
-    const t: Record<SignalColor, number> = { green: 0, yellow: 0, red: 0, unknown: 0, stale: 0 };
-    for (const st of board.stations) {
-      // 값이 없어서 못 재는 것은 방식과 무관하다. 그대로 둔다.
-      if (st.signal === "stale" || st.signal === "unknown") { t[st.signal]++; continue; }
-      if (o.key === "rank") { t[st.signal]++; continue; }
-
-      const a = st.adjusted;
-      if (!a) { t.unknown++; continue; }
-      // 이탈률 색은 화면에 지금 들어 있는 임계값으로 다시 낸다.
-      const d = a.drift <= c.driftGreen ? "green" : a.drift <= c.driftYellow ? "yellow" : "red";
-      t[o.key === "adj-drift" ? d
-        : o.key === "adj-rank" ? a.rankSignal
-        : worseOf(a.rankSignal, d)]++;
-    }
-    return { ...o, t };
-  });
+  // 현황판이 쓰는 바로 그 코드로 센다. 여기서 따로 세면 언젠가 두 곳이 어긋나고,
+  // 그러면 골라 놓고 본 숫자와 실제 화면이 달라진다.
+  const tallies = JUDGE_CHOICES.map((o) => ({
+    ...o,
+    t: applyJudging(board, { ...c, judgeMode: o.judgeMode, adjustedCombine: o.combine })
+      .summary.counts,
+  }));
 
   const selected = choiceKeyOf(c);
   const unconfirmed = board.baseline
@@ -443,7 +433,7 @@ function JudgeCompare({ c }: { c: AdminConfig }) {
       </table>
       <p className="muted" style={{ fontSize: "12px" }}>
         고른 줄에 표시가 붙습니다. 여기 숫자는 지금 화면의 설정으로 바로 센 것이고,
-        현황판에는 <b>저장한 뒤 다음 집계부터</b> 반영됩니다.
+        현황판도 <b>저장하면 그 자리에서</b> 같은 숫자가 됩니다.
         {board.baseline && <>
           {" "}선정 때 후보에서 빠졌던 것으로 보이는 주유소 {board.baseline.excludedCount}곳을 모집단에서 뺐습니다.
         </>}
@@ -478,7 +468,7 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
       <h3>신호등 기준 순위</h3>
       <p className="muted">
         비교 모집단은 <b>시·도</b>입니다. 그 시·도에서 몇 위 안에 들면 초록으로 볼지 정합니다.
-        바꾼 값은 다음 집계부터 반영됩니다.
+        바꾼 값은 저장하면 현황판에 바로 반영됩니다.
       </p>
 
       <label>서울·경기 — 몇 위 이내를 초록으로
@@ -541,7 +531,7 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
       <JudgeCompare c={c} />
 
       <button className="btn" onClick={async () => {
-        try { await saveConfig(token, c); setMsg("저장했습니다. 다음 집계부터 현황판에 반영됩니다."); setErr(null); }
+        try { await saveConfig(token, c); setMsg("저장했습니다. 현황판에 바로 반영됩니다."); setErr(null); }
         catch (e) { setErr(describeError(e)); }
       }}>설정 저장</button>
 

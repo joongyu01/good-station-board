@@ -428,6 +428,33 @@ begin
 end;
 $$;
 
+-- 판정 설정만 **로그인 없이** 내려준다.
+--
+-- 현황판은 누구나 보는 화면인데, 설정을 저장하고도 다음 집계까지 옛 판정이
+-- 보이는 것이 문제였다. 판정에 쓰는 값만 따로 떼어 공개하면 화면이 받아서 그
+-- 자리에서 다시 판정할 수 있다 — client/src/lib/judge.ts 참고.
+--
+-- access_code 는 물론이고 updated_at 외의 어떤 내부 값도 나가지 않는다. 여기
+-- 실린 일곱 개는 이미 현황판 화면에 숫자로 그대로 드러나는 것들이다.
+create or replace function gs_judging()
+returns json
+language sql
+security definer
+stable
+set search_path = public, extensions
+as $$
+  select json_build_object(
+    'rankGreenMetro', rank_green_metro,
+    'rankGreenDefault', rank_green_default,
+    'rankYellowFactor', rank_yellow_factor,
+    'judgeMode', judge_mode,
+    'adjustedCombine', adjusted_combine,
+    'driftGreen', drift_green,
+    'driftYellow', drift_yellow,
+    'updatedAt', updated_at
+  ) from gs_config where id = 1;
+$$;
+
 -- 인자 목록이 바뀌면 create or replace 가 거부한다(42P13). 그렇다고 옛 시그니처를
 -- 하나씩 적어 지우면, 저장소마다 어느 판이 깔려 있는지 달라 언젠가 또 어긋난다.
 -- 실제로 두 번 겪었다 — p_gap_yellow 판에서 한 번, 판정 방식 인자를 붙이며 한 번.
@@ -591,6 +618,8 @@ grant execute on function gs_station_save(text, integer, text, text, text, text,
 grant execute on function gs_station_replace(text, jsonb)            to anon, authenticated;
 grant execute on function gs_station_delete(text, integer)          to anon, authenticated;
 grant execute on function gs_config_get(text)                        to anon, authenticated;
+-- 판정 설정만 내려주는 공개 함수. 현황판이 로그인 없이 부른다.
+grant execute on function gs_judging()                               to anon, authenticated;
 -- 인자가 늘면 시그니처가 통째로 바뀐다. 기본값이 있어도 grant 는 전체 인자를
 -- 적어야 하고, 옛 시그니처를 적으면 함수를 못 찾아 42883 으로 죽는다.
 grant execute on function gs_config_save(text, integer, integer, integer, text, text, numeric, numeric) to anon, authenticated;

@@ -207,6 +207,15 @@ export const replaceStations = (token: string, rows: Array<Record<string, unknow
 export const getConfig = (token: string) =>
   rpc<AdminConfig>("gs_config_get", { p_token: token });
 
+/**
+ * 판정 설정만 **로그인 없이** 읽는다.
+ *
+ * 현황판이 자료를 받은 뒤 이것으로 판정을 다시 낸다. 관리 화면에서 바꾼 값이
+ * 다음 집계를 기다리지 않고 바로 보이게 하기 위한 것이다 — judge.ts 참고.
+ * Supabase 를 못 읽어도 화면은 그대로 떠야 하므로 실패는 호출부가 삼킨다.
+ */
+export const getJudging = () => rpc<AdminConfig>("gs_judging");
+
 export const saveConfig = (token: string, c: AdminConfig) =>
   rpc("gs_config_save", {
     p_token: token,

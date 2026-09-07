@@ -2,6 +2,9 @@
 import type { BoardData, FuelType, SignalColor, StationSignal, ViewMode } from "@shared/lib/types.ts";
 import { SIDO_LABELS } from "@shared/lib/region.ts";
 import { VIEW_MODES, VIEW_MODE_LABELS } from "@shared/lib/types.ts";
+import { applyJudging, type Judging } from "@shared/lib/judge.ts";
+
+export type { Judging };
 
 export type { BoardData, FuelType, SignalColor, StationSignal, ViewMode };
 export { VIEW_MODES, VIEW_MODE_LABELS };
@@ -201,15 +204,19 @@ export function sidoLabel(sido: string): string {
  * 안 바뀌었으면 304 로 끝나 본문을 다시 받지 않으니 값도 싸다.
  */
 /**
- * 설정된 판정 방식을 자료에 입힌다.
+ * 판정 설정을 자료에 입힌다.
  *
- * 집계가 두 방식을 모두 계산해 함께 싣고, 어느 쪽을 보일지는 `judgeMode` 가
- * 정한다. 화면 곳곳이 `signal` 하나만 보게 여기서 한 번에 갈아 끼운다 —
- * 지도·목록·요약·거르기가 저마다 방식을 따지게 두면 한 군데는 반드시 어긋난다.
+ * 관리 화면 설정(`judging`)을 읽어 왔으면 그것으로 **다시 판정한다** — 저장하고
+ * 다음 집계를 기다릴 것 없이 바로 반영된다. Supabase 를 못 읽었으면 집계가 이미
+ * 박아 둔 판정을 그대로 쓴다.
  *
- * 유종별(휘발유·경유) 판정은 그대로 둔다. 보정은 **합계** 위에서만 정의된다 —
- * 선정이 합계로 이뤄졌기 때문이다.
+ * 화면 곳곳이 `signal` 하나만 보게 여기서 한 번에 갈아 끼운다 — 지도·목록·요약·
+ * 거르기가 저마다 설정을 따지게 두면 한 군데는 반드시 어긋난다.
  */
+export function judgeBoard(board: BoardData, judging: Judging | null): BoardData {
+  return judging ? applyJudging(board, judging) : applyJudgeMode(board);
+}
+
 export function applyJudgeMode(board: BoardData): BoardData {
   if (board.judgeMode !== "adjusted") return board;
 

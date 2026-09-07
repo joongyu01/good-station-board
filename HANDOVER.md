@@ -205,6 +205,7 @@ client/src/
 
 src/lib/                   화면과 스크립트가 공유
   signal.ts                판정 · 조밀 순위 · 계수 (COEF_DIGITS) · 임계값 묶음
+  judge.ts                 설정을 바꿨을 때 화면에서 판정을 다시 낸다 (커트라인 표)
   adjust.ts                보정 판정 — 기준기간·이탈률·결합 방식
   stable-write.ts          내용이 같으면 다시 쓰지 않는다 (헛커밋 방지)
   history.ts               시계열 · 기준 충족 일수 (COMPLIANCE_FROM)
@@ -557,6 +558,11 @@ RPC 는 `gs_login` / `gs_ping` / `gs_logout` / `gs_stations` / `gs_station_save`
 `gs_station_replace` / `gs_station_delete` / `gs_config_get` / `gs_config_save` /
 `gs_code_change` / `gs_secrets` / `gs_secret_save` / `gs_secret_delete` 입니다.
 전부 첫 인자가 세션 토큰입니다.
+
+딱 하나 예외가 `gs_judging()` 입니다. **토큰 없이** 부를 수 있고 판정 설정 일곱 개만
+돌려줍니다. 현황판이 이것을 읽어 그 자리에서 다시 판정하기 때문에, 관리 화면에서
+바꾼 값이 다음 집계를 기다리지 않고 바로 보입니다. 접근코드는 물론 어떤 내부 값도
+나가지 않습니다 — 여기 실린 일곱 개는 이미 화면에 숫자로 드러나는 것들입니다.
 
 스키마를 바꿨으면 **SQL Editor 에서 `supabase/schema.sql` 을 다시 실행**해야
 합니다. 여러 번 돌려도 안전하게 써 뒀습니다.

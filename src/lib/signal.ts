@@ -55,7 +55,7 @@ export interface Thresholds {
    *   adjusted  선정 시점 대비 시장연동 이탈까지 함께 본다 — adjust.ts 참고
    *
    * 집계는 두 방식을 모두 계산해 함께 싣고, 이 값은 어느 쪽을 기본으로 보일지만
-   * 정한다. 관리 화면에서 바꾸며 다음 집계부터 반영된다.
+   * 정한다. 관리 화면에서 바꾸면 현황판이 그 자리에서 다시 판정한다 — judge.ts 참고.
    */
   judgeMode?: JudgeMode;
 

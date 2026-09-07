@@ -12,6 +12,7 @@
  * 100KB 안쪽이다.
  */
 import { basisSido } from "./region.ts";
+import { cutoffsOf } from "./judge.ts";
 import { distinctAsc, greenRankWith, type Thresholds } from "./signal.ts";
 import { VIEW_MODES, type ViewMode } from "./types.ts";
 
@@ -41,6 +42,17 @@ export interface RankRegion {
   greenBase: number | null;
   /** 근접 경계값 */
   yellowBase: number | null;
+  /**
+   * 1위부터 CUTOFF_K위까지의 커트라인(서로 다른 값).
+   *
+   * 위의 `greenBase`·`yellowBase` 는 만들 때의 기준 순위로 박힌 값이다. 관리
+   * 화면에서 기준 순위를 바꾸면 현황판 계수는 바로 따라 움직이므로, 검증하러
+   * 연 창이 화면과 어긋나지 않으려면 어느 순위든 커트라인을 찾을 수 있어야 한다.
+   *
+   * 실린 줄(상위 K건)에서 찾을 수도 있을 것 같지만 안 된다. 동점이 많으면
+   * 30줄이 조밀 순위 열몇 위까지밖에 못 가 2N위가 목록 밖으로 나간다.
+   */
+  cutoffs: number[];
   rows: RankRow[];
 }
 
@@ -123,6 +135,7 @@ export function buildRanks(
         yellowRank,
         greenBase: at(greenRank),
         yellowBase: at(yellowRank),
+        cutoffs: cutoffsOf(distinct),
         rows: out,
       };
     }
