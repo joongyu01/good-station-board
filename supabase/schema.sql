@@ -121,8 +121,8 @@ create table if not exists gs_daily (
   diesel          integer,
   -- 휘발유+경유 합계. 둘 중 하나라도 없으면 null 이고 판정도 '미상'이 된다.
   sum_price       integer,
-  -- 그 시·도의 최저 휘발유가+최저 경유가를 1.000 으로 둔 계수
-  coefficient     numeric(6,3),
+  -- 시·도 초록불 커트라인을 1로 둔 계수. 화면과 동일하게 소수 넷째 자리 보관.
+  coefficient     numeric(10,4),
   -- 그 시·도에서 실제로 가장 싼 합계 / 평균 합계
   region_min_sum  integer,
   region_mean_sum numeric(10,2),
@@ -137,6 +137,7 @@ create table if not exists gs_daily (
 );
 
 -- 기존 설치에도 새 상태를 적용한다.
+alter table gs_daily alter column coefficient type numeric(10,4);
 alter table gs_daily drop constraint if exists gs_daily_signal;
 alter table gs_daily add constraint gs_daily_signal
   check (signal in ('green', 'yellow', 'red', 'unknown', 'stale', 'cancel'));
