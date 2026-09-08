@@ -4,6 +4,7 @@ import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
 import { compileQuery, QUERY_HINT } from "./lib/query.ts";
+import { SIGNAL_ORDER } from "@shared/lib/types.ts";
 import MobileSheet from "./components/MobileSheet.tsx";
 import RankWindow from "./components/RankWindow.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
@@ -479,7 +480,7 @@ export default function App() {
 
       <div className="page">
       <div className="summary-strip">
-        {(["green", "yellow", "red", "unknown", "stale"] as const).map((k) => (
+        {SIGNAL_ORDER.map((k) => (
           <button
             key={k}
             type="button"

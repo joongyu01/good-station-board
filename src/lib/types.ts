@@ -97,7 +97,52 @@ export interface RegionStat {
  * stale 은 오늘은 가격이 있으나 **과거에 거른 이력**이 있는 것이다. 앞의 것은
  * 지금 확인할 일이고 뒤의 것은 신고 이력을 따질 일이라 섞으면 안 된다.
  */
-export type SignalColor = "green" | "yellow" | "red" | "unknown" | "stale";
+export type SignalColor = "green" | "yellow" | "red" | "unknown" | "stale" | "cancel";
+
+/** 요약·집계에서 쓰는 판정 색 순서. 화면의 띠도 이 차례다. */
+export const SIGNAL_ORDER: SignalColor[] = ["green", "yellow", "red", "unknown", "stale", "cancel"];
+
+/** 색깔별 빈 집계표. 색을 하나 늘려도 세는 쪽은 손대지 않게 한 곳에 둔다. */
+export function emptyCounts(): Record<SignalColor, number> {
+  return { green: 0, yellow: 0, red: 0, unknown: 0, stale: 0, cancel: 0 };
+}
+
+/**
+ * 선정 취소 대상으로 보는 초과일 비율.
+ *
+ * 착한주유소로 뽑힌 **뒤에** 그 시·도 평균(휘발유+경유)보다 비싸게 판 날이
+ * 절반을 넘으면 대상으로 본다. 하루이틀 넘긴 것까지 걸면 212곳이 잡혀 뜻이
+ * 없고(전체의 45%), 늘 넘긴 곳만 세면 11곳이라 너무 좁다. 절반이면 72곳이고
+ * 그 72곳은 지금도 전부 빨강이라, 검정으로 덮어도 적합·근접을 가리지 않는다.
+ *
+ * 이 값은 제도 기준이지 계산의 성질이 아니다. 바꾸려면 여기만 고치면 된다 —
+ * 0.3 이면 101곳, 0.8 이면 38곳이다.
+ */
+export const CANCEL_OVER_RATE = 0.5;
+
+/**
+ * 선정 이후 그 시·도 평균을 넘긴 이력.
+ *
+ * 신호등은 **오늘** 순위를 묻지만 이건 **뽑힌 뒤 줄곧** 어땠는지를 묻는다.
+ * 오늘 하루 싸게 판다고 지난 다섯 달이 지워지지는 않으므로 따로 센다.
+ */
+export interface OverRegion {
+  /** 최초 선정 공시일. 이 날 다음날부터 센다 */
+  since: string;
+  /** 견줄 수 있었던 날 수 (가격과 지역 평균이 모두 있는 날) */
+  days: number;
+  /** 그중 지역 평균을 넘긴 날 수 */
+  overDays: number;
+  /** 넘긴 날의 평균 초과액 (원, 휘발유+경유 합계 기준) */
+  meanOver: number;
+  /** 가장 많이 넘긴 액수와 그 날짜 */
+  maxOver: number;
+  maxDate: string;
+  /** 최근까지 이어진 연속 초과일 */
+  streak: number;
+  /** 취소 대상인지 — overDays / days ≥ CANCEL_OVER_RATE */
+  cancel: boolean;
+}
 
 /** 판정 기준 — 휘발유+경유 합산, 또는 한 유종만. */
 export type ViewMode = "sum" | "gasoline" | "diesel";
@@ -171,6 +216,13 @@ export interface StationSignal {
    * 표시할 때도 전부 필요하다 — 기간은 `baseline.windows[차수]` 에 있다.
    */
   rounds: string[];
+  /**
+   * 선정 이후 지역 평균 초과 이력. 선정 전이거나 견줄 자료가 없으면 null.
+   *
+   * 날짜별 내역은 싣지 않는다 — 472곳 × 190일이면 파일이 통째로 무거워진다.
+   * 추이 창이 `history.json` 의 가격과 `regionMean` 으로 그 자리에서 낸다.
+   */
+  overRegion: OverRegion | null;
   /** 유종별 판매가 (원/L). 취급하지 않으면 null */
   prices: Record<FuelType, number | null>;
   /** 세 기준의 성적. 화면이 고른 기준을 꺼내 쓴다. */

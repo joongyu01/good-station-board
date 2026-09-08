@@ -35,6 +35,8 @@
   /* 과거 미신고 — 가격은 있으나 신고를 거른 이력이 있는 곳.
      '가격정보 없음'(회색)과 구분되면서 판정 삼색과도 섞이지 않는 청회색. */
   --sig-stale: #8A94A6;
+  /* 선정 취소 대상. 신호등 밖의 색이라 검정으로 뺀다 — 판정이 아니라 제도 문제다 */
+  --sig-cancel: #1F2328;
 
   --map-empty: #E7EAE8;
   --map-stroke: #FFFFFF;
@@ -362,6 +364,7 @@ button.stat + button.stat { margin-left: 4px; }
 .dot-red { background: var(--sig-red); }
 .dot-unknown { background: var(--sig-none); }
 .dot-stale { background: var(--sig-stale); }
+.dot-cancel { background: var(--sig-cancel); }
 
 .diff.neg { color: var(--good); font-weight: 700; }
 .diff.pos { color: var(--bad); font-weight: 700; }
@@ -378,6 +381,13 @@ button.stat + button.stat { margin-left: 4px; }
   이건 칭찬이라 혼자 채운다 — 목록을 훑을 때 이것만은 걸려야 한다.
 */
 .badge-loyal { background: var(--good); color: #fff; }
+/* 선정 취소 대상. 눈에 가장 먼저 걸려야 한다 */
+.badge-cancel { background: var(--sig-cancel); color: #fff; }
+/* 그래프 옆 초과 내역 */
+.over-sum { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+.over-sum b { color: var(--sig-cancel); font-weight: 800; }
+.log-table td.over { color: var(--sig-red); font-weight: 700; }
+.log-table td.under { color: var(--muted); }
 /*
   선정차수. 상호 옆에 붙으므로 눈에 먼저 걸리면 안 된다 — 배지 테두리 없이
   괄호만으로 묶고 색을 죽인다. 다섯 차수까지 붙는 곳이 있어 테두리를 두르면

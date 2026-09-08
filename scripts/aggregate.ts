@@ -16,7 +16,7 @@
 import { readFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
 import {
-  CONFIRMED_ROUNDS, DRIFT_GREEN, DRIFT_YELLOW, driftSignalOf, median, worseOf,
+  CONFIRMED_ROUNDS, DRIFT_GREEN, DRIFT_YELLOW, driftSignalOf, median, ROUND_ANNOUNCED, worseOf,
   type AdjustedMetric, type Baseline,
 } from "../src/lib/adjust.ts";
 import path from "node:path";
@@ -28,6 +28,7 @@ import {
 import {
   FUEL_TYPES,
   VIEW_MODES,
+  emptyCounts,
   type BoardData, type FuelMetric, type FuelType, type GoodStation,
   type RegionStat, type SignalColor, type StationSignal, type ViewMode,
 } from "../src/lib/types.ts";
@@ -36,7 +37,8 @@ import { buildRanks } from "../src/lib/rank.ts";
 import { cutoffsOf } from "../src/lib/judge.ts";
 import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
-  COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, pruneTo, sampleDay,
+  COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, mergeRegionMean, overDaysOf,
+  overRegionOf, pruneTo, regionMeanOf, sampleDay,
   type History,
 } from "../src/lib/history.ts";
 import type { EnrichedRow } from "./collect.ts";
@@ -342,6 +344,8 @@ function main() {
       lat: coord?.lat ?? null,
       lng: coord?.lng ?? null,
       rounds: roundsOf(g),
+      // 시계열을 얹은 뒤 아래에서 채운다
+      overRegion: null,
       prices,
       metrics,
 
@@ -378,6 +382,8 @@ function main() {
 
   mergeDay(history, date,
     sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
+  // 날짜축을 맞춘 뒤라야 자리를 찾는다.
+  mergeRegionMean(history, date, regionMeanOf(raw.rows));
   const droppedSeries = pruneTo(history, ids);
   history.generatedAt = new Date().toISOString();
 
@@ -439,14 +445,37 @@ function main() {
     if (sig.adjusted) sig.adjusted.signal = mark;
   }
 
+  // ── 선정 이후 지역 평균 초과 ────────────────────────────────────────
+  //
+  // 신호등은 **오늘** 그 시·도에서 몇 위냐를 묻는다. 이건 다른 질문이다 —
+  // **뽑힌 뒤로 줄곧** 그 시·도 평균보다 비싸게 팔았는가. 오늘 하루 싸게
+  // 판다고 지난 다섯 달이 지워지지 않으므로 따로 센다.
+  //
+  // 기준일은 그 주유소의 **최초 선정 공시일**이다. 여러 차수에 걸쳐 다시 뽑힌
+  // 곳도 착한주유소였던 기간은 처음부터 이어진다.
+  let cancelCount = 0;
+  for (const sig of signals) {
+    if (!sig.stationId || !sig.rounds.length) continue;
+    const since = ROUND_ANNOUNCED[sig.rounds[0]];
+    if (!since) continue;
+    const basis = basisSido(sig.sido, sig.sigungu);
+    sig.overRegion = overRegionOf(overDaysOf(history, sig.stationId, basis, since), since);
+    if (!sig.overRegion?.cancel) continue;
+
+    // 취소 대상은 다른 무엇보다 앞선다. 오늘 순위가 어떻든 선정 자체를 다시
+    // 볼 일이기 때문이다.
+    cancelCount++;
+    sig.signal = "cancel";
+    for (const mode of VIEW_MODES) sig.metrics[mode].signal = "cancel";
+    if (sig.adjusted) sig.adjusted.signal = "cancel";
+  }
+
   // ── 요약 ────────────────────────────────────────────────────────────
-  const tally = (pick: (s: StationSignal) => SignalColor) => ({
-    green: signals.filter((s) => pick(s) === "green").length,
-    yellow: signals.filter((s) => pick(s) === "yellow").length,
-    red: signals.filter((s) => pick(s) === "red").length,
-    unknown: signals.filter((s) => pick(s) === "unknown").length,
-    stale: signals.filter((s) => pick(s) === "stale").length,
-  });
+  const tally = (pick: (s: StationSignal) => SignalColor) => {
+    const out = emptyCounts();
+    for (const s of signals) out[pick(s)]++;
+    return out;
+  };
 
   const counts = tally((s) => s.signal);
   // 기준선이 없어 보정 값을 못 낸 곳은 판정 불가로 센다. 현재 방식의 색을
@@ -556,6 +585,7 @@ function main() {
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
   console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
+  console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 시·도 평균 초과일이 절반 넘음)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }

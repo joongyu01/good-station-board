@@ -153,6 +153,7 @@ Node 스크립트와 Playwright 만 돌립니다. LLM 호출도, API 키도 없�
 | `client/public/data/history.json` | O | 차트가 읽는 시계열 |
 | `client/public/data/board-{날짜}.json` | O | 그날의 판정 스냅샷 (최근 30일) |
 | `client/public/data/rank-{날짜}.json` | O | 계수 검증용 순위표 (하루 743KB · 30일 보관) |
+| `client/public/data/history.json` | O | 일별 시계열 + 시·도 일별 평균(`regionMean`) |
 | `client/public/data/index.json` | O | 보유 날짜 목록 `{dates, ranks}` |
 | `client/public/data/geo-*.json` | O | 단순화한 행정구역 경계 |
 

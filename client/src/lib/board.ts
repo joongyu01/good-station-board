@@ -72,6 +72,7 @@ export const SIGNAL_COLORS: Record<SignalColor, string> = {
   red: "#C6402E",
   unknown: "#B9BDBE",
   stale: "#8A94A6",
+  cancel: "#1F2328",
 };
 
 export const SIGNAL_LABELS: Record<SignalColor, string> = {
@@ -80,6 +81,7 @@ export const SIGNAL_LABELS: Record<SignalColor, string> = {
   red: "가격기준 초과",
   unknown: "가격정보 없음",
   stale: "과거 미신고",
+  cancel: "선정 취소 대상",
 };
 
 /** 지역 단위 집계 — 지도 색칠에 쓴다. */
@@ -92,6 +94,7 @@ export interface RegionSummary {
   red: number;
   unknown: number;
   stale: number;
+  cancel: number;
   total: number;
   /** 착한주유소들이 지역 최저가에서 평균 몇 원 떨어져 있는지. 지도 색의 근거. */
   meanGap: number | null;
@@ -117,7 +120,7 @@ const GREEN_SHARE = 0.3;
 export function summarize(stations: StationSignal[], label: string, sido: string): RegionSummary {
   const s: RegionSummary = {
     label, sido,
-    green: 0, yellow: 0, red: 0, unknown: 0, stale: 0,
+    green: 0, yellow: 0, red: 0, unknown: 0, stale: 0, cancel: 0,
     total: stations.length, meanGap: null, signal: "unknown",
   };
   const gaps: number[] = [];
@@ -127,7 +130,9 @@ export function summarize(stations: StationSignal[], label: string, sido: string
   }
   if (gaps.length) s.meanGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
 
-  const judged = s.green + s.yellow + s.red;
+  // 취소 대상도 판정이 끝난 곳이다. 색을 정하는 분모에 넣지 않으면 그 지역이
+  // 실제보다 후하게 칠해진다 — 취소 대상만 남은 지역이 '미상' 이 되어 버린다.
+  const judged = s.green + s.yellow + s.red + s.cancel;
   if (judged > 0) {
     const share = s.green / judged;
     s.signal = share >= GREEN_SHARE ? "green" : s.green > 0 ? "yellow" : "red";

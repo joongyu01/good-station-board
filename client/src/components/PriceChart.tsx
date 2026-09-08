@@ -17,6 +17,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from "@shared/lib/history.ts";
 import { LOYAL_LABEL, LOYAL_ROUNDS } from "@shared/lib/types.ts";
+import { basisSido } from "@shared/lib/region.ts";
+import { overDaysOf, overRegionOf } from "@shared/lib/history.ts";
+import { ROUND_ANNOUNCED } from "@shared/lib/adjust.ts";
 import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
@@ -117,6 +120,25 @@ export default function PriceChart({ station, windows, onClose }: Props) {
 
   const series: StationSeries | null =
     (station.stationId && history?.stations[station.stationId]) || null;
+
+  /**
+   * 선정 이후 그 시·도 평균과 견준 내역.
+   *
+   * 계수의 분모는 상위 N위 커트라인이라 "평균보다 비쌌나" 를 묻지 못한다.
+   * 그건 선정 취소를 따지는 잣대라 따로 낸다 — history.ts 의 regionMean 참고.
+   */
+  const over = useMemo(() => {
+    const empty = { at: new Map<string, number>(), summary: null, since: null as string | null };
+    if (!history || !station.stationId || !station.rounds?.length) return empty;
+    const since = ROUND_ANNOUNCED[station.rounds[0]];
+    if (!since) return empty;
+    const days = overDaysOf(history, station.stationId, basisSido(station.sido, station.sigungu), since);
+    return {
+      at: new Map(days.map((d) => [d.date, d.over])),
+      summary: overRegionOf(days, since),
+      since,
+    };
+  }, [history, station.stationId, station.rounds, station.sido, station.sigungu]);
 
   const chart = useMemo(() => {
     if (!history || !series) return null;
@@ -246,11 +268,15 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       // 9/5·9/4 가 통째로 사라지고 9/3 부터 시작해, 신고를 거른 것인지 아직
       // 안 받아온 것인지 알 수가 없다. 빈 날은 '정보없음' 으로 적는다.
       rows: dates
-        .map((date, i) => ({ date, g: series.g[i], d: series.d[i] }))
+        .map((date, i) => ({
+          date, g: series.g[i], d: series.d[i],
+          // 선정 이후만 채운다. 선정 전 값은 견줄 잣대가 아니다.
+          over: over.at.get(date) ?? null,
+        }))
         .filter((r) => r.date >= from)
         .reverse(),
     };
-  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows]);
+  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows, over]);
 
   /** 고른 구간의 적합·근접·초과 일수. */
   const days = useMemo(
@@ -347,6 +373,21 @@ export default function PriceChart({ station, windows, onClose }: Props) {
               )}
             </ul>
           </div>
+        )}
+
+        {over.summary && (
+          <p className="over-sum">
+            {fmtDate(over.summary.since)} 선정 이후 {over.summary.days}일 중{" "}
+            <b>{over.summary.overDays}일</b>({Math.round((over.summary.overDays / over.summary.days) * 100)}%)
+            {" "}시·도 평균보다 비쌌습니다
+            {over.summary.overDays > 0 && <>
+              {" "}— 평균 <b>+{Math.round(over.summary.meanOver).toLocaleString("ko-KR")}원</b>,
+              {" "}가장 많이 넘긴 날 {fmtDate(over.summary.maxDate)}{" "}
+              <b>+{Math.round(over.summary.maxOver).toLocaleString("ko-KR")}원</b>
+              {over.summary.streak > 0 && <> · 최근 {over.summary.streak}일 연속 초과</>}
+            </>}
+            {over.summary.cancel && <span className="badge badge-cancel">선정 취소 대상</span>}
+          </p>
         )}
 
         <div className="chart-body">
@@ -483,6 +524,9 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                       <th>구분</th>
                       <th className="num">휘발유</th>
                       <th className="num">경유</th>
+                      <th className="num" title="그날 그 시·도 평균(휘발유+경유)과의 차이. 양수면 평균보다 비싸게 판 날">
+                        평균차
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -490,11 +534,15 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                       <tr key={r.date} className={r.g == null && r.d == null ? "is-none" : ""}>
                         <th scope="row">{fmtTick(r.date)}</th>
                         {r.g == null && r.d == null ? (
-                          <td className="no-data" colSpan={2}>정보없음</td>
+                          <td className="no-data" colSpan={3}>정보없음</td>
                         ) : (
                           <>
                             <td className="num">{r.g == null ? "—" : r.g.toLocaleString("ko-KR")}</td>
                             <td className="num">{r.d == null ? "—" : r.d.toLocaleString("ko-KR")}</td>
+                            <td className={`num ${r.over == null ? "" : r.over > 0 ? "over" : "under"}`}>
+                              {r.over == null ? "—"
+                                : `${r.over > 0 ? "+" : ""}${Math.round(r.over).toLocaleString("ko-KR")}`}
+                            </td>
                           </>
                         )}
                       </tr>

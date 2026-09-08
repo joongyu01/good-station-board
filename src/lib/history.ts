@@ -1,4 +1,5 @@
 import { basisSido } from "./region.ts";
+import { CANCEL_OVER_RATE, type OverRegion } from "./types.ts";
 import { COEF_DIGITS, distinctAsc } from "./signal.ts";
 
 /**
@@ -43,11 +44,58 @@ export interface History {
   dates: string[];
   /** 오피넷 주유소코드 → 시계열 */
   stations: Record<string, StationSeries>;
+  /**
+   * 비교 모집단(시·도) → 일별 **평균** 합계. 배열 길이는 `dates` 와 같다.
+   *
+   * 계수의 분모는 상위 N위 커트라인이라 "평균보다 비쌌나" 를 물을 수 없다.
+   * 선정 취소 판단은 평균 기준이라 따로 싣는다. 17개 시·도 × 191일이라
+   * 20KB 남짓이다.
+   */
+  regionMean?: Record<string, (number | null)[]>;
   generatedAt: string;
 }
 
 export function emptyHistory(): History {
-  return { dates: [], stations: {}, generatedAt: new Date().toISOString() };
+  return { dates: [], stations: {}, regionMean: {}, generatedAt: new Date().toISOString() };
+}
+
+/**
+ * 하루치 시·도 평균을 병합한다. 날짜축은 `mergeDay` 가 이미 맞춰 둔 것을 쓴다.
+ *
+ * 그래서 **`mergeDay` 뒤에 불러야 한다.** 먼저 부르면 그날이 아직 축에 없어
+ * 자리를 못 찾는다.
+ */
+export function mergeRegionMean(h: History, date: string, means: Map<string, number>): History {
+  const at = h.dates.indexOf(date);
+  if (at < 0) return h;
+  const len = h.dates.length;
+  const all = (h.regionMean ??= {});
+  // 이미 있던 시·도의 배열도 날짜축이 늘어난 만큼 채워 준다.
+  for (const arr of Object.values(all)) while (arr.length < len) arr.push(null);
+  for (const [sido, v] of means) {
+    const arr = all[sido] ??= new Array(len).fill(null);
+    while (arr.length < len) arr.push(null);
+    arr[at] = Math.round(v * 100) / 100;
+  }
+  return h;
+}
+
+/** 하루치 전국 행에서 시·도별 평균 합계를 낸다. 두 유종을 모두 파는 곳만 센다. */
+export function regionMeanOf(
+  rows: Array<{ sido: string; sigungu: string; gasoline: number | null; diesel: number | null }>,
+): Map<string, number> {
+  const acc = new Map<string, { s: number; n: number }>();
+  for (const r of rows) {
+    const g = r.gasoline, d = r.diesel;
+    if (g == null || g <= 0 || d == null || d <= 0) continue;
+    const basis = basisSido(r.sido, r.sigungu);
+    const a = acc.get(basis) ?? acc.set(basis, { s: 0, n: 0 }).get(basis)!;
+    a.s += g + d;
+    a.n++;
+  }
+  const out = new Map<string, number>();
+  for (const [k, a] of acc) out.set(k, a.s / a.n);
+  return out;
 }
 
 /** 하루치 관측값 — 한 날짜의 주유소코드별 값 */
@@ -208,4 +256,58 @@ export function complianceOf(h: History, id: string, from: string): Compliance {
   }
 
   return out;
+}
+
+/** 선정 이후 하루치 — 그날 합계와 그 시·도 평균, 그리고 차액. */
+export interface OverDay {
+  date: string;
+  /** 그날 휘발유+경유 합계 */
+  sum: number;
+  /** 그날 그 시·도 평균 합계 */
+  mean: number;
+  /** sum − mean. 양수면 평균보다 비싸게 판 것 */
+  over: number;
+}
+
+/**
+ * 선정 이후, 그 시·도 평균과 견준 날들.
+ *
+ * `since` **다음날**부터 센다. 공시 당일은 아직 선정 전 가격이 붙어 있는 날이다.
+ * 두 유종을 모두 판 날만 센다 — 합계가 없으면 견줄 수가 없다.
+ */
+export function overDaysOf(h: History, stationId: string, basis: string, since: string): OverDay[] {
+  const ser = h.stations[stationId];
+  const means = h.regionMean?.[basis];
+  if (!ser || !means) return [];
+  const out: OverDay[] = [];
+  for (let i = 0; i < h.dates.length; i++) {
+    if (h.dates[i] <= since) continue;
+    const g = ser.g[i], d = ser.d[i], m = means[i];
+    if (g == null || d == null || m == null) continue;
+    const sum = g + d;
+    out.push({ date: h.dates[i], sum, mean: m, over: Math.round((sum - m) * 100) / 100 });
+  }
+  return out;
+}
+
+/** 위를 요약한다. 견줄 날이 하나도 없으면 null. */
+export function overRegionOf(days: OverDay[], since: string, rate = CANCEL_OVER_RATE): OverRegion | null {
+  if (!days.length) return null;
+  const over = days.filter((x) => x.over > 0);
+  let maxOver = 0, maxDate = "";
+  for (const x of over) if (x.over > maxOver) { maxOver = x.over; maxDate = x.date; }
+  // 최근까지 이어진 연속 초과일 — 끝에서부터 센다.
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0 && days[i].over > 0; i--) streak++;
+  const sumOver = over.reduce((a, b) => a + b.over, 0);
+  return {
+    since,
+    days: days.length,
+    overDays: over.length,
+    meanOver: over.length ? Math.round((sumOver / over.length) * 10) / 10 : 0,
+    maxOver: Math.round(maxOver * 10) / 10,
+    maxDate,
+    streak,
+    cancel: over.length / days.length >= rate,
+  };
 }

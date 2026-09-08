@@ -30,7 +30,7 @@ import { driftSignalOf, worseOf } from "./adjust.ts";
 import type {
   AdjustedCombine, BoardData, JudgeMode, SignalColor, StationSignal, ViewMode,
 } from "./types.ts";
-import { VIEW_MODES } from "./types.ts";
+import { emptyCounts, VIEW_MODES } from "./types.ts";
 
 /**
  * 시·도마다 실어 둘 커트라인 개수.
@@ -72,9 +72,7 @@ export function baseAt(cut: number[] | undefined, rank: number): number | null {
 }
 
 function tally(stations: StationSignal[], pick: (s: StationSignal) => SignalColor) {
-  const out: Record<SignalColor, number> = {
-    green: 0, yellow: 0, red: 0, unknown: 0, stale: 0,
-  };
+  const out = emptyCounts();
   for (const s of stations) out[pick(s)]++;
   return out;
 }
@@ -139,6 +137,16 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
       const mark: SignalColor = hasToday ? "stale" : "unknown";
       for (const mode of VIEW_MODES) if (metrics[mode]) metrics[mode].signal = mark;
       if (adjusted) adjusted = { ...adjusted, signal: mark };
+    }
+
+    // 선정 취소 대상은 다른 무엇보다 앞선다. 오늘 순위가 어떻든 선정 자체를
+    // 다시 볼 일이기 때문이다. 집계도 같은 차례로 덮는다 — aggregate.ts 참고.
+    //
+    // 이 표시는 임계값과 무관하다. 관리 화면에서 기준 순위를 바꿔도 '선정
+    // 이후 지역 평균을 넘긴 날' 은 그대로라, 집계가 정해 둔 값을 그대로 쓴다.
+    if (st.overRegion?.cancel) {
+      for (const mode of VIEW_MODES) if (metrics[mode]) metrics[mode].signal = "cancel";
+      if (adjusted) adjusted = { ...adjusted, signal: "cancel" };
     }
 
     const m = metrics.sum ?? st.metrics?.sum;

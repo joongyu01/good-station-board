@@ -12,6 +12,8 @@
  *   순위<=5       시·도 순위 5위 이내
  *   휘발유<1700   휘발유 1,700원 미만
  *   적합          가격기준 적합
+ *   취소          선정 취소 대상 (선정 이후 지역 평균 초과일이 절반 넘음)
+ *   초과일>=100   선정 이후 지역 평균을 넘긴 날이 100일 이상
  *   셀프 경기 계수<0.99      ← 띄어쓰면 모두 만족하는 곳
  *
  * 낱말은 모두 **AND** 다. 거르기는 좁히려고 쓰는 것이라 낱말을 더할수록 줄어드는
@@ -33,6 +35,8 @@ const FIELDS: Record<string, (s: StationSignal, mode: ViewMode) => number | null
   경유: (s) => s.prices?.diesel ?? null,
   적합일: (s) => s.compliance?.greenDays ?? null,
   미신고: (s) => s.dataGapDays,
+  초과일: (s) => s.overRegion?.overDays ?? null,
+  초과액: (s) => s.overRegion?.meanOver ?? null,
 };
 
 const SIGNAL_WORDS: Record<string, SignalColor> = {
@@ -41,6 +45,7 @@ const SIGNAL_WORDS: Record<string, SignalColor> = {
   초과: "red", 미달: "red",
   정보없음: "unknown", 가격정보없음: "unknown",
   과거미신고: "stale",
+  취소: "cancel", 선정취소: "cancel", 취소대상: "cancel", 선정취소대상: "cancel",
 };
 
 const OPS = ["<=", ">=", "!=", "<", ">", "=", ":"] as const;
@@ -117,4 +122,4 @@ export function compileQuery(q: string): (s: StationSignal, mode: ViewMode) => b
 }
 
 /** 검색 상자 도움말에 쓸 보기. */
-export const QUERY_HINT = `이름·지역, 9차, ${LOYAL_LABEL}, 계수<1, 순위<=5, 휘발유<1700, 적합, 셀프`;
+export const QUERY_HINT = `이름·지역, 9차, ${LOYAL_LABEL}, 취소, 계수<1, 순위<=5, 초과일>=100, 적합, 셀프`;

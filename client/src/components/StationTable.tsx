@@ -146,6 +146,16 @@ export default function StationTable({
               <RoundBadge rounds={s.rounds} />
               {s.isSelf && <span className="badge badge-self">셀프</span>}
               {s.isRegionLowest && <span className="badge badge-low">시·도 최저</span>}
+              {s.overRegion?.cancel && (
+                <span
+                  className="badge badge-cancel"
+                  title={`${fmtDay(s.overRegion.since)} 선정 이후 ${s.overRegion.days}일 중 ${s.overRegion.overDays}일`
+                    + ` 시·도 평균보다 비쌌습니다 (평균 +${Math.round(s.overRegion.meanOver)}원,`
+                    + ` 최대 +${Math.round(s.overRegion.maxOver)}원 ${fmtDay(s.overRegion.maxDate)})`}
+                >
+                  선정 취소 대상 {Math.round((s.overRegion.overDays / s.overRegion.days) * 100)}%
+                </span>
+              )}
               {s.dataGapDays > 0 && (
                 <span
                   className="badge badge-gap"
