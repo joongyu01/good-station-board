@@ -14,15 +14,12 @@
  * 색은 그대로 다시 낼 수 있다.
  *
  * 문제는 계수다. 계수의 분모인 커트라인은 `N번째로 싼 값`이라 N이 바뀌면 같이
- * 바뀌는데, 전국 1만 건 분포는 화면에 없다. 그래서 집계가 시·도별로 **1위부터
- * CUTOFF_K위까지의 커트라인**을 함께 싣는다(`BoardData.cutoffs`). 16개 시·도 ×
- * 3기준 × 40개라 12KB 남짓이고, 이것만 있으면 N을 어디로 옮기든 계수를 정확히
- * 다시 낼 수 있다.
+ * 바뀌는데, 전국 주유소 원본은 화면에 없다. 대신 시·도별 서로 다른 가격을
+ * 모두 싣는다(`BoardData.cutoffs`). 허용된 설정 전체에서 분모를 다시 구한다.
  *
  * ## 무엇이 안 되나
  *
- * N이 CUTOFF_K를 넘으면 그 지역 커트라인을 알 수 없다. 그때는 계수만 집계가
- * 낸 값을 그대로 두고 색은 다시 낸다 — 순위는 알고 있기 때문이다.
+ * 기존 40개 제한 자료에서 새 순위의 분모를 알 수 없으면 계수를 비워 둔다.
  */
 import { basisSido } from "./region.ts";
 import { coefficientOf, greenRankWith, toSignal } from "./signal.ts";
@@ -33,11 +30,7 @@ import type {
 import { emptyCounts, VIEW_MODES } from "./types.ts";
 
 /**
- * 시·도마다 실어 둘 커트라인 개수.
- *
- * 관리 화면이 허용하는 기준 순위는 1~500이지만, 실제로 쓰는 값은 서울·경기 10과
- * 그 밖 5다. 근접 경계(2N)까지 봐도 20이면 충분하고, 여유를 둬 40으로 잡았다.
- * 이 값을 키우면 latest.json 이 시·도당 3×(늘어난 수)개씩 커진다.
+ * 기존 파일의 잘림 여부를 해석하는 호환용 상한. 새 파일에는 제한이 없다.
  */
 export const CUTOFF_K = 40;
 
@@ -52,9 +45,9 @@ export interface Judging {
   driftYellow: number;
 }
 
-/** 오름차순 서로 다른 값에서 앞쪽 K개만 잘라 낸다. 집계가 부른다. */
-export function cutoffsOf(distinct: number[], k = CUTOFF_K): number[] {
-  return distinct.slice(0, k);
+/** 오름차순 서로 다른 가격을 모두 싣는다. 주유소별 원본 행은 포함하지 않는다. */
+export function cutoffsOf(distinct: number[]): number[] {
+  return [...distinct];
 }
 
 /**
@@ -65,10 +58,16 @@ export function cutoffsOf(distinct: number[], k = CUTOFF_K): number[] {
  * 자리보다 뒤를 물으면 모른다고 답한다.** 잘린 끝을 지역의 마지막 값으로
  * 착각하면 커트라인이 실제보다 훨씬 싸게 나온다.
  */
-export function baseAt(cut: number[] | undefined, rank: number): number | null {
+export function baseAt(cut: number[] | undefined, rank: number, complete = false): number | null {
+  if (!Number.isInteger(rank) || rank < 1) return null;
   if (!cut || cut.length === 0) return null;
   if (rank <= cut.length) return cut[rank - 1];
-  return cut.length < CUTOFF_K ? cut[cut.length - 1] : null;
+  return complete || cut.length < CUTOFF_K ? cut[cut.length - 1] : null;
+}
+
+/** 보정 기준선 유무와 무관하게 선정 취소 조건을 우선한다. */
+export function adjustedSignalOf(st: StationSignal): SignalColor {
+  return st.overRegion?.cancel ? "cancel" : st.adjusted?.signal ?? "unknown";
 }
 
 function tally(stations: StationSignal[], pick: (s: StationSignal) => SignalColor) {
@@ -97,7 +96,8 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
     for (const mode of VIEW_MODES) {
       const m = st.metrics?.[mode];
       if (!m) continue;
-      const greenBase = baseAt(board.cutoffs?.[basis]?.[mode], greenRank) ?? m.greenBase;
+      const greenBase = baseAt(board.cutoffs?.[basis]?.[mode], greenRank, board.cutoffsComplete)
+        ?? (greenRank === st.greenRank ? m.greenBase : null);
       const idx = coefficientOf(m.price, greenBase);
       metrics[mode] = {
         ...m,
@@ -111,7 +111,8 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
     const a = st.adjusted;
     let adjusted = a;
     if (a) {
-      const greenBase = baseAt(board.adjustedCutoffs?.[basis], greenRank) ?? a.greenBase;
+      const greenBase = baseAt(board.adjustedCutoffs?.[basis], greenRank, board.cutoffsComplete)
+        ?? (greenRank === st.greenRank ? a.greenBase : null);
       const idx = coefficientOf(st.sum, greenBase);
       const rankSignal = toSignal(a.rank, greenRank, f, a.regionN);
       const driftSignal = driftSignalOf(a.drift, j.driftGreen, j.driftYellow);
@@ -150,7 +151,8 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
     }
 
     const m = metrics.sum ?? st.metrics?.sum;
-    const shown = j.judgeMode === "adjusted" ? (adjusted?.signal ?? "unknown") : m.signal;
+    const shown = st.overRegion?.cancel ? "cancel"
+      : j.judgeMode === "adjusted" ? (adjusted?.signal ?? "unknown") : m.signal;
 
     return {
       ...st,
@@ -172,7 +174,7 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
     summary: {
       ...board.summary,
       counts: tally(stations, (s) => s.signal),
-      adjustedCounts: tally(stations, (s) => s.adjusted?.signal ?? "unknown"),
+      adjustedCounts: tally(stations, adjustedSignalOf),
     },
     baseline: board.baseline
       ? {

@@ -133,8 +133,13 @@ create table if not exists gs_daily (
   region_n        integer     not null default 0,
   created_at      timestamptz not null default now(),
   primary key (trade_date, seq),
-  constraint gs_daily_signal check (signal in ('green', 'yellow', 'red', 'unknown'))
+  constraint gs_daily_signal check (signal in ('green', 'yellow', 'red', 'unknown', 'stale', 'cancel'))
 );
+
+-- 기존 설치에도 새 상태를 적용한다.
+alter table gs_daily drop constraint if exists gs_daily_signal;
+alter table gs_daily add constraint gs_daily_signal
+  check (signal in ('green', 'yellow', 'red', 'unknown', 'stale', 'cancel'));
 
 create index if not exists gs_daily_date_idx   on gs_daily (trade_date desc);
 create index if not exists gs_daily_signal_idx on gs_daily (trade_date, signal);

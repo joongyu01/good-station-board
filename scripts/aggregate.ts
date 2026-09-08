@@ -34,7 +34,7 @@ import {
 } from "../src/lib/types.ts";
 import { basisSido, regionKey } from "../src/lib/region.ts";
 import { buildRanks } from "../src/lib/rank.ts";
-import { cutoffsOf } from "../src/lib/judge.ts";
+import { adjustedSignalOf, cutoffsOf } from "../src/lib/judge.ts";
 import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
   COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, mergeRegionMean, overDaysOf,
@@ -482,7 +482,7 @@ function main() {
   const counts = tally((s) => s.signal);
   // 기준선이 없어 보정 값을 못 낸 곳은 판정 불가로 센다. 현재 방식의 색을
   // 빌려 오면 두 방식의 개수를 나란히 놓고 견줄 수가 없다.
-  const adjustedCounts = tally((s) => s.adjusted?.signal ?? "unknown");
+  const adjustedCounts = tally(adjustedSignalOf);
 
   // 시·도 통계는 전부 실어도 50건이 안 된다.
   const regions: RegionStat[] = [...stats.values()];
@@ -490,9 +490,8 @@ function main() {
   // ── 순위별 커트라인 ─────────────────────────────────────────────────
   //
   // 관리 화면에서 기준 순위를 바꾸면 계수의 분모가 함께 바뀐다. 그런데 그 분모는
-  // 전국 분포에서 뽑는 것이라 화면에는 없다. 그래서 시·도별로 앞쪽 몇 개를
-  // 미리 잘라 싣는다 — 이것만 있으면 화면이 다음 집계를 기다리지 않고 계수를
-  // 다시 낼 수 있다. 16개 시·도 × 3기준 × 40개라 12KB 남짓이다.
+  // 전국 분포에서 뽑는 값이므로 시·도별 서로 다른 가격을 전부 싣는다.
+  // 표시용 순위표 행 수와 독립적으로 전체 설정 범위의 분모를 계산한다.
   const cutoffs: BoardData["cutoffs"] = {};
   for (const [key, distinct] of distinctPrices) {
     const [sido, kind] = key.split("|");
@@ -508,6 +507,7 @@ function main() {
     stations: signals,
     regions,
     cutoffs,
+    cutoffsComplete: true,
     adjustedCutoffs,
     summary: { total: good.length, matched: matchedCount, counts, adjustedCounts },
     judgeMode: th.judgeMode ?? "rank",

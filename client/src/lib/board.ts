@@ -1,8 +1,8 @@
 /** 현황판이 쓰는 데이터 로딩과 지역 집계 헬퍼. */
 import type { BoardData, FuelType, SignalColor, StationSignal, ViewMode } from "@shared/lib/types.ts";
 import { SIDO_LABELS } from "@shared/lib/region.ts";
-import { VIEW_MODES, VIEW_MODE_LABELS } from "@shared/lib/types.ts";
-import { applyJudging, type Judging } from "@shared/lib/judge.ts";
+import { emptyCounts, VIEW_MODES, VIEW_MODE_LABELS } from "@shared/lib/types.ts";
+import { adjustedSignalOf, applyJudging, type Judging } from "@shared/lib/judge.ts";
 
 export type { Judging };
 
@@ -225,13 +225,16 @@ export function judgeBoard(board: BoardData, judging: Judging | null): BoardData
 export function applyJudgeMode(board: BoardData): BoardData {
   if (board.judgeMode !== "adjusted") return board;
 
+  const counts = emptyCounts();
+  for (const s of board.stations) counts[adjustedSignalOf(s)]++;
+
   return {
     ...board,
-    summary: { ...board.summary, counts: board.summary.adjustedCounts ?? board.summary.counts },
+    summary: { ...board.summary, counts, adjustedCounts: counts },
     stations: board.stations.map((s) => {
       // 기준선이 없어 보정 값을 못 낸 곳은 판정 불가로 둔다. 현재 방식의 색을
       // 빌려 오면 두 방식이 뒤섞여 무엇을 보고 있는지 알 수 없게 된다.
-      const sig = s.adjusted?.signal ?? "unknown";
+      const sig = adjustedSignalOf(s);
       return { ...s, signal: sig, metrics: { ...s.metrics, sum: { ...s.metrics.sum, signal: sig } } };
     }),
   };

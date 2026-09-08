@@ -310,6 +310,8 @@ export type AdjustedCombine = "both" | "drift" | "rank";
 
 /** 현황판이 읽는 최종 산출물 */
 export interface BoardData {
+  /** 모든 순위의 서로 다른 가격을 보유함. 기존 40개 제한 자료와 구분한다. */
+  cutoffsComplete?: boolean;
   /** 가격 기준일 YYYYMMDD */
   date: string;
   generatedAt: string;
@@ -333,7 +335,7 @@ export interface BoardData {
   judgeMode: JudgeMode;
 
   /**
-   * 시·도 → 기준 → 1위부터 CUTOFF_K위까지의 커트라인(서로 다른 값, 오름차순).
+   * 시·도 → 기준 → 전체 커트라인(서로 다른 값, 오름차순).
    *
    * 관리 화면에서 기준 순위를 바꿨을 때 **집계를 기다리지 않고** 계수를 다시
    * 낼 수 있게 싣는다. 계수의 분모는 N번째로 싼 값이라 N이 바뀌면 같이 바뀌는데,

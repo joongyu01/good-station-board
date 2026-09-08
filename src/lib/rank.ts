@@ -48,6 +48,7 @@ export interface RankRow {
 }
 
 export interface RankRegion {
+  cutoffsComplete?: boolean;
   /** 그 기준으로 비교 가능한 주유소 수 (전국 원본 기준) */
   n: number;
   /** 실린 줄이 닿는 조밀 순위. 상한에 걸려 잘렸으면 RANK_TOP_RANK 보다 작다 */
@@ -59,7 +60,7 @@ export interface RankRegion {
   /** 근접 경계값 */
   yellowBase: number | null;
   /**
-   * 1위부터 CUTOFF_K위까지의 커트라인(서로 다른 값).
+   * 전체 순위의 커트라인(서로 다른 값).
    *
    * 위의 `greenBase`·`yellowBase` 는 만들 때의 기준 순위로 박힌 값이다. 관리
    * 화면에서 기준 순위를 바꾸면 현황판 계수는 바로 따라 움직이므로, 검증하러
@@ -160,6 +161,7 @@ export function buildRanks(
         greenBase: at(greenRank),
         yellowBase: at(yellowRank),
         cutoffs: cutoffsOf(distinct),
+        cutoffsComplete: true,
         rows: out,
       };
     }
