@@ -374,6 +374,11 @@ button.stat + button.stat { margin-left: 4px; }
 .badge-low { background: var(--good-bg); color: var(--good); }
 .badge-self { background: rgba(47, 111, 181, .12); color: #2F6FB5; }
 /*
+  다섯 차수 넘게 뽑힌 곳. 다른 배지는 사실을 적은 이름표라 바탕을 옅게 두지만
+  이건 칭찬이라 혼자 채운다 — 목록을 훑을 때 이것만은 걸려야 한다.
+*/
+.badge-loyal { background: var(--good); color: #fff; }
+/*
   선정차수. 상호 옆에 붙으므로 눈에 먼저 걸리면 안 된다 — 배지 테두리 없이
   괄호만으로 묶고 색을 죽인다. 다섯 차수까지 붙는 곳이 있어 테두리를 두르면
   상호보다 요란해진다.

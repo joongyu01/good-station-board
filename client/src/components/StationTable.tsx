@@ -2,7 +2,7 @@
 import type { StationSignal } from "../lib/board.ts";
 import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 import { nextSort, type SortDir, type SortKey, type SortState } from "../lib/table.ts";
-import { VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
+import { LOYAL_LABEL, LOYAL_ROUNDS, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
 import { COEF_DIGITS } from "@shared/lib/signal.ts";
 import { BRAND_LABELS, withBrand } from "@shared/lib/brand.ts";
 
@@ -204,9 +204,16 @@ export default function StationTable({
 function RoundBadge({ rounds }: { rounds?: string[] }) {
   if (!rounds || rounds.length === 0) return null;
   return (
-    <span className="rounds" title={`${rounds.join(" · ")} 선정 (${rounds.length}회)`}>
-      {rounds.map((r) => <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>)}
-    </span>
+    <>
+      <span className="rounds" title={`${rounds.join(" · ")} 선정 (${rounds.length}회)`}>
+        {rounds.map((r) => <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>)}
+      </span>
+      {rounds.length >= LOYAL_ROUNDS && (
+        <span className="badge badge-loyal" title={`${rounds.length}차수에 걸쳐 뽑혔습니다 — ${rounds.join(" · ")}`}>
+          {LOYAL_LABEL}
+        </span>
+      )}
+    </>
   );
 }
 

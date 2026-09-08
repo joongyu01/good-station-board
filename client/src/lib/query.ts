@@ -7,6 +7,7 @@
  *
  *   대복          상호·주소·상표에 '대복'
  *   9차           9차에 뽑힌 곳
+ *   착하디착한    다섯 차수 넘게 뽑힌 곳
  *   계수<1        계수가 1 미만
  *   순위<=5       시·도 순위 5위 이내
  *   휘발유<1700   휘발유 1,700원 미만
@@ -19,7 +20,7 @@
  * 조건을 못 알아들으면 그 낱말은 **그냥 글자로** 찾는다. 오타 하나에 결과가 통째로
  * 비는 것보다, 이름으로 찾아 주는 편이 덜 놀랍다.
  */
-import type { SignalColor, StationSignal, ViewMode } from "@shared/lib/types.ts";
+import { LOYAL_LABEL, LOYAL_ROUNDS, type SignalColor, type StationSignal, type ViewMode } from "@shared/lib/types.ts";
 import { BRAND_LABELS } from "@shared/lib/brand.ts";
 
 /** 조건을 걸 수 있는 값. 화면 도움말에 그대로 쓴다. */
@@ -75,6 +76,8 @@ function parseTerm(word: string): Term {
 
   if (raw === "셀프") return (s) => s.isSelf;
   if (raw === "최저" || raw === "시도최저") return (s) => s.isRegionLowest;
+  // 여러 차수에 걸쳐 뽑힌 곳. 목록의 이름표를 그대로 쳐도 찾아진다.
+  if (raw === LOYAL_LABEL) return (s) => (s.rounds?.length ?? 0) >= LOYAL_ROUNDS;
 
   // 차수 — `9차`, `차수:9`, `차수=9차` 를 모두 받는다.
   const round = /^(?:차수[:=])?(\d{1,2})차?$/.exec(raw);
@@ -114,4 +117,4 @@ export function compileQuery(q: string): (s: StationSignal, mode: ViewMode) => b
 }
 
 /** 검색 상자 도움말에 쓸 보기. */
-export const QUERY_HINT = "이름·지역, 9차, 계수<1, 순위<=5, 휘발유<1700, 적합, 셀프";
+export const QUERY_HINT = `이름·지역, 9차, ${LOYAL_LABEL}, 계수<1, 순위<=5, 휘발유<1700, 적합, 셀프`;

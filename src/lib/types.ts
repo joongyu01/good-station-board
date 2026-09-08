@@ -239,6 +239,19 @@ export interface PriceIndex {
   coefficient: number;
 }
 
+/**
+ * 이 횟수 이상 뽑힌 곳에 붙이는 표시.
+ *
+ * 아홉 차수 중 다섯 번을 든 곳이 스물두 곳이다. 한 번 뽑힌 곳과 같은 줄에
+ * 두면 그 꾸준함이 묻힌다 — 차수 동그라미가 다섯 개라는 것은 세어야 보이지만
+ * 이름표는 눈에 바로 걸린다.
+ *
+ * 지금은 다섯이 최대값이지만 차수가 더 쌓이면 여섯도 나온다. 그래서 '같음' 이
+ * 아니라 '이상' 으로 센다.
+ */
+export const LOYAL_ROUNDS = 5;
+export const LOYAL_LABEL = "착하디착한";
+
 /** 신호등을 무엇으로 판정할지. */
 export type JudgeMode = "rank" | "adjusted";
 

@@ -16,6 +16,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from "@shared/lib/history.ts";
+import { LOYAL_LABEL, LOYAL_ROUNDS } from "@shared/lib/types.ts";
 import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
 import { useNarrow } from "../lib/useNarrow.ts";
@@ -312,6 +313,9 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>
                   ))} 선정
                 </span>
+              )}
+              {station.rounds?.length >= LOYAL_ROUNDS && (
+                <span className="badge badge-loyal">{LOYAL_LABEL}</span>
               )}
               {chart && <> · {fmtDate(chart.from)} ~ {fmtDate(chart.to)}</>}
             </p>
