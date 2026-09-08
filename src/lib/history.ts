@@ -71,7 +71,10 @@ export function mergeRegionMean(h: History, date: string, means: Map<string, num
   const len = h.dates.length;
   const all = (h.regionMean ??= {});
   // 이미 있던 시·도의 배열도 날짜축이 늘어난 만큼 채워 준다.
-  for (const arr of Object.values(all)) while (arr.length < len) arr.push(null);
+  for (const arr of Object.values(all)) {
+    while (arr.length < len) arr.push(null);
+    arr[at] = null;
+  }
   for (const [sido, v] of means) {
     const arr = all[sido] ??= new Array(len).fill(null);
     while (arr.length < len) arr.push(null);
@@ -119,6 +122,7 @@ export function mergeDay(h: History, date: string, samples: Map<string, DaySampl
     at = h.dates.findIndex((d) => d > date);
     if (at < 0) at = h.dates.length;
     h.dates.splice(at, 0, date);
+    for (const arr of Object.values(h.regionMean ?? {})) arr.splice(at, 0, null);
     for (const s of Object.values(h.stations)) {
       s.g.splice(at, 0, null);
       s.d.splice(at, 0, null);
@@ -128,6 +132,11 @@ export function mergeDay(h: History, date: string, samples: Map<string, DaySampl
   }
 
   const len = h.dates.length;
+  // 하루 전체를 교체한다. 새 원본에 없는 주유소는 이전 가격을 유지하지 않는다.
+  for (const s of Object.values(h.stations)) {
+    s.g[at] = s.d[at] = s.c[at] = null;
+    (s.s ??= new Array(len).fill(null))[at] = null;
+  }
   for (const [id, v] of samples) {
     let s = h.stations[id];
     if (!s) {

@@ -109,8 +109,8 @@ export default function RankWindow({ date, sido, mode, judging, onClose }: Props
       ...stored,
       greenRank,
       yellowRank,
-      greenBase: baseAt(stored.cutoffs, greenRank),
-      yellowBase: baseAt(stored.cutoffs, yellowRank),
+      greenBase: baseAt(stored.cutoffs, greenRank, stored.cutoffsComplete),
+      yellowBase: baseAt(stored.cutoffs, yellowRank, stored.cutoffsComplete),
     };
   }, [stored, active, judging]);
 
