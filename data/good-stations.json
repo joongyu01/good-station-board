@@ -296,8 +296,7 @@
     "stationId": "A0019951",
     "brand": "SK",
     "isSelf": true,
-    "round": "1차",
-    "anomaly": "광주"
+    "round": "1차"
   },
   {
     "seq": 24,
@@ -310,8 +309,7 @@
     "stationId": "A0020477",
     "brand": "SK",
     "isSelf": true,
-    "round": "1차",
-    "anomaly": "광주"
+    "round": "1차"
   },
   {
     "seq": 25,
@@ -324,8 +322,7 @@
     "stationId": "A0020705",
     "brand": "AL",
     "isSelf": true,
-    "round": "1차",
-    "anomaly": "광주"
+    "round": "1차"
   },
   {
     "seq": 26,
@@ -338,8 +335,7 @@
     "stationId": "A0020238",
     "brand": "HD",
     "isSelf": true,
-    "round": "1차",
-    "anomaly": "광주"
+    "round": "1차"
   },
   {
     "seq": 27,
@@ -833,8 +829,7 @@
     "stationId": "A0033145",
     "brand": "NH",
     "isSelf": false,
-    "round": "1차",
-    "anomaly": "전남"
+    "round": "1차"
   },
   {
     "seq": 65,
@@ -847,8 +842,7 @@
     "stationId": "A0022481",
     "brand": "GS",
     "isSelf": false,
-    "round": "1차",
-    "anomaly": "전남"
+    "round": "1차"
   },
   {
     "seq": 66,
@@ -861,8 +855,7 @@
     "stationId": "A0019958",
     "brand": "SK",
     "isSelf": false,
-    "round": "1차",
-    "anomaly": "전남"
+    "round": "1차"
   },
   {
     "seq": 67,
@@ -875,8 +868,7 @@
     "stationId": "A0021966",
     "brand": "SOIL",
     "isSelf": true,
-    "round": "1차",
-    "anomaly": "전남"
+    "round": "1차"
   },
   {
     "seq": 68,
@@ -1357,8 +1349,7 @@
     "stationId": "A0020427",
     "brand": "HD",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "광주"
+    "round": "2차"
   },
   {
     "seq": 105,
@@ -1371,8 +1362,7 @@
     "stationId": "A0020262",
     "brand": "SK",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "광주"
+    "round": "2차"
   },
   {
     "seq": 106,
@@ -1385,8 +1375,7 @@
     "stationId": "A0020130",
     "brand": "HD",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "광주"
+    "round": "2차"
   },
   {
     "seq": 107,
@@ -1776,8 +1765,7 @@
     "stationId": "A0021472",
     "brand": "GS",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "전남"
+    "round": "2차"
   },
   {
     "seq": 137,
@@ -1790,8 +1778,7 @@
     "stationId": "A0019638",
     "brand": "NH",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "전남"
+    "round": "2차"
   },
   {
     "seq": 138,
@@ -1804,8 +1791,7 @@
     "stationId": "A0019823",
     "brand": "HD",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "전남"
+    "round": "2차"
   },
   {
     "seq": 139,
@@ -1818,8 +1804,7 @@
     "stationId": "A0021486",
     "brand": "HD",
     "isSelf": false,
-    "round": "2차",
-    "anomaly": "전남"
+    "round": "2차"
   },
   {
     "seq": 140,
@@ -2274,8 +2259,7 @@
     "stationId": "A0020205",
     "brand": "HD",
     "isSelf": true,
-    "round": "3차",
-    "anomaly": "광주"
+    "round": "3차"
   },
   {
     "seq": 175,
@@ -2288,8 +2272,7 @@
     "stationId": "A0020473",
     "brand": "PB",
     "isSelf": true,
-    "round": "3차",
-    "anomaly": "광주"
+    "round": "3차"
   },
   {
     "seq": 176,
@@ -2302,8 +2285,7 @@
     "stationId": "A0020612",
     "brand": "GS",
     "isSelf": true,
-    "round": "3차",
-    "anomaly": "광주"
+    "round": "3차"
   },
   {
     "seq": 177,
@@ -2316,8 +2298,7 @@
     "stationId": "A0019802",
     "brand": "SK",
     "isSelf": true,
-    "round": "3차",
-    "anomaly": "광주"
+    "round": "3차"
   },
   {
     "seq": 178,
@@ -2330,8 +2311,7 @@
     "stationId": "A0020458",
     "brand": "GS",
     "isSelf": false,
-    "round": "3차",
-    "anomaly": "광주"
+    "round": "3차"
   },
   {
     "seq": 179,
@@ -2799,8 +2779,7 @@
     "stationId": "A0033398",
     "brand": "NH",
     "isSelf": false,
-    "round": "3차",
-    "anomaly": "전남"
+    "round": "3차"
   },
   {
     "seq": 215,
@@ -2813,8 +2792,7 @@
     "stationId": "A0020908",
     "brand": "HD",
     "isSelf": false,
-    "round": "3차",
-    "anomaly": "전남"
+    "round": "3차"
   },
   {
     "seq": 216,
@@ -2827,8 +2805,7 @@
     "stationId": "A0022076",
     "brand": "SK",
     "isSelf": true,
-    "round": "3차",
-    "anomaly": "전남"
+    "round": "3차"
   },
   {
     "seq": 217,
@@ -3244,8 +3221,7 @@
     "stationId": "A0019752",
     "brand": "AL",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "광주"
+    "round": "4차"
   },
   {
     "seq": 249,
@@ -3258,8 +3234,7 @@
     "stationId": "A0020586",
     "brand": "HD",
     "isSelf": false,
-    "round": "4차",
-    "anomaly": "광주"
+    "round": "4차"
   },
   {
     "seq": 250,
@@ -3272,8 +3247,7 @@
     "stationId": "A0020372",
     "brand": "SOIL",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "광주"
+    "round": "4차"
   },
   {
     "seq": 251,
@@ -3715,8 +3689,7 @@
     "stationId": "A0021316",
     "brand": "NH",
     "isSelf": false,
-    "round": "4차",
-    "anomaly": "전남"
+    "round": "4차"
   },
   {
     "seq": 285,
@@ -3729,8 +3702,7 @@
     "stationId": "A0033558",
     "brand": "AL",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "전남"
+    "round": "4차"
   },
   {
     "seq": 286,
@@ -3743,8 +3715,7 @@
     "stationId": "A0021156",
     "brand": "GS",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "전남"
+    "round": "4차"
   },
   {
     "seq": 287,
@@ -3757,8 +3728,7 @@
     "stationId": "A0021189",
     "brand": "SOIL",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "전남"
+    "round": "4차"
   },
   {
     "seq": 288,
@@ -3771,8 +3741,7 @@
     "stationId": "A0021236",
     "brand": "SK",
     "isSelf": true,
-    "round": "4차",
-    "anomaly": "전남"
+    "round": "4차"
   },
   {
     "seq": 289,
@@ -4240,8 +4209,7 @@
     "stationId": "A0019690",
     "brand": "AL",
     "isSelf": true,
-    "round": "5차",
-    "anomaly": "전남"
+    "round": "5차"
   },
   {
     "seq": 325,
@@ -4254,8 +4222,7 @@
     "stationId": "A0033669",
     "brand": "HD",
     "isSelf": true,
-    "round": "5차",
-    "anomaly": "전남"
+    "round": "5차"
   },
   {
     "seq": 326,
@@ -4268,8 +4235,7 @@
     "stationId": "A0033781",
     "brand": "SOIL",
     "isSelf": true,
-    "round": "5차",
-    "anomaly": "전남"
+    "round": "5차"
   },
   {
     "seq": 327,
@@ -4698,8 +4664,7 @@
     "stationId": "A0019865",
     "brand": "AL",
     "isSelf": true,
-    "round": "6차",
-    "anomaly": "전남"
+    "round": "6차"
   },
   {
     "seq": 360,
@@ -4829,8 +4794,7 @@
     "stationId": "A0020608",
     "brand": "SK",
     "isSelf": true,
-    "round": "7차",
-    "anomaly": "광주"
+    "round": "7차"
   },
   {
     "seq": 370,
@@ -4843,8 +4807,7 @@
     "stationId": "A0019692",
     "brand": "HD",
     "isSelf": true,
-    "round": "7차",
-    "anomaly": "광주광역시"
+    "round": "7차"
   },
   {
     "seq": 371,
