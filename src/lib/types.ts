@@ -108,17 +108,15 @@ export function emptyCounts(): Record<SignalColor, number> {
 }
 
 /**
- * 선정 취소 대상으로 보는 초과일 비율.
+ * 선정 취소 대상으로 보는 최소 초과일.
  *
  * 착한주유소로 뽑힌 **뒤에** 그 시·도 평균(휘발유+경유)보다 비싸게 판 날이
- * 절반을 넘으면 대상으로 본다. 하루이틀 넘긴 것까지 걸면 212곳이 잡혀 뜻이
- * 없고(전체의 45%), 늘 넘긴 곳만 세면 11곳이라 너무 좁다. 절반이면 72곳이고
- * 그 72곳은 지금도 전부 빨강이라, 검정으로 덮어도 적합·근접을 가리지 않는다.
+ * 이 값 이상이면 대상으로 본다. **하루라도 넘기면 취소**가 제도 기준이다.
  *
- * 이 값은 제도 기준이지 계산의 성질이 아니다. 바꾸려면 여기만 고치면 된다 —
- * 0.3 이면 101곳, 0.8 이면 38곳이다.
+ * 값을 올리면 그만큼 관대해진다 — 참고로 비율로 걸었을 때는 절반 이상이 72곳,
+ * 30% 이상이 101곳이었다. 제도 기준이지 계산의 성질이 아니므로 여기 한 곳에 둔다.
  */
-export const CANCEL_OVER_RATE = 0.5;
+export const CANCEL_MIN_OVER_DAYS = 1;
 
 /**
  * 선정 이후 그 시·도 평균을 넘긴 이력.
@@ -140,7 +138,7 @@ export interface OverRegion {
   maxDate: string;
   /** 최근까지 이어진 연속 초과일 */
   streak: number;
-  /** 취소 대상인지 — overDays / days ≥ CANCEL_OVER_RATE */
+  /** 취소 대상인지 — overDays ≥ CANCEL_MIN_OVER_DAYS */
   cancel: boolean;
 }
 

@@ -153,7 +153,7 @@ export default function StationTable({
                     + ` 시·도 평균보다 비쌌습니다 (평균 +${Math.round(s.overRegion.meanOver)}원,`
                     + ` 최대 +${Math.round(s.overRegion.maxOver)}원 ${fmtDay(s.overRegion.maxDate)})`}
                 >
-                  선정 취소 대상 {Math.round((s.overRegion.overDays / s.overRegion.days) * 100)}%
+                  선정 취소 대상 {s.overRegion.overDays}일
                 </span>
               )}
               {s.dataGapDays > 0 && (

@@ -1,5 +1,5 @@
 import { basisSido } from "./region.ts";
-import { CANCEL_OVER_RATE, type OverRegion } from "./types.ts";
+import { CANCEL_MIN_OVER_DAYS, type OverRegion } from "./types.ts";
 import { COEF_DIGITS, distinctAsc } from "./signal.ts";
 
 /**
@@ -291,7 +291,11 @@ export function overDaysOf(h: History, stationId: string, basis: string, since: 
 }
 
 /** 위를 요약한다. 견줄 날이 하나도 없으면 null. */
-export function overRegionOf(days: OverDay[], since: string, rate = CANCEL_OVER_RATE): OverRegion | null {
+export function overRegionOf(
+  days: OverDay[],
+  since: string,
+  minOverDays = CANCEL_MIN_OVER_DAYS,
+): OverRegion | null {
   if (!days.length) return null;
   const over = days.filter((x) => x.over > 0);
   let maxOver = 0, maxDate = "";
@@ -308,6 +312,6 @@ export function overRegionOf(days: OverDay[], since: string, rate = CANCEL_OVER_
     maxOver: Math.round(maxOver * 10) / 10,
     maxDate,
     streak,
-    cancel: over.length / days.length >= rate,
+    cancel: over.length >= minOverDays,
   };
 }

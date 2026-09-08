@@ -662,6 +662,18 @@ button.stat + button.stat { margin-left: 4px; }
 .ch-round { fill: #2F6FB5; opacity: .07; }
 .ch-round-edge { stroke: #2F6FB5; stroke-width: 1.2; stroke-dasharray: 3 3; opacity: .5; }
 .ch-round-label { fill: #2F6FB5; font-size: 9.5px; font-weight: 700; opacity: .75; }
+
+/*
+  단위지역 평균값 비교 — 두 선 사이가 곧 초과분이다.
+
+  넓이로 읽히게 칠한다. 숫자를 읽지 않아도 "얼마나 오래, 얼마나 많이" 가 눈에
+  들어온다. 평균선은 판정의 잣대라 굵고 진하게 둔다 — 옅게 두면 배경의 선정
+  구간 띠에 묻힌다.
+*/
+.ch-over-band { fill: var(--sig-red); opacity: .13; }
+.ch-mean { stroke-width: 1.9; opacity: 1; }
+.chart-legend .over { color: var(--sig-red); font-weight: 800; }
+.chart-legend .under { color: var(--good); font-weight: 800; }
 .ch-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 
 .chart-legend {

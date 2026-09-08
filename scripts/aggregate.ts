@@ -453,6 +453,8 @@ function main() {
   //
   // 기준일은 그 주유소의 **최초 선정 공시일**이다. 여러 차수에 걸쳐 다시 뽑힌
   // 곳도 착한주유소였던 기간은 처음부터 이어진다.
+  //
+  // 하루라도 넘기면 대상이다 — types.ts 의 CANCEL_MIN_OVER_DAYS.
   let cancelCount = 0;
   for (const sig of signals) {
     if (!sig.stationId || !sig.rounds.length) continue;
@@ -585,7 +587,7 @@ function main() {
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
   console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
-  console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 시·도 평균 초과일이 절반 넘음)`);
+  console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 시·도 평균을 한 번이라도 넘김)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }

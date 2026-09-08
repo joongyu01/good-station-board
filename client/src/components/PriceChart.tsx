@@ -51,14 +51,25 @@ const H_PRICE_MOBILE = 250;
 /** 계수는 값의 폭이 좁아 판매가보다 낮아도 읽힌다. */
 const H_COEF_DESKTOP = 140;
 const H_COEF_MOBILE = 175;
+/** 단위지역 평균값 비교 칸. 두 선이 붙어 다녀 세로가 좁으면 겹친다. */
+const H_AVG_DESKTOP = 150;
+const H_AVG_MOBILE = 185;
 const PAD = { top: 16, right: 16, bottom: 10, left: 58 };
-/** 날짜 라벨이 들어가는 아래 여백 — 계수 그래프에만 적용한다. */
+/** 날짜 라벨이 들어가는 아래 여백 — **맨 아래** 그래프에만 적용한다. */
 const PAD_BOTTOM_AXIS = 30;
 
 /** 휘발유는 노란색. 경유의 초록과 계수의 빨강과 겹치지 않는다. */
 const COLOR_GASOLINE = "#E3A81E";
 const COLOR_DIESEL = "#5B9A3E";
 const COLOR_COEF = "#C6402E";
+/**
+ * 단위지역 평균값 비교 — 이 주유소는 파랑, 단위지역 평균은 검정.
+ *
+ * 평균선은 판정의 잣대라 눈에 또렷해야 한다. 옅은 회색 점선으로 뒀더니 배경의
+ * 선정 구간 띠에 묻혔다.
+ */
+const COLOR_SUM = "#2F6FB5";
+const COLOR_MEAN = "#1F2328";
 
 /** 여러 창에서 같은 파일을 다시 받지 않도록 모듈 수준에 한 번만 담아 둔다. */
 let cache: Promise<History> | null = null;
@@ -102,6 +113,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
+  const H_AVG = narrow ? H_AVG_MOBILE : H_AVG_DESKTOP;
 
   useEffect(() => {
     let alive = true;
@@ -128,15 +140,24 @@ export default function PriceChart({ station, windows, onClose }: Props) {
    * 그건 선정 취소를 따지는 잣대라 따로 낸다 — history.ts 의 regionMean 참고.
    */
   const over = useMemo(() => {
-    const empty = { at: new Map<string, number>(), summary: null, since: null as string | null };
-    if (!history || !station.stationId || !station.rounds?.length) return empty;
+    const empty = {
+      at: new Map<string, number>(), summary: null, since: null as string | null,
+      mean: [] as (number | null)[],
+    };
+    if (!history || !station.stationId) return empty;
+    const basis = basisSido(station.sido, station.sigungu);
+    // 그래프는 선정 전후를 가리지 않고 그린다 — 언제부터 착한주유소였는지는
+    // 이미 띠로 표시돼 있고, 그 전 흐름이 있어야 뽑힌 뒤 달라졌는지가 보인다.
+    const mean = history.regionMean?.[basis] ?? [];
+    if (!station.rounds?.length) return { ...empty, mean };
     const since = ROUND_ANNOUNCED[station.rounds[0]];
-    if (!since) return empty;
-    const days = overDaysOf(history, station.stationId, basisSido(station.sido, station.sigungu), since);
+    if (!since) return { ...empty, mean };
+    const days = overDaysOf(history, station.stationId, basis, since);
     return {
       at: new Map(days.map((d) => [d.date, d.over])),
       summary: overRegionOf(days, since),
       since,
+      mean,
     };
   }, [history, station.stationId, station.rounds, station.sido, station.sigungu]);
 
@@ -172,14 +193,31 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     const c0 = cMin - cPad;
     const c1 = cMax + cPad;
 
+    /** 합계 판매가와 그 시·도 평균. 날짜축과 길이가 같아야 line() 이 받는다. */
+    const sumSeries: (number | null)[] = dates.map((_, i) => {
+      const g = series.g[i], d = series.d[i];
+      return g != null && d != null ? g + d : null;
+    });
+    const meanSeries: (number | null)[] = dates.map((_, i) => over.mean[i] ?? null);
+
     const innerW = W - PAD.left - PAD.right;
     const priceH = H_PRICE - PAD.top - PAD.bottom;
-    const coefH = H_COEF - PAD.top - PAD_BOTTOM_AXIS;
+    // 날짜 라벨은 맨 아래 칸(평균가 견주기)이 갖는다.
+    const coefH = H_COEF - PAD.top - PAD.bottom;
+    const avgH = H_AVG - PAD.top - PAD_BOTTOM_AXIS;
 
     const x = (k: number) =>
       PAD.left + (idx.length === 1 ? innerW / 2 : (k / (idx.length - 1)) * innerW);
     const yP = (v: number) => PAD.top + priceH - ((v - p0) / (p1 - p0)) * priceH;
     const yC = (v: number) => PAD.top + coefH - ((v - c0) / (c1 - c0)) * coefH;
+
+    // 평균가 축 — 두 계열을 함께 담는다. 각자 축을 쓰면 견주는 뜻이 없다.
+    const avgVals = idx.flatMap((i) => [sumSeries[i], meanSeries[i]]).filter((v): v is number => v != null);
+    const aMin = avgVals.length ? Math.min(...avgVals) : 0;
+    const aMax = avgVals.length ? Math.max(...avgVals) : 1;
+    const aPad = Math.max(20, (aMax - aMin) * 0.15);
+    const a0 = aMin - aPad, a1 = aMax + aPad;
+    const yA = (v: number) => PAD.top + avgH - ((v - a0) / (a1 - a0)) * avgH;
 
     /**
      * null 이 섞인 계열을 끊어진 선분들로 만든다.
@@ -220,6 +258,33 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       return out;
     }
 
+    /**
+     * 판매가가 평균을 웃돈 구간을 칠한다.
+     *
+     * 두 선 사이가 곧 초과분이라 눈으로 넓이를 읽게 된다. 값이 빈 날이나
+     * 날짜가 건너뛴 자리에서는 끊는다 — 이어 붙이면 없는 초과를 그리게 된다.
+     */
+    function overBands(): string[] {
+      const out: string[] = [];
+      let run: number[] = [];
+      const flush = () => {
+        if (run.length > 1) {
+          const up = run.map((k) => `${x(k).toFixed(1)},${yA(sumSeries[idx[k]]!).toFixed(1)}`);
+          const down = [...run].reverse().map((k) => `${x(k).toFixed(1)},${yA(meanSeries[idx[k]]!).toFixed(1)}`);
+          out.push(`M${up.join(" L")} L${down.join(" L")} Z`);
+        }
+        run = [];
+      };
+      idx.forEach((i, k) => {
+        const v = sumSeries[i], m = meanSeries[i];
+        if (v == null || m == null || v <= m) { flush(); return; }
+        if (run.length && gapDays(dates[idx[run[run.length - 1]]], dates[i]) > 1) flush();
+        run.push(k);
+      });
+      flush();
+      return out;
+    }
+
     // x축 눈금 — 6개 안팎으로 솎는다. 66일치 날짜를 다 쓰면 글자가 겹친다.
     const step = Math.max(1, Math.ceil(idx.length / 6));
     const ticks = idx
@@ -253,6 +318,16 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       idx, x, yP, yC, marks,
       gasoline: line(series.g, yP), diesel: line(series.d, yP), coef: line(series.c, yC),
       gasolineDots: dots(series.g, yP), dieselDots: dots(series.d, yP), coefDots: dots(series.c, yC),
+      sumLine: line(sumSeries, yA), meanLine: line(meanSeries, yA),
+      sumDots: dots(sumSeries, yA),
+      overBands: overBands(),
+      avgTicks: niceTicks(a0, a1, 4),
+      yA, avgH,
+      latestAvg: {
+        sum: sumSeries[last], mean: meanSeries[last],
+        diff: sumSeries[last] != null && meanSeries[last] != null
+          ? sumSeries[last]! - meanSeries[last]! : null,
+      },
       ticks,
       priceTicks: niceTicks(p0, p1, 4),
       coefTicks: niceTicks(c0, c1, 3),
@@ -491,12 +566,6 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                       </>
                     )}
 
-                    {/* 날짜 라벨은 아래 그래프에만. 두 그래프의 x 는 정확히 포개진다. */}
-                    {chart.ticks.map(({ k, date }) => (
-                      <text key={date} className="ch-axis" x={chart.x(k)}
-                        y={H_COEF - PAD_BOTTOM_AXIS + 18} textAnchor="middle">{fmtTick(date)}</text>
-                    ))}
-
                     {chart.coef.map((d, i) => (
                       <path key={`cl${i}`} d={d} className="ch-line" stroke={COLOR_COEF} />
                     ))}
@@ -507,6 +576,69 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_COEF }} />
                       계수 {chart.latest.c?.toFixed(COEF_DIGITS) ?? "—"}</span>
+                  </p>
+                </section>
+
+                {/* ── 평균가 견주기 ──────────────────────────── */}
+                <section className="chart-panel">
+                  <h4 className="chart-panel-title">
+                    단위지역 평균값 비교 <span>휘발유+경유 합계 · {station.sido} 평균</span>
+                  </h4>
+                  <svg viewBox={`0 0 ${W} ${H_AVG}`} className="chart-svg" role="img"
+                    aria-label={`${station.name} 합계 판매가와 ${station.sido} 평균 비교`}>
+                    {chart.marks.map((m) => (
+                      <g key={`ma${m.round}`}>
+                        <rect className="ch-round" x={m.x1} y={PAD.top}
+                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.avgH}>
+                          <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
+                        </rect>
+                        <line className="ch-round-edge" x1={m.x2} x2={m.x2}
+                          y1={PAD.top} y2={PAD.top + chart.avgH} />
+                      </g>
+                    ))}
+                    {chart.avgTicks.map((v) => (
+                      <g key={`a${v}`}>
+                        <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
+                          y1={chart.yA(v)} y2={chart.yA(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={chart.yA(v)}
+                          textAnchor="end" dominantBaseline="middle">
+                          {Math.round(v).toLocaleString("ko-KR")}
+                        </text>
+                      </g>
+                    ))}
+
+                    {/* 평균을 웃돈 구간 — 선보다 먼저 깔아야 값을 가리지 않는다 */}
+                    {chart.overBands.map((d, i) => (
+                      <path key={`ob${i}`} d={d} className="ch-over-band" />
+                    ))}
+
+                    {chart.meanLine.map((d, i) => (
+                      <path key={`ml${i}`} d={d} className="ch-line ch-mean" stroke={COLOR_MEAN} />
+                    ))}
+                    {chart.sumLine.map((d, i) => (
+                      <path key={`sl${i}`} d={d} className="ch-line" stroke={COLOR_SUM} />
+                    ))}
+                    {chart.sumDots.map((p, i) => (
+                      <circle key={`sd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_SUM} />
+                    ))}
+
+                    {/* 날짜 라벨은 맨 아래 칸에만. 세 그래프의 x 는 정확히 포개진다. */}
+                    {chart.ticks.map(({ k, date }) => (
+                      <text key={date} className="ch-axis" x={chart.x(k)}
+                        y={H_AVG - PAD_BOTTOM_AXIS + 18} textAnchor="middle">{fmtTick(date)}</text>
+                    ))}
+                  </svg>
+                  <p className="chart-legend">
+                    <span><i style={{ background: COLOR_SUM }} />
+                      이 주유소 {formatPrice(chart.latestAvg.sum)}</span>
+                    <span><i style={{ background: COLOR_MEAN }} />
+                      {station.sido} 평균 {formatPrice(chart.latestAvg.mean)}</span>
+                    {chart.latestAvg.diff != null && (
+                      <span className={chart.latestAvg.diff > 0 ? "over" : "under"}>
+                        {chart.latestAvg.diff > 0 ? "+" : ""}
+                        {Math.round(chart.latestAvg.diff).toLocaleString("ko-KR")}원
+                      </span>
+                    )}
                   </p>
                 </section>
               </div>
