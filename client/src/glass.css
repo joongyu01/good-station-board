@@ -31,6 +31,9 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   gap: 10px 18px; position: relative;
 }
 .topbar-logo { background: transparent; padding: 0; height: 34px; border-radius: 8px; }
+/* Blend the raster logo's white matte into the light toolbar without changing
+   the source CI asset. Limit compositing to the small logo, not the toolbar. */
+.topbar-logo img { mix-blend-mode: multiply; }
 .brand h1 { color: var(--ink); font-weight: 700; font-size: 19px; letter-spacing: -.045em; }
 .meta { color: #66756b; font-size: 11px; letter-spacing: -.015em; }
 .meta .sep { margin: 0 5px; }
