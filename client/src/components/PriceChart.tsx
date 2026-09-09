@@ -482,6 +482,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                 {/* ── 판매가 ─────────────────────────────────── */}
                 <section className="chart-panel">
                   <h4 className="chart-panel-title">판매가 <span>원/L</span></h4>
+                  <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_PRICE}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 휘발유·경유 판매가 추이`}>
                     {/* 선정 시점 — 선 뒤에 깔아야 값을 가리지 않는다 */}
@@ -531,6 +532,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <h4 className="chart-panel-title">
                     계수 <span>1 이하가 상위권</span>
                   </h4>
+                  <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_COEF}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합산 계수 추이`}>
                     {chart.marks.map((m) => (
@@ -580,6 +582,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <h4 className="chart-panel-title">
                     단위지역 평균값 비교 <span>휘발유+경유 합계 · {station.sido === "전남광주" ? "6/30까지 광주·전남 각각, 7/1부터 통합 평균" : `${station.sido} 평균`}</span>
                   </h4>
+                  <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_AVG}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합계 판매가와 ${station.sido} 평균 비교`}>
                     {chart.marks.map((m) => (

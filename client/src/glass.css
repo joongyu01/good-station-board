@@ -211,6 +211,10 @@ button.stat .dot { width: 9px; height: 9px; }
 }
 /* Readable everyday UI sizing, including the mobile overrides above. */
 body { font-size: 15px; }
+.chart-readout { min-height: 76px; margin: 4px 0 8px; }
+.ch-value-tooltip { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 12px; background: #18251f; color: white; border-radius: 8px; font-size: 13px; line-height: 1.45; pointer-events: none; }
+.ch-value-tooltip strong { flex-basis: 100%; }
+.ch-value-tooltip span { overflow-wrap: anywhere; }
 .brand h1 { font-size: 21px; }
 .meta, .summary-strip .stat-note { font-size: 12px; }
 .mode-tabs button, .admin-link, .crumb { font-size: 14px; }

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export interface DailyPlot {
   label: string;
@@ -13,12 +14,13 @@ export default function ChartPoints({ dates, x, y, plots, width, bottom }: {
   plots: DailyPlot[]; width: number; bottom: number;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
+  const root = useRef<SVGGElement>(null);
+  const [host, setHost] = useState<Element | null>(null);
+  useEffect(() => { setHost(root.current?.closest("section")?.querySelector(".chart-readout") ?? null); }, []);
   const active = selected == null ? null : Math.min(selected, dates.length - 1);
-  const tipWidth = Math.min(280, width - 64);
-  const tipX = active == null ? 0 : Math.max(4, Math.min(width - tipWidth - 4, x(active) - tipWidth / 2));
   const text = (plot: DailyPlot, i: number) => plot.values[i] == null
     ? "미신고 · 값 없음" : plot.format(plot.values[i]!);
-  return <g className="ch-daily-layer"
+  return <g ref={root} className="ch-daily-layer"
     onPointerMove={(event) => {
       const svg = event.currentTarget.ownerSVGElement!;
       const point = svg.createSVGPoint(); point.x = event.clientX; point.y = event.clientY;
@@ -51,15 +53,14 @@ export default function ChartPoints({ dates, x, y, plots, width, bottom }: {
       <line x1={x(active)} x2={x(active)} y1={16} y2={bottom} stroke="#69756e" strokeDasharray="3 3" />
       {plots.map(plot => plot.values[active] != null && <circle key={plot.label}
         cx={x(active)} cy={y(plot.values[active]!)} r={3.2} fill={plot.color} stroke="white" />)}
-      <g className="ch-value-tooltip" role="status" transform={`translate(${tipX}, 2)`}>
-        <rect width={tipWidth} height={24+plots.length*17} rx={6} fill="#18251f" />
-        <text x={10} y={16} fill="white" fontSize={11}>
+      {host && createPortal(<div className="ch-value-tooltip" role="status">
+        <strong>
           {dates[active].slice(0,4)}년 {Number(dates[active].slice(4,6))}월 {Number(dates[active].slice(6,8))}일
-        </text>
-        {plots.map((plot, i) => <text key={plot.label} x={10} y={33+i*17} fill="white" fontSize={11}>
+        </strong>
+        {plots.map((plot) => <span key={plot.label}>
           {plot.label}: {text(plot, active)}
-        </text>)}
-      </g>
+        </span>)}
+      </div>, host)}
     </g>}
   </g>;
 }

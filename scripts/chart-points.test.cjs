@@ -27,12 +27,15 @@ const assert=require('node:assert/strict');
    assert.match(await page.locator('.ch-value-tooltip').textContent(),/미신고/);
    await page.keyboard.press('ArrowRight');
    assert.ok(await page.locator('.ch-value-tooltip').count());
-   assert.equal(await page.locator('.ch-value-tooltip > rect').evaluate(el=>getComputedStyle(el).opacity),'1');
+   const section=page.locator('.chart-panel').nth(i);
+   const tipBox=await section.locator('.ch-value-tooltip').boundingBox();
+   const svgBox=await section.locator('.chart-svg').boundingBox();
+   assert.ok(tipBox.y+tipBox.height<=svgBox.y,'tooltip must stay above plot');
  }
  assert.equal(await page.locator('.ch-mean').first().evaluate(el=>getComputedStyle(el).strokeDasharray),'6px, 4px');
  const point=page.locator('[data-series="계수"] .ch-daily-point').last();
  await point.hover({force:true});
- assert.match(await page.locator('.ch-daily-layer').nth(1).locator('.ch-value-tooltip').textContent(),new RegExp(series.c.at(-1).toFixed(4).replace('.','\\.')));
+ assert.match(await page.locator('.chart-panel').nth(1).locator('.ch-value-tooltip').textContent(),new RegExp(series.c.at(-1).toFixed(4).replace('.','\\.')));
  await page.screenshot({path:'.tmp/chart-points.png'});
  await page.setViewportSize({width:390,height:844});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
