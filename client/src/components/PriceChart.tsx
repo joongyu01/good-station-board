@@ -159,7 +159,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     if (!since) return { ...empty, mean };
     const days = overDaysOf(history, station.stationId, station.sido, since, station.sigungu);
     return {
-      at: new Map(days.map((d) => [d.date, d.over])),
+      at: new Map(days.flatMap((d) => d.over == null ? [] : [[d.date, d.over] as [string, number]])),
       summary: overRegionOf(days, since),
       days,
       since,
@@ -484,9 +484,9 @@ export default function PriceChart({ station, windows, onClose }: Props) {
           <p className="over-sum">
             {fmtDate(over.summary.since)} 선정 이후 {over.summary.days}일 중{" "}
             <b>{over.summary.overDays}일</b>({Math.round((over.summary.overDays / over.summary.days) * 100)}%)
-            {" "}시·도 평균보다 비쌌습니다
+            {" "}휘발유 또는 경유가 단위지역 유종별 평균보다 비쌌습니다
             {over.summary.overDays > 0 && <>
-              {" "}— 평균 <b>+{Math.round(over.summary.meanOver).toLocaleString("ko-KR")}원</b>,
+              {" "}— 일별 최대 유종 초과액 평균 <b>+{Math.round(over.summary.meanOver).toLocaleString("ko-KR")}원</b>,
               {" "}가장 많이 넘긴 날 {fmtDate(over.summary.maxDate)}{" "}
               <b>+{Math.round(over.summary.maxOver).toLocaleString("ko-KR")}원</b>
               {over.summary.streak > 0 && <> · 최근 {over.summary.streak}일 연속 초과</>}

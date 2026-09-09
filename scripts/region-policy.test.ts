@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { basisSido } from '../src/lib/region.ts';
 import { DEFAULT_THRESHOLDS, greenRankWith } from '../src/lib/signal.ts';
-import { emptyHistory, mergeDay, mergeRegionMean, overDaysOf, regionMeanOf, sampleDay } from '../src/lib/history.ts';
+import { emptyHistory, mergeDay, mergeRegionMean, mergeRegionFuelMean, overDaysOf, overRegionOf, regionMeanOf, sampleDay } from '../src/lib/history.ts';
 import { readRaw, listRawDates } from '../src/lib/raw.ts';
 import { readFileSync } from 'node:fs';
 import type { History } from '../src/lib/history.ts';
@@ -41,9 +41,22 @@ test('cancellation follows daily geography across the boundary', () => {
   for (const day of ['20260630','20260701']) {
     mergeDay(h, day, sampleDay(rows, new Set(['A','B']), s=>greenRankWith(s, DEFAULT_THRESHOLDS), 2, day));
     mergeRegionMean(h, day, regionMeanOf(rows, day));
+    mergeRegionFuelMean(h, day, rows);
   }
   assert.deepEqual(overDaysOf(h,'B','전남광주','20260629','목포시').map(x=>x.over), [0,100]);
   assert.deepEqual(overDaysOf(h,'A','전남광주','20260629','광산구').map(x=>x.mean), [200,300]);
+});
+
+test('cancellation is individual fuel OR, counts each day once and includes partial valid days', () => {
+  const h: History = {dates:['20260101','20260102','20260103','20260104'],generatedAt:'',
+    stations:{A:{g:[120,120,120,null],d:[50,120,null,null],c:[1,1,null,null],s:['g','g',null,null]}},
+    regionMean:{서울:[200,200,200,200]},regionFuelMean:{g:{서울:[100,100,100,100]},d:{서울:[100,100,100,100]}}};
+  const days=overDaysOf(h,'A','서울','20251231');
+  assert.equal(days.length,3);
+  assert.equal(days[0].over,-30); // total below mean, gasoline above
+  assert.equal(days[0].fuelOver,20);
+  assert.equal(overRegionOf(days,'20251231')!.overDays,3);
+  assert.equal(overRegionOf(days,'20251231')!.cancel,true);
 });
 
 test('all stored daily means agree with independent date-aware raw grouping', () => {

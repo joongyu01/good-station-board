@@ -281,22 +281,30 @@ export function complianceOf(h: History, id: string, from: string): Compliance {
   return out;
 }
 
-/** 선정 이후 하루치 — 그날 합계와 그 시·도 평균, 그리고 차액. */
+/** 선정 이후 하루치 유종별 평균 비교. 합계 차액은 그래프 참고용이다. */
 export interface OverDay {
   date: string;
   /** 그날 휘발유+경유 합계 */
-  sum: number;
+  sum: number | null;
   /** 그날 그 시·도 평균 합계 */
-  mean: number;
+  mean: number | null;
   /** sum − mean. 양수면 평균보다 비싸게 판 것 */
-  over: number;
+  over: number | null;
+  gasoline?: number | null;
+  diesel?: number | null;
+  gasolineMean?: number | null;
+  dieselMean?: number | null;
+  gasolineOver?: number | null;
+  dieselOver?: number | null;
+  /** Largest individual-fuel excess; never the sum difference. */
+  fuelOver?: number;
 }
 
 /**
  * 선정 이후, 그 시·도 평균과 견준 날들.
  *
  * `since` **다음날**부터 센다. 공시 당일은 아직 선정 전 가격이 붙어 있는 날이다.
- * 두 유종을 모두 판 날만 센다 — 합계가 없으면 견줄 수가 없다.
+ * 한 유종만 유효해도 비교한다. 취소 여부는 유종별 평균 초과의 OR이며 합계차는 참고용이다.
  */
 export function overDaysOf(h: History, stationId: string, basis: string, since: string, sigungu = ""): OverDay[] {
   const ser = h.stations[stationId];
@@ -304,10 +312,16 @@ export function overDaysOf(h: History, stationId: string, basis: string, since: 
   const out: OverDay[] = [];
   for (let i = 0; i < h.dates.length; i++) {
     if (h.dates[i] <= since) continue;
-    const g = ser.g[i], d = ser.d[i], m = h.regionMean?.[basisSido(basis, sigungu, h.dates[i])]?.[i];
-    if (g == null || d == null || m == null) continue;
-    const sum = g + d;
-    out.push({ date: h.dates[i], sum, mean: m, over: Math.round((sum - m) * 100) / 100 });
+    const region = basisSido(basis, sigungu, h.dates[i]);
+    const g = ser.g[i], d = ser.d[i], m = h.regionMean?.[region]?.[i] ?? null;
+    const gm = h.regionFuelMean?.g[region]?.[i] ?? null, dm = h.regionFuelMean?.d[region]?.[i] ?? null;
+    const go = g != null && g > 0 && gm != null ? Math.round((g-gm)*100)/100 : null;
+    const diffD = d != null && d > 0 && dm != null ? Math.round((d-dm)*100)/100 : null;
+    if (go == null && diffD == null) continue;
+    const sum = g != null && g > 0 && d != null && d > 0 ? g+d : null;
+    out.push({ date: h.dates[i], sum, mean: m, over: sum != null && m != null ? Math.round((sum-m)*100)/100 : null,
+      gasoline:g, diesel:d, gasolineMean:gm, dieselMean:dm, gasolineOver:go, dieselOver:diffD,
+      fuelOver: Math.max(0,go ?? 0,diffD ?? 0) });
   }
   return out;
 }
@@ -319,13 +333,13 @@ export function overRegionOf(
   minOverDays = CANCEL_MIN_OVER_DAYS,
 ): OverRegion | null {
   if (!days.length) return null;
-  const over = days.filter((x) => x.over > 0);
+  const over = days.filter((x) => (x.fuelOver ?? 0) > 0);
   let maxOver = 0, maxDate = "";
-  for (const x of over) if (x.over > maxOver) { maxOver = x.over; maxDate = x.date; }
+  for (const x of over) if (x.fuelOver! > maxOver) { maxOver = x.fuelOver!; maxDate = x.date; }
   // 최근까지 이어진 연속 초과일 — 끝에서부터 센다.
   let streak = 0;
-  for (let i = days.length - 1; i >= 0 && days[i].over > 0; i--) streak++;
-  const sumOver = over.reduce((a, b) => a + b.over, 0);
+  for (let i = days.length - 1; i >= 0 && (days[i].fuelOver ?? 0) > 0; i--) streak++;
+  const sumOver = over.reduce((a, b) => a + b.fuelOver!, 0);
   return {
     since,
     days: days.length,

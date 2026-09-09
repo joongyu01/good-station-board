@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Admin from "./components/Admin.tsx";
+import StationStats from "./components/StationStats.tsx";
+import { signalHelp } from "./lib/signalHelp.ts";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
@@ -361,6 +363,8 @@ export default function App() {
     return <div className="state-msg"><p>불러오는 중…</p></div>;
   }
 
+  if (hash.startsWith("#/stats")) return <StationStats board={board} />;
+
   const mapNode = (
     <KoreaMap
       sidoGeo={sidoGeo}
@@ -477,6 +481,9 @@ export default function App() {
       </header>
 
       <div className="page">
+      <a className="station-total-link" href="#/stats" target="_blank" rel="noopener noreferrer">
+        현재 등록 착한주유소 <strong>{board.stations.length.toLocaleString()}업체</strong><span>통계 보기 ↗</span>
+      </a>
       <div className="summary-strip">
         {SIGNAL_ORDER.filter((k) => k !== "stale").map((k) => (
           <button
@@ -484,12 +491,15 @@ export default function App() {
             type="button"
             className={`stat stat-${k}${filter === k ? " is-on" : ""}`}
             aria-pressed={filter === k}
-            title={k === "cancel" ? "과거 이력 기준 · 현재 신호등과 중복 집계 (눌러서 필터)" : filter === k ? "눌러서 전체 보기" : `${SIGNAL_LABELS[k]} 만 보기`}
+            aria-describedby={`signal-help-${k}`}
             onClick={() => setFilter(filter === k ? null : k)}
           >
             <span className="dot" style={{ background: SIGNAL_COLORS[k] }} />
             <span className="stat-label">{SIGNAL_LABELS[k]}</span>
             <strong className="stat-value">{totals[k]}</strong>
+            <span className="signal-help" role="tooltip" id={`signal-help-${k}`}>
+              {signalHelp(k, board, judging, mode)} 클릭하면 해당 목록을 봅니다.
+            </span>
           </button>
         ))}
         <div className="stat stat-note">

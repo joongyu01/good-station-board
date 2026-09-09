@@ -25,6 +25,17 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await page.waitForTimeout(400);
   assert.ok(await page.locator('.name-link').count() < 60, 'virtual list preserved');
   assert.equal(await page.locator('button.stat').count(), 5);
+  await page.locator('.stat-green').hover();
+  assert.ok(await page.locator('#signal-help-green').isVisible());
+  assert.match(await page.locator('#signal-help-green').innerText(),/순위/);
+  const statsEvent=page.waitForEvent('popup');
+  await page.locator('.station-total-link').click();
+  const stats=await statsEvent;
+  await stats.getByRole('heading',{name:'착한주유소 통계',exact:true}).waitFor();
+  assert.equal(await stats.locator('.stats-panel').count(),6);
+  assert.match(await stats.locator('.stats-kpis').innerText(),/472/);
+  await stats.screenshot({path:'.tmp/preview/station-stats.png',fullPage:true});
+  await stats.close();
   for (let i=0;i<5;i++) {
     const filter=page.locator('button.stat').nth(i);
     await filter.click();

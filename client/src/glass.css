@@ -211,6 +211,26 @@ button.stat .dot { width: 9px; height: 9px; }
 }
 /* Readable everyday UI sizing, including the mobile overrides above. */
 body { font-size: 15px; }
+.station-total-link { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding: 12px 18px; background: #fff; border: 1px solid #dce8d5; border-radius: 14px; color: #30472b; text-decoration: none; }
+.station-total-link strong { font-size: 23px; }
+.station-total-link span { margin-left: auto; font-size: 13px; }
+button.stat { position: relative; overflow: visible; }
+.signal-help { display: none; position: absolute; z-index: 100; top: calc(100% + 6px); left: 0; width: min(330px, 80vw); padding: 13px; border-radius: 10px; background: #203329; color: #fff; font-size: 13px; font-weight: 400; line-height: 1.6; text-align: left; white-space: normal; box-shadow: 0 5px 20px #0003; }
+.stat:last-of-type .signal-help { left: auto; right: 0; }
+button.stat:hover .signal-help, button.stat:focus-visible .signal-help { display: block; }
+.stats-page { max-width: 1200px; margin: 24px auto; padding: 20px; }
+.stats-page header p, .stats-panel p { color: #647267; font-size: 14px; line-height: 1.6; }
+.stats-kpis, .stats-grid { display: grid; gap: 16px; grid-template-columns: repeat(2,minmax(0,1fr)); margin-top: 20px; }
+.stats-kpis { grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); }
+.stats-kpis > div, .stats-panel { background: #fff; border-radius: 16px; padding: 20px; }
+.stats-kpis strong { display: block; font-size: 26px; margin-top: 8px; }
+.stats-panel h2 { font-size: 19px; }
+.stats-panel table { width: 100%; border-collapse: collapse; }
+.stats-panel th, .stats-panel td { padding: 9px 5px; border-bottom: 1px solid #e5ece6; text-align: right; }
+.stats-panel th:first-child { text-align: left; }
+.stats-panel td:last-child { position: relative; min-width: 90px; }
+.stats-bar { display: block; background: #86bc4544; position: absolute; left: 0; bottom: 2px; height: 5px; }
+@media(max-width:720px) { .stats-grid { grid-template-columns: 1fr; } }
 .chart-readout { min-height: 76px; margin: 4px 0 8px; }
 .chart-navigation { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .chart-zoom-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
