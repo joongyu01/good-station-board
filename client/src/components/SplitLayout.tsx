@@ -56,7 +56,8 @@ export default function SplitLayout({ left, right }: Props) {
   const [fraction, setFraction] = useState(load);
   const [dragging, setDragging] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
-  const drag = useRef<{ left: number; width: number; value: number } | null>(null);
+  const guide = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ width: number; value: number; startX: number; startValue: number; offset: number } | null>(null);
   const frame = useRef(0);
   useEffect(() => () => {
     cancelAnimationFrame(frame.current);
@@ -67,9 +68,13 @@ export default function SplitLayout({ left, right }: Props) {
   useEffect(() => { if (!dragging) save(fraction); }, [dragging, fraction]);
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.button !== 0) return;
     const rect = ref.current!.getBoundingClientRect();
     if (rect.width <= 0) return;
-    drag.current = { left: rect.left, width: rect.width, value: fraction };
+    const handle = e.currentTarget.getBoundingClientRect();
+    const offset = handle.left + handle.width / 2 - rect.left - fraction * rect.width;
+    drag.current = { width: rect.width, value: fraction, startX: e.clientX, startValue: fraction, offset };
+    guide.current!.style.transform = `translateX(${fraction * rect.width + offset}px)`;
     pauseNameFit();
     // 분할선은 얇아서 포인터가 쉽게 벗어난다. 여기서는 바로 캡처해도 된다 —
     // 지도 폴리곤과 달리 이어지는 click 을 받을 대상이 없다.
@@ -80,10 +85,12 @@ export default function SplitLayout({ left, right }: Props) {
 
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
     if (!drag.current) return;
-    drag.current.value = clamp((e.clientX - drag.current.left) / drag.current.width);
+    drag.current.value = clamp(drag.current.startValue + (e.clientX - drag.current.startX) / drag.current.width);
     if (!frame.current) frame.current = requestAnimationFrame(() => {
       frame.current = 0;
-      if (drag.current) setFraction(drag.current.value);
+      if (drag.current && guide.current) {
+        guide.current.style.transform = `translateX(${drag.current.value * drag.current.width + drag.current.offset}px)`;
+      }
     });
   }
 
@@ -92,7 +99,7 @@ export default function SplitLayout({ left, right }: Props) {
     cancelAnimationFrame(frame.current);
     frame.current = 0;
     const value = e.type === "pointerup"
-      ? clamp((e.clientX - drag.current.left) / drag.current.width) : drag.current.value;
+      ? clamp(drag.current.startValue + (e.clientX - drag.current.startX) / drag.current.width) : drag.current.startValue;
     drag.current = null;
     setFraction(value);
     resumeNameFit();
@@ -127,7 +134,7 @@ export default function SplitLayout({ left, right }: Props) {
         aria-valuemin={Math.round(MIN_FRACTION * 100)}
         aria-valuemax={Math.round(MAX_FRACTION * 100)}
         tabIndex={0}
-        title="끌어서 폭 조절 · 두 번 누르면 기본값"
+        title="안내선을 끈 뒤 놓으면 폭 적용 · 두 번 누르면 기본값"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -147,6 +154,7 @@ export default function SplitLayout({ left, right }: Props) {
       <section className="panel-col">
         <div className="panel-inner">{right}</div>
       </section>
+      <div ref={guide} className="layout-resize-guide" aria-hidden="true"><span>놓으면 적용</span></div>
     </main>
   );
 }

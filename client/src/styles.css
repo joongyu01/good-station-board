@@ -166,7 +166,11 @@ button.stat + button.stat { margin-left: 4px; }
   /* 두 칸의 높이를 맞춘다. 행 높이는 지도가 정한다 — .panel-inner 참고. */
   align-items: stretch;
 }
+.layout { position: relative; }
 .layout.is-resizing { cursor: col-resize; user-select: none; }
+.layout-resize-guide { display: none; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--green-deep); pointer-events: none; z-index: 20; will-change: transform; }
+.layout.is-resizing > .layout-resize-guide { display: block; }
+.layout-resize-guide span { position: absolute; top: 8px; left: 8px; padding: 4px 8px; border-radius: 5px; white-space: nowrap; background: var(--gray-deep); color: white; font-size: 12px; }
 
 .layout-resizer {
   align-self: stretch; min-height: 220px;
