@@ -59,6 +59,8 @@ function headers(mode: ViewMode): HeaderDef[] {
       key: "compliance", label: "기준 충족(일)", num: true, first: "desc",
       title: "8월 1일부터 오늘까지 적합 / 근접 / 초과였던 날 수",
     },
+    { key: "cancelDays", label: "선정 취소 대상일", num: true, first: "desc",
+      title: "최초 선정 발표 다음 날부터 휘발유+경유 합계가 단위지역 평균을 초과한 일수" },
   ];
 }
 
@@ -146,16 +148,6 @@ export default function StationTable({
               <RoundBadge rounds={s.rounds} />
               {s.isSelf && <span className="badge badge-self">셀프</span>}
               {s.isRegionLowest && <span className="badge badge-low">시·도 최저</span>}
-              {s.overRegion?.cancel && (
-                <span
-                  className="badge badge-cancel"
-                  title={`${fmtDay(s.overRegion.since)} 선정 이후 ${s.overRegion.days}일 중 ${s.overRegion.overDays}일`
-                    + ` 시·도 평균보다 비쌌습니다 (평균 +${Math.round(s.overRegion.meanOver)}원,`
-                    + ` 최대 +${Math.round(s.overRegion.maxOver)}원 ${fmtDay(s.overRegion.maxDate)})`}
-                >
-                  선정 취소 대상 {s.overRegion.overDays}일
-                </span>
-              )}
               {s.dataGapDays > 0 && (
                 <span
                   className="badge badge-gap"
@@ -191,6 +183,11 @@ export default function StationTable({
             </td>
             <td className="num days" data-label="기준 충족(일)">
               <ComplianceDays c={s.compliance} />
+            </td>
+            <td className="num" data-label="선정 취소 대상일">
+              {s.overRegion ? <span className={s.overRegion.cancel ? "badge badge-cancel" : "muted"}>
+                {s.overRegion.overDays}일
+              </span> : <span className="muted">—</span>}
             </td>
           </tr>
         ))}

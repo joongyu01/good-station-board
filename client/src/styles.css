@@ -383,6 +383,27 @@ button.stat + button.stat { margin-left: 4px; }
 .badge-loyal { background: var(--good); color: #fff; }
 /* 선정 취소 대상. 눈에 가장 먼저 걸려야 한다 */
 .badge-cancel { background: var(--sig-cancel); color: #fff; }
+.cancel-report-trigger { border: 0; cursor: pointer; padding: 6px 9px; }
+.cancel-report-trigger:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.cancel-report { width: min(820px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: #fff; overflow: auto; box-sizing: border-box; }
+.cancel-report::backdrop { background: rgb(0 0 0 / 48%); }
+.cancel-report-content { padding: 20px; font-size: 14px; line-height: 1.6; }
+.cancel-report-content header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cancel-report-content h3, .cancel-report-content h4 { margin: 0 0 12px; }
+.cancel-report-content header button { flex: none; min-width: 40px; min-height: 40px; cursor: pointer; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.cancel-report-rule { padding: 12px; background: var(--paper); border-radius: 8px; }
+.cancel-report-table { overflow-x: auto; }
+.cancel-report-table table { width: 100%; border-collapse: collapse; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cancel-report-table th, .cancel-report-table td { padding: 9px; border-bottom: 1px solid var(--line); text-align: right; }
+.cancel-report-table th:first-child { text-align: left; }
+.cancel-report-table thead { background: var(--paper); }
+@media (max-width: 720px) {
+  .cancel-report-content { padding: 14px; font-size: 13px; }
+  .cancel-report-content h3 { font-size: 16px; }
+  .cancel-report-table table { font-size: 11px; }
+  .cancel-report-table th, .cancel-report-table td { padding: 9px 3px; }
+  .cancel-report-table thead th { white-space: normal; }
+}
 /* 그래프 옆 초과 내역 */
 .over-sum { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
 .over-sum b { color: var(--sig-cancel); font-weight: 800; }

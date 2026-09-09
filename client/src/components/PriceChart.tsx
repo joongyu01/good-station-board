@@ -18,7 +18,8 @@ import { useEffect, useMemo, useState } from "react";
 import { COMPLIANCE_FROM, complianceOf, type History, type StationSeries } from "@shared/lib/history.ts";
 import { LOYAL_LABEL, LOYAL_ROUNDS } from "@shared/lib/types.ts";
 import { basisSido } from "@shared/lib/region.ts";
-import { overDaysOf, overRegionOf } from "@shared/lib/history.ts";
+import { overDaysOf, overRegionOf, type OverDay } from "@shared/lib/history.ts";
+import CancellationReport from "./CancellationReport.tsx";
 import { ROUND_ANNOUNCED } from "@shared/lib/adjust.ts";
 import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
@@ -110,6 +111,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
    * 처음부터 보여준다. 최근만 보려면 '8월 1일부터' 로 좁힌다.
    */
   const [from, setFrom] = useState<string>("");
+  const [reportOpen, setReportOpen] = useState(false);
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -125,10 +127,10 @@ export default function PriceChart({ station, windows, onClose }: Props) {
 
   // 배경을 눌러도 닫히지만 Esc 가 더 빠르다.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && !reportOpen) onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, reportOpen]);
 
   const series: StationSeries | null =
     (station.stationId && history?.stations[station.stationId]) || null;
@@ -143,6 +145,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     const empty = {
       at: new Map<string, number>(), summary: null, since: null as string | null,
       mean: [] as (number | null)[],
+      days: [] as OverDay[],
     };
     if (!history || !station.stationId) return empty;
     const basis = basisSido(station.sido, station.sigungu);
@@ -156,6 +159,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     return {
       at: new Map(days.map((d) => [d.date, d.over])),
       summary: overRegionOf(days, since),
+      days,
       since,
       mean,
     };
@@ -443,6 +447,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
               <li className="d-g"><b>{days.greenDays}</b>일<span>가격기준 적합</span></li>
               <li className="d-y"><b>{days.yellowDays}</b>일<span>가격기준 근접</span></li>
               <li className="d-r"><b>{days.redDays}</b>일<span>가격기준 초과</span></li>
+              {over.summary?.cancel && <li><button type="button" className="badge badge-cancel cancel-report-trigger"
+                onClick={() => setReportOpen(true)} aria-haspopup="dialog">선정 취소 대상 · {over.summary.overDays}일</button></li>}
               {days.missingDays > 0 && (
                 <li className="d-n"><b>{days.missingDays}</b>일<span>가격정보 없음</span></li>
               )}
@@ -461,9 +467,12 @@ export default function PriceChart({ station, windows, onClose }: Props) {
               <b>+{Math.round(over.summary.maxOver).toLocaleString("ko-KR")}원</b>
               {over.summary.streak > 0 && <> · 최근 {over.summary.streak}일 연속 초과</>}
             </>}
-            {over.summary.cancel && <span className="badge badge-cancel">선정 취소 대상</span>}
           </p>
         )}
+
+        {reportOpen && over.since && history && <CancellationReport
+          name={withBrand(station.name, station.brand)} region={basisSido(station.sido, station.sigungu)}
+          since={over.since} to={history.dates.at(-1)!} days={over.days} onClose={() => setReportOpen(false)} />}
 
         <div className="chart-body">
           {error && (

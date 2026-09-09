@@ -5,7 +5,7 @@ import { BRAND_LABELS, withBrand } from "@shared/lib/brand.ts";
 
 export type SortKey =
   | "signal" | "name" | "region"
-  | "gasoline" | "diesel" | "coefficient" | "rank" | "compliance";
+  | "gasoline" | "diesel" | "coefficient" | "rank" | "compliance" | "cancelDays";
 
 export type SortDir = "asc" | "desc";
 export interface SortState { key: SortKey; dir: SortDir }
@@ -23,6 +23,7 @@ function valueOf(s: StationSignal, key: SortKey): number | string | null {
     case "coefficient": return s.priceIndex?.coefficient ?? null;
     case "rank": return s.regionRank;
     case "compliance": return s.compliance?.greenDays ?? null;
+    case "cancelDays": return s.overRegion?.overDays ?? null;
   }
 }
 
@@ -101,6 +102,7 @@ const COLUMNS: Col[] = [
   ["적합일수", (s) => s.compliance?.greenDays ?? null],
   ["근접일수", (s) => s.compliance?.yellowDays ?? null],
   ["초과일수", (s) => s.compliance?.redDays ?? null],
+  ["선정 취소 대상일", (s) => s.overRegion?.overDays ?? null],
   ["미신고일수", (s) => s.compliance?.missingDays ?? null],
   ["주유소코드", (s) => s.stationId ?? ""],
   ["위도", (s) => s.lat],

@@ -480,7 +480,7 @@ export default function App() {
 
       <div className="page">
       <div className="summary-strip">
-        {SIGNAL_ORDER.map((k) => (
+        {SIGNAL_ORDER.filter((k) => k !== "stale").map((k) => (
           <button
             key={k}
             type="button"
