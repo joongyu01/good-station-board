@@ -1,0 +1,40 @@
+const {chromium}=require('playwright');
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+(async()=>{
+ const board=JSON.parse(fs.readFileSync('client/public/data/latest.json','utf8'));
+ const history=JSON.parse(fs.readFileSync('client/public/data/history.json','utf8'));
+ const station=board.stations.find(s=>history.stations[s.stationId]);
+ const series=history.stations[station.stationId];
+ series.g[5]=null; series.d[5]=null; series.c[5]=null;
+ const browser=await chromium.launch({headless:true});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});
+ await page.route('**/history.json*',r=>r.fulfill({json:history}));
+ await page.route('**/latest.json*',r=>r.fulfill({json:{...board,stations:[station]}}));
+ await page.route('**/rest/v1/rpc/**',r=>r.abort());
+ await page.goto(process.env.CHART_TEST_URL||'http://127.0.0.1:5173/');
+ const search=page.getByRole('combobox',{name:'주유소 검색'});
+ await search.fill(station.name);
+ await page.getByRole('listbox').getByRole('option').first().click();
+ await page.locator('.ch-daily-layer').first().waitFor();
+ assert.equal(await page.locator('.ch-daily-layer').count(),3);
+ assert.ok(await page.locator('.ch-daily-point').count()>100);
+ assert.ok(await page.locator('.ch-missing-point').count()>=4);
+ const sliders=page.getByRole('slider',{name:'일별 그래프 값 조회'});
+ for(let i=0;i<3;i++){
+   await sliders.nth(i).focus();
+   for(let k=0;k<5;k++) await page.keyboard.press('ArrowRight');
+   assert.match(await page.locator('.ch-value-tooltip').textContent(),/미신고/);
+   await page.keyboard.press('ArrowRight');
+   assert.ok(await page.locator('.ch-value-tooltip').count());
+ }
+ assert.equal(await page.locator('.ch-mean').first().evaluate(el=>getComputedStyle(el).strokeDasharray),'6px, 4px');
+ const point=page.locator('[data-series="계수"] .ch-daily-point').last();
+ await point.hover({force:true});
+ assert.match(await page.locator('.ch-daily-layer').nth(1).locator('.ch-value-tooltip').textContent(),new RegExp(series.c.at(-1).toFixed(4).replace('.','\\.')));
+ await page.screenshot({path:'.tmp/chart-points.png'});
+ await page.setViewportSize({width:390,height:844});
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+ await browser.close();
+ console.log('PASS: three daily plots, missing markers, keyboard/hover values, dashed mean, mobile width');
+})().catch(e=>{console.error(e);process.exit(1)});

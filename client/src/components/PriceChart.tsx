@@ -20,6 +20,7 @@ import { LOYAL_LABEL, LOYAL_ROUNDS } from "@shared/lib/types.ts";
 import { basisSido } from "@shared/lib/region.ts";
 import { overDaysOf, overRegionOf, type OverDay } from "@shared/lib/history.ts";
 import CancellationReport from "./CancellationReport.tsx";
+import ChartPoints from "./ChartPoints.tsx";
 import { ROUND_ANNOUNCED } from "@shared/lib/adjust.ts";
 import { SIGNAL_COLORS, fetchData, formatPrice, type StationSignal } from "../lib/board.ts";
 import { withBrand } from "@shared/lib/brand.ts";
@@ -169,18 +170,16 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     // 아래 헬퍼들이 중첩 함수라 history 의 null 좁히기가 풀린다. 한 번 묶어 둔다.
     const dates = history.dates;
 
-    // 고른 구간 안에서, 값이 하나라도 있는 날만 그린다.
-    // 앞뒤로 빈 날짜가 길면 선이 구석에 몰린다.
+    // 결측일도 날짜축에 남겨 ×로 표시한다. 결측을 0으로 바꾸지는 않는다.
     const idx: number[] = [];
     for (let i = 0; i < dates.length; i++) {
       if (dates[i] < from) continue;
-      if (series.g[i] != null || series.d[i] != null || series.c[i] != null) idx.push(i);
+      idx.push(i);
     }
     if (idx.length === 0) return null;
 
     const prices = idx.flatMap((i) => [series.g[i], series.d[i]]).filter((v): v is number => v != null);
     const coefs = idx.map((i) => series.c[i]).filter((v): v is number => v != null);
-    if (prices.length === 0 && coefs.length === 0) return null;
 
     // 가격축 — 위아래로 조금 띄운다. 딱 맞추면 선이 테두리에 닿는다.
     const pMin = prices.length ? Math.min(...prices) : 0;
@@ -245,21 +244,6 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       return segs;
     }
 
-    /** 앞뒤가 모두 끊긴 외톨이 점은 선으로 안 보인다. 점으로 따로 찍는다. */
-    function dots(values: (number | null)[], y: (v: number) => number) {
-      const out: Array<{ x: number; y: number }> = [];
-      const linked = (a: number, b: number) =>
-        values[idx[a]] != null && values[idx[b]] != null
-        && gapDays(dates[idx[a]], dates[idx[b]]) <= 1;
-      idx.forEach((i, k) => {
-        const v = values[i];
-        if (v == null) return;
-        const back = k > 0 && linked(k - 1, k);
-        const fwd = k < idx.length - 1 && linked(k, k + 1);
-        if (!back && !fwd) out.push({ x: x(k), y: y(v) });
-      });
-      return out;
-    }
 
     /**
      * 판매가가 평균을 웃돈 구간을 칠한다.
@@ -320,9 +304,11 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     return {
       idx, x, yP, yC, marks,
       gasoline: line(series.g, yP), diesel: line(series.d, yP), coef: line(series.c, yC),
-      gasolineDots: dots(series.g, yP), dieselDots: dots(series.d, yP), coefDots: dots(series.c, yC),
+      dates: idx.map(i => dates[i]),
+      dailyG: idx.map(i => series.g[i] ?? null), dailyD: idx.map(i => series.d[i] ?? null),
+      dailyC: idx.map(i => series.c[i] ?? null),
+      dailySum: idx.map(i => sumSeries[i]), dailyMean: idx.map(i => meanSeries[i]),
       sumLine: line(sumSeries, yA), meanLine: line(meanSeries, yA),
-      sumDots: dots(sumSeries, yA),
       overBands: overBands(),
       avgTicks: niceTicks(a0, a1, 4),
       yA, avgH,
@@ -526,12 +512,11 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     {chart.diesel.map((d, i) => (
                       <path key={`d${i}`} d={d} className="ch-line" stroke={COLOR_DIESEL} />
                     ))}
-                    {chart.gasolineDots.map((p, i) => (
-                      <circle key={`gd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_GASOLINE} />
-                    ))}
-                    {chart.dieselDots.map((p, i) => (
-                      <circle key={`dd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_DIESEL} />
-                    ))}
+                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yP}
+                      width={W} bottom={PAD.top + chart.priceH} plots={[
+                        { label: "휘발유", color: COLOR_GASOLINE, values: chart.dailyG, format: exactPrice },
+                        { label: "경유", color: COLOR_DIESEL, values: chart.dailyD, format: exactPrice },
+                      ]} />
                   </svg>
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_GASOLINE }} />휘발유 {formatPrice(chart.latest.g)}</span>
@@ -577,9 +562,10 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     {chart.coef.map((d, i) => (
                       <path key={`cl${i}`} d={d} className="ch-line" stroke={COLOR_COEF} />
                     ))}
-                    {chart.coefDots.map((p, i) => (
-                      <circle key={`cd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_COEF} />
-                    ))}
+                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yC}
+                      width={W} bottom={PAD.top + chart.coefH} plots={[
+                        { label: "계수", color: COLOR_COEF, values: chart.dailyC, format: v => v.toFixed(COEF_DIGITS) },
+                      ]} />
                   </svg>
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_COEF }} />
@@ -621,14 +607,16 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     ))}
 
                     {chart.meanLine.map((d, i) => (
-                      <path key={`ml${i}`} d={d} className="ch-line ch-mean" stroke={COLOR_MEAN} />
+                      <path key={`ml${i}`} d={d} className="ch-line ch-mean" stroke={COLOR_MEAN} style={{ strokeDasharray: "6 4" }} />
                     ))}
                     {chart.sumLine.map((d, i) => (
                       <path key={`sl${i}`} d={d} className="ch-line" stroke={COLOR_SUM} />
                     ))}
-                    {chart.sumDots.map((p, i) => (
-                      <circle key={`sd${i}`} cx={p.x} cy={p.y} r={2.6} fill={COLOR_SUM} />
-                    ))}
+                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yA}
+                      width={W} bottom={PAD.top + chart.avgH} plots={[
+                        { label: "판매가 합계(휘발유+경유)", color: COLOR_SUM, values: chart.dailySum, format: exactPrice },
+                        { label: "단위지역 평균", color: COLOR_MEAN, values: chart.dailyMean, format: exactPrice },
+                      ]} />
 
                     {/* 날짜 라벨은 맨 아래 칸에만. 세 그래프의 x 는 정확히 포개진다. */}
                     {chart.ticks.map(({ k, date }) => (
@@ -639,7 +627,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_SUM }} />
                       이 주유소 {formatPrice(chart.latestAvg.sum)}</span>
-                    <span><i style={{ background: COLOR_MEAN }} />
+                    <span><i style={{ background: "none", borderTop: `2px dashed ${COLOR_MEAN}` }} />
                       {station.sido} 평균 {formatPrice(chart.latestAvg.mean)}</span>
                     {chart.latestAvg.diff != null && (
                       <span className={chart.latestAvg.diff > 0 ? "over" : "under"}>
@@ -725,4 +713,9 @@ function fmtDate(d: string): string {
 
 function fmtTick(d: string): string {
   return `${Number(d.slice(4, 6))}/${Number(d.slice(6, 8))}`;
+}
+
+/** Keep the recorded precision (including decimal regional means), without integer rounding. */
+function exactPrice(value: number): string {
+  return `${value.toLocaleString("ko-KR", { maximumFractionDigits: 10 })}원/L`;
 }
