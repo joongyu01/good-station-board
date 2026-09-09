@@ -10,7 +10,8 @@
  * 서버에 올릴 이유가 없다. 저장이 막혀 있어도(사생활 보호 창 등) 기본값으로
  * 그냥 동작해야 한다.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { pauseNameFit, resumeNameFit } from "../lib/nameFit.ts";
 
 const KEY = "gs.mapFraction";
 
@@ -55,19 +56,21 @@ export default function SplitLayout({ left, right }: Props) {
   const [fraction, setFraction] = useState(load);
   const [dragging, setDragging] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
+  const drag = useRef<{ left: number; width: number; value: number } | null>(null);
+  const frame = useRef(0);
+  useEffect(() => () => {
+    cancelAnimationFrame(frame.current);
+    if (drag.current) resumeNameFit();
+  }, []);
 
   // 끌기가 끝났을 때만 저장한다. 움직이는 내내 쓰면 낭비다.
   useEffect(() => { if (!dragging) save(fraction); }, [dragging, fraction]);
 
-  const fromX = useCallback((clientX: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    if (rect.width <= 0) return;
-    setFraction(clamp((clientX - rect.left) / rect.width));
-  }, []);
-
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    const rect = ref.current!.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    drag.current = { left: rect.left, width: rect.width, value: fraction };
+    pauseNameFit();
     // 분할선은 얇아서 포인터가 쉽게 벗어난다. 여기서는 바로 캡처해도 된다 —
     // 지도 폴리곤과 달리 이어지는 click 을 받을 대상이 없다.
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -76,11 +79,23 @@ export default function SplitLayout({ left, right }: Props) {
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!dragging) return;
-    fromX(e.clientX);
+    if (!drag.current) return;
+    drag.current.value = clamp((e.clientX - drag.current.left) / drag.current.width);
+    if (!frame.current) frame.current = requestAnimationFrame(() => {
+      frame.current = 0;
+      if (drag.current) setFraction(drag.current.value);
+    });
   }
 
   function onPointerUp(e: React.PointerEvent<HTMLDivElement>) {
+    if (!drag.current) return;
+    cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    const value = e.type === "pointerup"
+      ? clamp((e.clientX - drag.current.left) / drag.current.width) : drag.current.value;
+    drag.current = null;
+    setFraction(value);
+    resumeNameFit();
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
@@ -117,6 +132,7 @@ export default function SplitLayout({ left, right }: Props) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onLostPointerCapture={onPointerUp}
         onDoubleClick={() => setFraction(DEFAULT_FRACTION)}
         onKeyDown={onKeyDown}
       >

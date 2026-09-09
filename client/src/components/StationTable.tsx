@@ -1,6 +1,7 @@
 /** 주유소 목록 표. 패널 오른쪽에 들어간다. */
 import type { StationSignal } from "../lib/board.ts";
 import { useLayoutEffect, useRef } from "react";
+import { observeNameFit } from "../lib/nameFit.ts";
 import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 import { nextSort, type SortDir, type SortKey, type SortState } from "../lib/table.ts";
 import { LOYAL_LABEL, LOYAL_ROUNDS, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
@@ -217,24 +218,7 @@ function StationName({ station: s, onSelect }: { station: StationSignal; onSelec
   const ref = useRef<HTMLButtonElement>(null);
   const name = withBrand(s.name, s.brand);
   useLayoutEffect(() => {
-    const el = ref.current!;
-    const fit = () => {
-      el.style.whiteSpace = "nowrap";
-      for (const [size, spacing] of [[13, -.02], [12, -.04], [11, -.06]]) {
-        el.style.fontSize = `${size}px`;
-        el.style.letterSpacing = `${spacing}em`;
-        if (el.scrollWidth <= el.clientWidth + 1) return;
-      }
-      // 어떤 폭에서도 이름을 숨기거나 자르지 않는다.
-      el.style.whiteSpace = "normal";
-    };
-    fit();
-    let width = el.clientWidth;
-    const observer = new ResizeObserver(() => {
-      if (el.clientWidth !== width) { width = el.clientWidth; fit(); }
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
+    return observeNameFit(ref.current!);
   }, [name]);
   return <div className="station-name-line"><button ref={ref} type="button" className="name name-link"
     title={`${name} · ${s.brand ? BRAND_LABELS[s.brand] + " · " : ""}판매가 추이 보기`}
