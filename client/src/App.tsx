@@ -343,13 +343,12 @@ export default function App() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="검색"
-        title={`낱말을 띄어 쓰면 모두 만족하는 곳만 남습니다 — ${QUERY_HINT}`}
+        title={`검색 가이드\n${QUERY_HINT}\n낱말을 띄어 쓰면 모든 조건을 만족하는 주유소만 표시합니다.`}
         aria-label="주유소 검색"
       />
       {q && (
         <button type="button" className="search-clear" onClick={() => setQ("")} aria-label="검색 지우기">✕</button>
       )}
-      <span className="search-hint">{QUERY_HINT}</span>
     </div>
   );
 
@@ -549,7 +548,6 @@ export default function App() {
           <div className="panel-head">
             <div className="panel-title">
               <h2>{view.title}</h2>
-              <p className="panel-sub">{view.subtitle}</p>
             </div>
             <div className="panel-actions">
               <button
@@ -636,7 +634,6 @@ export default function App() {
           label="착한주유소 목록"
           head={<>
             <h2 className="sheet-title">{view.title}</h2>
-            <p className="panel-sub">{view.subtitle}</p>
             {searchBox}
           </>}
           onClose={() => setListOpen(false)}
