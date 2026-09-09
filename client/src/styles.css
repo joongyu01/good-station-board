@@ -769,11 +769,19 @@ button.stat + button.stat { margin-left: 4px; }
 .th-sort:hover .th-arrow { opacity: .7; }
 .th-sort.is-active .th-arrow { opacity: 1; }
 .station-table .th-label { line-height: 1.35; letter-spacing: -.035em; }
+.station-name-line { contain: inline-size; }
+.station-name-line .name-link { display: block; width: 100%; text-align: left; padding: 0; line-height: 1.4; overflow-wrap: anywhere; }
+.station-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 3px; }
+.station-badges .badge { margin: 0; padding: 1px 4px; font-size: 10px; line-height: 16px; letter-spacing: -.04em; }
+.station-badges .rounds { margin: 0; gap: 1px; }
+.station-badges .rounds b { background: #eee7fa; color: #7044a0; width: 15px; height: 16px; font-size: 10px; }
+.station-badges .badge-low { background: #dff3ef; color: #147060; }
+.station-badges .badge-gap { background: #fff0da; color: #995208; }
 .station-table .th-label small { display: block; font-size: 10px; font-weight: 400; }
 @media (min-width: 721px) {
   .station-table td { padding-left: 6px; padding-right: 6px; }
   .station-table .th-sort { padding: 9px 6px; gap: 3px; min-height: 46px; }
-  .station-table .col-name { min-width: 180px; }
+  .station-table .col-name { min-width: 240px; }
 }
 
 /* ── CSV 내려받기 ───────────────────────────────────────── */

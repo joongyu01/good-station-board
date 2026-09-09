@@ -1,5 +1,6 @@
 /** 주유소 목록 표. 패널 오른쪽에 들어간다. */
 import type { StationSignal } from "../lib/board.ts";
+import { useLayoutEffect, useRef } from "react";
 import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 import { nextSort, type SortDir, type SortKey, type SortState } from "../lib/table.ts";
 import { LOYAL_LABEL, LOYAL_ROUNDS, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
@@ -144,17 +145,13 @@ export default function StationTable({
               <span className={`dot dot-${s.signal}`} title={SIGNAL_LABELS[s.signal]} />
             </td>
             <td className="col-name">
-              <button
-                type="button"
-                className="name name-link"
-                title={`${s.brand ? BRAND_LABELS[s.brand] + " · " : ""}판매가 추이 보기`}
-                onClick={() => onSelect?.(s)}
-              >
-                {withBrand(s.name, s.brand)}
-              </button>
-              <RoundBadge rounds={s.rounds} />
+              <StationName station={s} onSelect={onSelect} />
+              <div className="station-badges">
               {s.isSelf && <span className="badge badge-self">셀프</span>}
+              {(s.rounds?.length ?? 0) >= LOYAL_ROUNDS && <span className="badge badge-loyal"
+                title={s.rounds!.join(" · ")}>{LOYAL_LABEL}</span>}
               {s.isRegionLowest && <span className="badge badge-low">시·도 최저</span>}
+              <RoundBadge rounds={s.rounds} />
               {s.dataGapDays > 0 && (
                 <span
                   className="badge badge-gap"
@@ -168,6 +165,7 @@ export default function StationTable({
                   미매칭
                 </span>
               )}
+              </div>
             </td>
             {showRegion && <td className="col-region" data-label="지역">{s.sigungu}</td>}
             <td className="num" data-label="휘발유(지역순위)">
@@ -215,6 +213,34 @@ export default function StationTable({
  * 색은 그래프의 선정 구간 띠와 같은 파랑이다 — 목록에서 본 동그라미와 그래프에서
  * 본 띠가 같은 것을 가리킨다는 게 색으로 읽힌다.
  */
+function StationName({ station: s, onSelect }: { station: StationSignal; onSelect?: (s: StationSignal) => void }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const name = withBrand(s.name, s.brand);
+  useLayoutEffect(() => {
+    const el = ref.current!;
+    const fit = () => {
+      el.style.whiteSpace = "nowrap";
+      for (const [size, spacing] of [[13, -.02], [12, -.04], [11, -.06]]) {
+        el.style.fontSize = `${size}px`;
+        el.style.letterSpacing = `${spacing}em`;
+        if (el.scrollWidth <= el.clientWidth + 1) return;
+      }
+      // 어떤 폭에서도 이름을 숨기거나 자르지 않는다.
+      el.style.whiteSpace = "normal";
+    };
+    fit();
+    let width = el.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth !== width) { width = el.clientWidth; fit(); }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [name]);
+  return <div className="station-name-line"><button ref={ref} type="button" className="name name-link"
+    title={`${name} · ${s.brand ? BRAND_LABELS[s.brand] + " · " : ""}판매가 추이 보기`}
+    onClick={() => onSelect?.(s)}>{name}</button></div>;
+}
+
 function RoundBadge({ rounds }: { rounds?: string[] }) {
   if (!rounds || rounds.length === 0) return null;
   return (
@@ -222,11 +248,6 @@ function RoundBadge({ rounds }: { rounds?: string[] }) {
       <span className="rounds" title={`${rounds.join(" · ")} 선정 (${rounds.length}회)`}>
         {rounds.map((r) => <b key={r} aria-label={`${r} 선정`}>{r.replace("차", "")}</b>)}
       </span>
-      {rounds.length >= LOYAL_ROUNDS && (
-        <span className="badge badge-loyal" title={`${rounds.length}차수에 걸쳐 뽑혔습니다 — ${rounds.join(" · ")}`}>
-          {LOYAL_LABEL}
-        </span>
-      )}
     </>
   );
 }
