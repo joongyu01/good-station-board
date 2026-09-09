@@ -73,6 +73,16 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await page.locator('.region-label').filter({hasText:'서울'}).first().click();
   await page.waitForTimeout(200);
   assert.ok((await page.locator('.breadcrumb').first().innerText()).includes('서울'));
+  const data=JSON.parse(fs.readFileSync('client/public/data/latest.json','utf8'));
+  const seoul=data.stations.filter(s=>s.sido==='서울');
+  for(const signal of ['green','yellow','red','unknown','cancel']) {
+    const expected=seoul.filter(s=>signal==='cancel' ? s.overRegion?.cancel : s.signal===signal).length;
+    assert.equal(Number(await page.locator('.stat-'+signal+' .stat-value').innerText()),expected,'scoped '+signal);
+  }
+  await page.locator('.region-label').filter({hasText:'노원구'}).first().click();
+  const nowon=seoul.filter(s=>s.sigungu==='노원구');
+  assert.equal(Number(await page.locator('.stat-red .stat-value').innerText()),nowon.filter(s=>s.signal==='red').length);
+  assert.equal(Number(await page.locator('.stat-cancel .stat-value').innerText()),nowon.filter(s=>s.overRegion?.cancel).length);
   await page.getByRole('button',{name:'확대',exact:true}).click();
   await page.getByRole('button',{name:'축소',exact:true}).click();
   await page.getByRole('button',{name:'한국석유관리원 — 처음 화면으로'}).click();

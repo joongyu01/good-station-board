@@ -310,7 +310,8 @@ export default function App() {
     };
   }, [panel, filter, q, match, mode]);
 
-  const totals = useMemo(() => summarize(stations, "전국", ""), [stations]);
+  // Scope totals to the geographic selection, not to the search/status filter.
+  const totals = useMemo(() => summarize(panel.stations, panel.title, activeSido ?? ""), [panel, activeSido]);
 
   /** 기관 로고를 누르면 처음 화면으로 — 드릴다운·확대·정렬을 모두 되돌린다. */
   function resetAll() {
