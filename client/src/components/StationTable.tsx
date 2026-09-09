@@ -118,7 +118,7 @@ export default function StationTable({
             return (
               <th
                 key={h.key}
-                className={`${h.num ? "num" : ""}${h.key === "signal" ? " col-sig" : ""}`}
+                className={`${h.num ? "num" : ""}${h.key === "signal" ? " col-sig" : ""}${h.key === "name" ? " station-name-heading" : ""}`}
                 aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
               >
                 <button

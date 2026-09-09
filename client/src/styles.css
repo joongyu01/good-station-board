@@ -779,6 +779,11 @@ button.stat + button.stat { margin-left: 4px; }
 .station-badges .badge-gap { background: #fff0da; color: #995208; }
 .station-table .th-label small { display: block; font-size: 10px; font-weight: 400; }
 @media (min-width: 721px) {
+  .station-table td { text-align: center; vertical-align: middle; }
+  .station-table td.col-name { text-align: left; }
+  .station-table th .th-sort { justify-content: center; text-align: center; }
+  .station-table th.num .th-sort { justify-content: center; }
+  .station-table th.station-name-heading .th-sort { justify-content: flex-start; text-align: left; }
   .station-table td { padding-left: 6px; padding-right: 6px; }
   .station-table .th-sort { padding: 9px 6px; gap: 3px; min-height: 46px; }
   .station-table .col-name { min-width: 240px; }
