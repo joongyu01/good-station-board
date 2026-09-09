@@ -13,10 +13,10 @@
 import { useEffect, useRef, useState } from "react";
 import { pauseNameFit, resumeNameFit } from "../lib/nameFit.ts";
 
-const KEY = "gs.mapFraction";
+const KEY = "gs.glass.mapFraction";
 
 /** 지도 칸이 차지하는 기본 비율. */
-const DEFAULT_FRACTION = 0.58;
+const DEFAULT_FRACTION = 0.32;
 
 /** 어느 쪽도 이보다 좁아지지 않는다. 지도는 축척이, 표는 열이 무너진다. */
 const MIN_FRACTION = 0.3;

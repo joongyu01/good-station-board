@@ -9,6 +9,7 @@ import MobileSheet from "./components/MobileSheet.tsx";
 import RankWindow from "./components/RankWindow.tsx";
 import RegionMeanWindow from "./components/RegionMeanWindow.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
+import ToolIcon from "./components/ToolIcon.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import { useNarrow } from "./lib/useNarrow.ts";
 import {
@@ -557,7 +558,7 @@ export default function App() {
                 title="지금 보이는 목록을 보이는 순서 그대로 내려받습니다"
                 onClick={() => downloadCsv(rows, csvName(`${view.scope}_${VIEW_MODE_LABELS[mode]}`, board.date))}
               >
-                CSV 내려받기
+                <ToolIcon kind="download" /> CSV 내려받기
               </button>
               <button
                 type="button"
@@ -565,10 +566,10 @@ export default function App() {
                 title="그날 그 시·도의 순위를 펼쳐 계수가 맞는지 확인합니다"
                 onClick={() => setRankOpen(true)}
               >
-                순위표 검증
+                <ToolIcon kind="rank" /> 순위표 검증
               </button>
               <button type="button" className="btn-rank" onClick={() => setMeanOpen(true)}>
-                단위지역 평균가격 검증
+                <ToolIcon kind="mean" /> 단위지역 평균가격 검증
               </button>
             </div>
           </div>
