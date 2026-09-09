@@ -148,14 +148,13 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       days: [] as OverDay[],
     };
     if (!history || !station.stationId) return empty;
-    const basis = basisSido(station.sido, station.sigungu);
     // 그래프는 선정 전후를 가리지 않고 그린다 — 언제부터 착한주유소였는지는
     // 이미 띠로 표시돼 있고, 그 전 흐름이 있어야 뽑힌 뒤 달라졌는지가 보인다.
-    const mean = history.regionMean?.[basis] ?? [];
+    const mean = history.dates.map((date, i) => history.regionMean?.[basisSido(station.sido, station.sigungu, date)]?.[i] ?? null);
     if (!station.rounds?.length) return { ...empty, mean };
     const since = ROUND_ANNOUNCED[station.rounds[0]];
     if (!since) return { ...empty, mean };
-    const days = overDaysOf(history, station.stationId, basis, since);
+    const days = overDaysOf(history, station.stationId, station.sido, since, station.sigungu);
     return {
       at: new Map(days.map((d) => [d.date, d.over])),
       summary: overRegionOf(days, since),
@@ -591,7 +590,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                 {/* ── 평균가 견주기 ──────────────────────────── */}
                 <section className="chart-panel">
                   <h4 className="chart-panel-title">
-                    단위지역 평균값 비교 <span>휘발유+경유 합계 · {station.sido} 평균</span>
+                    단위지역 평균값 비교 <span>휘발유+경유 합계 · {station.sido === "전남광주" ? "6/30까지 광주·전남 각각, 7/1부터 통합 평균" : `${station.sido} 평균`}</span>
                   </h4>
                   <svg viewBox={`0 0 ${W} ${H_AVG}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합계 판매가와 ${station.sido} 평균 비교`}>

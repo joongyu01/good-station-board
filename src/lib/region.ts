@@ -29,8 +29,8 @@ export type Sido = (typeof SIDO_LIST)[number];
  */
 export const SIDO_LABELS: Record<string, string> = {
   전남광주: "전남광주통합특별시",
-  광주: "전남광주 · 광주",
-  전남: "전남광주 · 전남",
+  광주: "광주 (통합 전)",
+  전남: "전남 (통합 전)",
 };
 
 /**
@@ -42,18 +42,11 @@ export const SIDO_LABELS: Record<string, string> = {
  */
 const OLD_GWANGJU_GU = new Set(["광산구", "동구", "서구", "남구", "북구"]);
 
-/**
- * 순위를 매길 때 견주는 모집단 키.
- *
- * 행정구역상 광주와 전남은 전남광주통합특별시로 합쳐졌고 오피넷도 합쳐서
- * 내려준다. 그런데 **선정은 여전히 둘을 따로 뽑는다** — 명단 원본을 차수 ×
- * 시·도로 세어 보면 광주 5곳, 전남 5곳이 매 차수 따로 잡힌다.
- *
- * 그래서 지도·드릴다운이 쓰는 `sido` 는 통합시 그대로 두고, 순위와 커트라인을
- * 낼 때만 둘로 가른다. 합쳐서 세면 1,030곳 한 모집단에 상위 5위 하나가 되어,
- * 선정 때 열 자리였던 것이 다섯 자리로 줄어든다.
- */
-export function basisSido(sido: string, sigungu: string): string {
+/** 가격 날짜 기준 비교 단위. 지도용 canonical 주소와 분리한다. */
+export const REGION_MERGER_DATE = "20260701";
+export function basisSido(sido: string, sigungu: string, date = REGION_MERGER_DATE): string {
+  if (!["전남광주", "광주", "전남"].includes(sido)) return sido;
+  if (date >= REGION_MERGER_DATE) return "전남광주";
   if (sido !== "전남광주") return sido;
   return OLD_GWANGJU_GU.has(sigungu) ? "광주" : "전남";
 }

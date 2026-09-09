@@ -504,7 +504,7 @@ export default function App() {
           {board.judgeMode === "adjusted" && mode === "sum"
             ? " 선정 시점 대비 보정 기준 · 그 사이 시·도 시장이 오른 만큼을 빼고도 더 올렸는지로 판정"
             : ` 시·도 순위 기준 · 서울·경기 ${judging?.rankGreenMetro ?? 10}위, ` +
-              `그 외 ${judging?.rankGreenDefault ?? 5}위 이내는 상위권`}
+              `전남광주 10위(7/1부터), 그 외 ${judging?.rankGreenDefault ?? 5}위 이내는 상위권`}
         </div>
       </div>
 

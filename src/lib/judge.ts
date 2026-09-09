@@ -87,9 +87,9 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
   const f = j.rankYellowFactor;
 
   const stations = board.stations.map((st): StationSignal => {
-    const basis = basisSido(st.sido, st.sigungu);
+    const basis = basisSido(st.sido, st.sigungu, board.date);
     // 기준 순위는 집계와 같은 잣대로 고른다 — 오피넷 소재 시·도를 본다.
-    const greenRank = greenRankWith(st.sido, j);
+    const greenRank = greenRankWith(basis, j);
 
     // ── 세 기준(통합·휘발유·경유) ──────────────────────────────────
     const metrics = {} as StationSignal["metrics"];

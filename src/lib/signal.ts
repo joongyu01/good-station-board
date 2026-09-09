@@ -36,7 +36,7 @@ export const RANK_YELLOW_FACTOR = 2;
 
 /** 서울·경기 여부에 따라 초록 기준 순위를 고른다. */
 export function greenRankFor(sido: string): number {
-  return sido === "서울" || sido === "경기" ? RANK_GREEN_METRO : RANK_GREEN_DEFAULT;
+  return sido === "전남광주" ? 10 : sido === "서울" || sido === "경기" ? RANK_GREEN_METRO : RANK_GREEN_DEFAULT;
 }
 
 /** 집계에 쓰는 임계값 묶음. 관리 화면에서 내려온 값으로 덮어쓸 수 있다. */
@@ -90,7 +90,7 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
 
 /** 임계값을 반영한 초록 기준 순위. */
 export function greenRankWith(sido: string, th: Thresholds): number {
-  return sido === "서울" || sido === "경기" ? th.rankGreenMetro : th.rankGreenDefault;
+  return sido === "전남광주" ? 10 : sido === "서울" || sido === "경기" ? th.rankGreenMetro : th.rankGreenDefault;
 }
 
 /**

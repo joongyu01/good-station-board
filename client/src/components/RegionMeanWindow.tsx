@@ -29,8 +29,10 @@ export default function RegionMeanWindow({ date, sido, onClose }: { date: string
   }, [date]);
   const dates = [...(history?.dates ?? [])].sort().reverse();
   const index = history?.dates.indexOf(day) ?? -1;
-  const regions = Object.keys(history?.regionMean ?? {}).sort((a, b) => a.localeCompare(b, "ko-KR"));
-  const active = region && regions.includes(region) ? region : regions[0] ?? null;
+  const regions = Object.keys(history?.regionMean ?? {}).filter(r => history?.regionMean?.[r]?.[index] != null).sort((a, b) => a.localeCompare(b, "ko-KR"));
+  const mapped = region === "전남광주" && day < "20260701" ? "광주"
+    : (region === "광주" || region === "전남") && day >= "20260701" ? "전남광주" : region;
+  const active = mapped && regions.includes(mapped) ? mapped : regions[0] ?? null;
   return <dialog ref={dialog} className="cancel-report mean-report" aria-labelledby="mean-title"
     onCancel={e => { e.preventDefault(); onClose(); }}
     onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -38,7 +40,7 @@ export default function RegionMeanWindow({ date, sido, onClose }: { date: string
       <header><h3 id="mean-title">단위지역 평균가격 검증</h3>
         <button type="button" autoFocus onClick={onClose} aria-label="평균가격 검증 닫기">✕</button></header>
       <p>선정 취소 대상 판정과 ‘단위지역 평균값 비교’ 그래프에 사용하는 일별 평균입니다.</p>
-      <p className="muted">단위지역 내 휘발유·경유 가격이 모두 있는 전체 주유소의 합계가격을 산술평균합니다. 착한주유소만의 평균이 아닙니다. 광주·전남은 비교 모집단에 따라 별도로 표시합니다.</p>
+      <p className="muted">단위지역 내 휘발유·경유 가격이 모두 있는 전체 주유소의 합계가격을 산술평균합니다. 착한주유소만의 평균이 아닙니다. 2026년 6월 30일까지 광주·전남 각각, 7월 1일부터 전남광주 통합 평균입니다.</p>
       <div className="rank-bar"><label>기준일
         <select value={day} disabled={!dates.length} onChange={e => setDay(e.target.value)}>
           {dates.map(d => <option key={d} value={d}>{dateLabel(d)}</option>)}

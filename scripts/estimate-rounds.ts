@@ -83,7 +83,7 @@ function main() {
       if (i === undefined) {
         i = sidoOf.length;
         index.set(r.stationId, i);
-        sidoOf.push(basisSido(r.sido, r.sigungu));
+        sidoOf.push(basisSido(r.sido, r.sigungu, "20260630"));
         sums.push(new Float64Array(D));
         cnts.push(new Int32Array(D));
       }
@@ -103,10 +103,10 @@ function main() {
   }
 
   // 시·도 목록과 초록 기준 순위
-  const sidos = [...new Set(sidoOf)];
+  const sidos = [...new Set([...sidoOf, "전남광주"])];
   const sidoIdx = new Map(sidos.map((s, i) => [s, i]));
-  const sidoNo = sidoOf.map((s) => sidoIdx.get(s)!);
-  const greenRank = sidos.map((s) => (s === "서울" || s === "경기" ? 10 : 5));
+  let sidoNo = sidoOf.map((s) => sidoIdx.get(s)!);
+  const greenRank = sidos.map((s) => (["서울", "경기", "전남광주"].includes(s) ? 10 : 5));
 
   // ── 차수별 명단 ─────────────────────────────────────────────────────
   const good: GoodStation[] = JSON.parse(readFileSync(path.join(DATA, "good-stations.json"), "utf8"));
@@ -141,6 +141,8 @@ function main() {
    */
   const mean = new Float64Array(S);
   function cutoffs(a: number, b: number): Float64Array {
+    // 선정기간 말일의 행정단위로 기간 평균을 비교한다.
+    sidoNo = sidoOf.map(s => sidoIdx.get(basisSido(s, "", dates[b]))!);
     const need = Math.ceil((b - a + 1) * MIN_COVER);
     const best: number[][] = sidos.map(() => []);
     for (let i = 0; i < S; i++) {

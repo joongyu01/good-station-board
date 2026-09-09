@@ -141,9 +141,9 @@ async function main() {
     const raw = readRaw<{ rows: Array<{ stationId: string; sido: string; sigungu: string; gasoline: number | null; diesel: number | null }> }>(RAW_DIR, d);
     if (!raw) continue;
     mergeDay(history, d,
-      sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
+      sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor, d));
     // 선정 취소 판단에 쓰는 시·도 평균. 날짜축을 맞춘 뒤라야 자리를 찾는다.
-    mergeRegionMean(history, d, regionMeanOf(raw.rows));
+    mergeRegionMean(history, d, regionMeanOf(raw.rows, d));
     okDays++;
   }
   if (local.length) {
@@ -217,9 +217,9 @@ async function main() {
     }
 
     for (const [date, dayRows] of [...byDate.entries()].sort()) {
-      const samples = sampleDay(dayRows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor);
+      const samples = sampleDay(dayRows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor, date);
       mergeDay(history, date, samples);
-      mergeRegionMean(history, date, regionMeanOf(dayRows));
+      mergeRegionMean(history, date, regionMeanOf(dayRows, date));
       okDays++;
       console.log(`         ${date} — 전국 ${dayRows.length}건, 착한주유소 ${samples.size}곳`);
     }

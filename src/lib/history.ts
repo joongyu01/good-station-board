@@ -86,12 +86,13 @@ export function mergeRegionMean(h: History, date: string, means: Map<string, num
 /** 하루치 전국 행에서 시·도별 평균 합계를 낸다. 두 유종을 모두 파는 곳만 센다. */
 export function regionMeanOf(
   rows: Array<{ sido: string; sigungu: string; gasoline: number | null; diesel: number | null }>,
+  date: string,
 ): Map<string, number> {
   const acc = new Map<string, { s: number; n: number }>();
   for (const r of rows) {
     const g = r.gasoline, d = r.diesel;
     if (g == null || g <= 0 || d == null || d <= 0) continue;
-    const basis = basisSido(r.sido, r.sigungu);
+    const basis = basisSido(r.sido, r.sigungu, date);
     const a = acc.get(basis) ?? acc.set(basis, { s: 0, n: 0 }).get(basis)!;
     a.s += g + d;
     a.n++;
@@ -177,6 +178,7 @@ export function sampleDay(
   targetIds: Set<string>,
   greenRankOf: (sido: string) => number,
   yellowFactor = 2,
+  date = "20260701",
 ): Map<string, DaySample> {
   // 시·도별 합계 분포
   const sums = new Map<string, number[]>();
@@ -184,7 +186,7 @@ export function sampleDay(
     const g = r.gasoline;
     const d = r.diesel;
     if (g == null || g <= 0 || d == null || d <= 0) continue;
-    const basis = basisSido(r.sido, r.sigungu);
+    const basis = basisSido(r.sido, r.sigungu, date);
     const arr = sums.get(basis);
     if (arr) arr.push(g + d); else sums.set(basis, [g + d]);
   }
@@ -207,7 +209,7 @@ export function sampleDay(
     if (!targetIds.has(r.stationId)) continue;
     const g = r.gasoline && r.gasoline > 0 ? r.gasoline : null;
     const d = r.diesel && r.diesel > 0 ? r.diesel : null;
-    const b = base.get(basisSido(r.sido, r.sigungu));
+    const b = base.get(basisSido(r.sido, r.sigungu, date));
 
     let coefficient: number | null = null;
     let signal: DaySignal | null = null;
@@ -284,14 +286,13 @@ export interface OverDay {
  * `since` **다음날**부터 센다. 공시 당일은 아직 선정 전 가격이 붙어 있는 날이다.
  * 두 유종을 모두 판 날만 센다 — 합계가 없으면 견줄 수가 없다.
  */
-export function overDaysOf(h: History, stationId: string, basis: string, since: string): OverDay[] {
+export function overDaysOf(h: History, stationId: string, basis: string, since: string, sigungu = ""): OverDay[] {
   const ser = h.stations[stationId];
-  const means = h.regionMean?.[basis];
-  if (!ser || !means) return [];
+  if (!ser) return [];
   const out: OverDay[] = [];
   for (let i = 0; i < h.dates.length; i++) {
     if (h.dates[i] <= since) continue;
-    const g = ser.g[i], d = ser.d[i], m = means[i];
+    const g = ser.g[i], d = ser.d[i], m = h.regionMean?.[basisSido(basis, sigungu, h.dates[i])]?.[i];
     if (g == null || d == null || m == null) continue;
     const sum = g + d;
     out.push({ date: h.dates[i], sum, mean: m, over: Math.round((sum - m) * 100) / 100 });

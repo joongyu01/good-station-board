@@ -87,7 +87,9 @@ export default function RankWindow({ date, sido, mode, judging, onClose }: Props
   const sidos = useMemo(() => (file ? Object.keys(file.regions).sort() : []), [file]);
 
   // 고른 시·도가 그날 자료에 없으면 첫 번째로 물러선다.
-  const active = region && file?.regions[region] ? region : sidos[0] ?? null;
+  const mapped = region === "전남광주" && day < "20260701" ? "광주"
+    : (region === "광주" || region === "전남") && day >= "20260701" ? "전남광주" : region;
+  const active = mapped && file?.regions[mapped] ? mapped : sidos[0] ?? null;
   const stored = active ? file?.regions[active]?.[view] ?? null : null;
 
   /**

@@ -119,7 +119,7 @@ export function buildRanks(
       const v = valueOf(r, mode);
       if (v == null) continue;
       // 순위는 비교 모집단 단위로 센다. 통합시는 옛 광주·전남으로 갈린다.
-      const basis = basisSido(r.sido, r.sigungu);
+      const basis = basisSido(r.sido, r.sigungu, date);
       const arr = bySido.get(basis);
       if (arr) arr.push({ row: r, v }); else bySido.set(basis, [{ row: r, v }]);
     }

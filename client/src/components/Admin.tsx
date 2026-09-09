@@ -488,7 +488,7 @@ function Settings({ token, onExpire }: { token: string; onExpire: () => void }) 
           onChange={(e) => setC({ ...c, rankYellowFactor: Number(e.target.value) })} />
       </label>
       <p className="muted" style={{ fontSize: "12px", marginTop: "6px" }}>
-        현재 설정: 서울·경기 {c.rankGreenMetro}위 이내 초록 · {c.rankGreenMetro * c.rankYellowFactor}위까지 노랑 /
+        현재 설정: 전남광주 통합 10위(2026-07-01부터, 이전 광주·전남 각각 일반 기준) / 서울·경기 {c.rankGreenMetro}위 이내 초록 · {c.rankGreenMetro * c.rankYellowFactor}위까지 노랑 /
         그 외 {c.rankGreenDefault}위 이내 초록 · {c.rankGreenDefault * c.rankYellowFactor}위까지 노랑
       </p>
 

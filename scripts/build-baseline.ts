@@ -75,15 +75,22 @@ function readWindow(period: string) {
       const v = r.gasoline + r.diesel;
 
       // 견주는 모집단 키. 통합시는 선정 때와 같이 옛 광주·전남으로 갈린다.
-      const basis = basisSido(r.sido, r.sigungu);
+      const basis = basisSido(r.sido, r.sigungu, date);
 
       let a = perStation.get(r.stationId);
       if (!a) perStation.set(r.stationId, (a = { sido: basis, sum: 0, days: 0 }));
       a.sum += v;
       a.days++;
 
-      const arr = perSido.get(basis);
-      if (arr) arr.push(v); else perSido.set(basis, [v]);
+      // 보정 이탈률은 기준기간과 현재를 동일한 공간 범위로 비교한다.
+      // 통합 전 기준기간도 통합 모집단 중앙값을 추가 보관한다 (일별 판정과는 별개).
+      const marketKeys = r.sido === "전남광주"
+        ? new Set([basis, "전남광주", basisSido(r.sido, r.sigungu, "20260630")])
+        : new Set([basis]);
+      for (const key of marketKeys) {
+        const arr = perSido.get(key);
+        if (arr) arr.push(v); else perSido.set(key, [v]);
+      }
     }
   }
 

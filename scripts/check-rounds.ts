@@ -82,7 +82,7 @@ function readPeriod(from: string, to: string) {
       if (r.diesel == null || r.diesel <= 0) continue;
       let a = per.get(r.stationId);
       if (!a) {
-        per.set(r.stationId, (a = { sido: basisSido(r.sido, r.sigungu), sigungu: r.sigungu, sum: 0, days: 0 }));
+        per.set(r.stationId, (a = { sido: basisSido(r.sido, r.sigungu, date), sigungu: r.sigungu, sum: 0, days: 0 }));
       }
       a.sum += r.gasoline + r.diesel;
       a.days++;
@@ -142,7 +142,7 @@ function main() {
 
   // ── 교차표: 어느 기간에서 성적이 뛰는가 ─────────────────────────────
   const cols = [...loaded.keys()];
-  const greenRank = (sido: string) => (sido === "서울" || sido === "경기" ? 10 : 5);
+  const greenRank = (sido: string) => (["서울", "경기", "전남광주"].includes(sido) ? 10 : 5);
   console.log("\n■ 차수 × 기간 — 그 기간에 시·도 상위 N위(서울·경기 10, 그 외 5) 안에 든 비율");
   console.log("  차수(곳)  " + cols.map((c) => c.padStart(7)).join(""));
   for (const round of Object.keys(ROUND_PERIODS)) {

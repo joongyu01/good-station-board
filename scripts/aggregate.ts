@@ -158,7 +158,7 @@ function main() {
     for (const r of raw.rows) {
       const p = r[fuel];
       if (p == null || p <= 0) continue;
-      const b = basisSido(r.sido, r.sigungu);
+      const b = basisSido(r.sido, r.sigungu, date);
       const arr = buckets.get(b);
       if (arr) arr.push(p); else buckets.set(b, [p]);
     }
@@ -172,7 +172,7 @@ function main() {
     const g = r.gasoline;
     const d = r.diesel;
     if (g == null || g <= 0 || d == null || d <= 0) continue;
-    const b = basisSido(r.sido, r.sigungu);
+    const b = basisSido(r.sido, r.sigungu, date);
     const arr = sumBuckets.get(b);
     if (arr) arr.push(g + d); else sumBuckets.set(b, [g + d]);
   }
@@ -190,7 +190,7 @@ function main() {
       if (excluded.has(r.stationId)) continue;
       const g = r.gasoline, d = r.diesel;
       if (g == null || g <= 0 || d == null || d <= 0) continue;
-      const b = basisSido(r.sido, r.sigungu);
+      const b = basisSido(r.sido, r.sigungu, date);
       const arr = buckets.get(b);
       if (arr) arr.push(g + d); else buckets.set(b, [g + d]);
     }
@@ -236,10 +236,10 @@ function main() {
       detailParts.length > 1 && detailParts[0] === effSigungu ? detailParts[1] : null;
 
     // 신호등 기준 순위. 서울·경기는 10위, 그 밖의 시·도는 5위 이내가 상위권.
-    const greenRank = greenRankWith(effSido, th);
+    const greenRank = greenRankWith(basisSido(effSido, effSigungu, date), th);
 
     // 견주는 모집단 키. 통합시는 선정 때와 같이 옛 광주·전남으로 갈린다.
-    const basis = basisSido(effSido, effSigungu);
+    const basis = basisSido(effSido, effSigungu, date);
 
     const prices = {} as Record<FuelType, number | null>;
     for (const fuel of FUEL_TYPES) prices[fuel] = row?.[fuel] ?? null;
@@ -381,9 +381,9 @@ function main() {
   for (const s of signals) if (s.stationId) ids.add(s.stationId);
 
   mergeDay(history, date,
-    sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor));
+    sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor, date));
   // 날짜축을 맞춘 뒤라야 자리를 찾는다.
-  mergeRegionMean(history, date, regionMeanOf(raw.rows));
+  mergeRegionMean(history, date, regionMeanOf(raw.rows, date));
   const droppedSeries = pruneTo(history, ids);
   history.generatedAt = new Date().toISOString();
 
@@ -460,8 +460,7 @@ function main() {
     if (!sig.stationId || !sig.rounds.length) continue;
     const since = ROUND_ANNOUNCED[sig.rounds[0]];
     if (!since) continue;
-    const basis = basisSido(sig.sido, sig.sigungu);
-    sig.overRegion = overRegionOf(overDaysOf(history, sig.stationId, basis, since), since);
+    sig.overRegion = overRegionOf(overDaysOf(history, sig.stationId, sig.sido, since, sig.sigungu), since);
     if (!sig.overRegion?.cancel) continue;
 
     // 취소 대상은 다른 무엇보다 앞선다. 오늘 순위가 어떻든 선정 자체를 다시
@@ -588,7 +587,7 @@ function main() {
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
   console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
   console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 시·도 평균을 한 번이라도 넘김)`);
-  console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
+  console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 전남광주 10위(7/1부터) / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }
 
