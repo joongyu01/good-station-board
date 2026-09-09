@@ -387,6 +387,9 @@ button.stat + button.stat { margin-left: 4px; }
 .cancel-report-trigger:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .cancel-report { width: min(820px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: #fff; overflow: auto; box-sizing: border-box; }
 .cancel-report::backdrop { background: rgb(0 0 0 / 48%); }
+.mean-report { width: min(680px, calc(100vw - 24px)); }
+.mean-table small { font-weight: 400; font-size: 11px; color: var(--ink-soft); }
+.sum-price-note { display: block; margin-top: 2px; }
 .cancel-report-content { padding: 20px; font-size: 14px; line-height: 1.6; }
 .cancel-report-content header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .cancel-report-content h3, .cancel-report-content h4 { margin: 0 0 12px; }
@@ -796,7 +799,7 @@ button.stat + button.stat { margin-left: 4px; }
 .btn-csv:hover:not(:disabled) { background: var(--good-bg); border-color: var(--green); }
 .btn-csv:disabled { opacity: .45; cursor: default; }
 
-.panel-actions { display: flex; gap: 6px; flex: none; }
+.panel-actions { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
 .btn-rank {
   border: 1px solid var(--line); background: var(--card);
   color: var(--gray); border-radius: 8px; cursor: pointer;

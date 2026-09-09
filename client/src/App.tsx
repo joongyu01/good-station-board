@@ -7,6 +7,7 @@ import { compileQuery, QUERY_HINT } from "./lib/query.ts";
 import { SIGNAL_ORDER } from "@shared/lib/types.ts";
 import MobileSheet from "./components/MobileSheet.tsx";
 import RankWindow from "./components/RankWindow.tsx";
+import RegionMeanWindow from "./components/RegionMeanWindow.tsx";
 import SplitLayout from "./components/SplitLayout.tsx";
 import { csvName, downloadCsv, sortStations, type SortState } from "./lib/table.ts";
 import { useNarrow } from "./lib/useNarrow.ts";
@@ -57,6 +58,7 @@ export default function App() {
   const [q, setQ] = useState("");
   /** 계수 검증용 순위표 창 */
   const [rankOpen, setRankOpen] = useState(false);
+  const [meanOpen, setMeanOpen] = useState(false);
   /** 로고를 눌러 초기화할 때마다 올린다. 지도가 확대·이동을 되돌리는 신호. */
   const [resetSignal, setResetSignal] = useState(0);
 
@@ -567,6 +569,9 @@ export default function App() {
               >
                 순위표 검증
               </button>
+              <button type="button" className="btn-rank" onClick={() => setMeanOpen(true)}>
+                단위지역 평균가격 검증
+              </button>
             </div>
           </div>
           {searchBox}
@@ -658,6 +663,9 @@ export default function App() {
         </MobileSheet>
       )}
 
+      {meanOpen && <RegionMeanWindow date={board.date}
+        sido={activeSido ? basisSido(activeSido, activeRegion ?? "") : null}
+        onClose={() => setMeanOpen(false)} />}
       {rankOpen && (
         // 순위표는 비교 모집단 단위라 통합시 이름으로는 찾지 못한다. 시·군·구까지
         // 들어와 있으면 그것으로 갈리고, 시·도 단계에서는 옛 전남으로 연다 —
