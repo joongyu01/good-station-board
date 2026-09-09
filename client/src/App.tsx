@@ -445,6 +445,9 @@ export default function App() {
 
         <div className="brand">
           <h1>착한주유소 현황판</h1>
+          <a className="station-total-link" href="#/stats" target="_blank" rel="noopener noreferrer" aria-label={`현재 등록 착한주유소 ${board.stations.length}업체 통계 보기 (새 창)`}>
+            <strong>{board.stations.length.toLocaleString()}업체</strong><span>· 통계 보기 ↗</span>
+          </a>
         </div>
 
         <div className="meta">
@@ -481,9 +484,6 @@ export default function App() {
       </header>
 
       <div className="page">
-      <a className="station-total-link" href="#/stats" target="_blank" rel="noopener noreferrer">
-        현재 등록 착한주유소 <strong>{board.stations.length.toLocaleString()}업체</strong><span>통계 보기 ↗</span>
-      </a>
       <div className="summary-strip">
         {SIGNAL_ORDER.filter((k) => k !== "stale").map((k) => (
           <button

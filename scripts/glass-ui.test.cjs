@@ -25,6 +25,8 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await page.waitForTimeout(400);
   assert.ok(await page.locator('.name-link').count() < 60, 'virtual list preserved');
   assert.equal(await page.locator('button.stat').count(), 5);
+  assert.equal(await page.locator('.topbar .brand .station-total-link').count(), 1);
+  assert.equal(await page.locator('.page > .station-total-link').count(), 0);
   await page.locator('.stat-green').hover();
   assert.ok(await page.locator('#signal-help-green').isVisible());
   assert.match(await page.locator('#signal-help-green').innerText(),/순위/);

@@ -211,9 +211,17 @@ button.stat .dot { width: 9px; height: 9px; }
 }
 /* Readable everyday UI sizing, including the mobile overrides above. */
 body { font-size: 15px; }
-.station-total-link { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding: 12px 18px; background: #fff; border: 1px solid #dce8d5; border-radius: 14px; color: #30472b; text-decoration: none; }
-.station-total-link strong { font-size: 23px; }
-.station-total-link span { margin-left: auto; font-size: 13px; }
+.topbar .brand { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; min-width: 0; }
+.station-total-link { display: inline-flex; align-items: baseline; gap: 5px; color: #426b30; text-decoration: none; white-space: nowrap; }
+.station-total-link strong { font-size: 17px; }
+.station-total-link span { font-size: 13px; }
+.station-total-link:hover { text-decoration: underline; }
+.station-total-link:focus-visible { outline: 2px solid #76a83a; outline-offset: 4px; border-radius: 3px; }
+@media (max-width: 720px) {
+  .topbar .brand { gap: 3px 10px; }
+  .station-total-link strong { font-size: 14px; }
+  .station-total-link span { font-size: 12px; }
+}
 button.stat { position: relative; overflow: visible; }
 .signal-help { display: none; position: absolute; z-index: 100; top: calc(100% + 6px); left: 0; width: min(330px, 80vw); padding: 13px; border-radius: 10px; background: #203329; color: #fff; font-size: 13px; font-weight: 400; line-height: 1.6; text-align: left; white-space: normal; box-shadow: 0 5px 20px #0003; }
 .stat:last-of-type .signal-help { left: auto; right: 0; }
