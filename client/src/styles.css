@@ -118,6 +118,17 @@ button { font: inherit; }
 .admin-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
 .page { max-width: 1560px; margin: 0 auto; padding: 18px 22px 36px; }
+/* 데스크톱 현황판만 창 전체를 사용한다. 관리/모바일 화면에는 적용하지 않는다. */
+@media (min-width: 1241px) {
+  #root:has(> .page) { height: 100dvh; display: flex; flex-direction: column; }
+  #root:has(> .page) > .topbar { flex: none; }
+  #root > .page { max-width: none; width: 100%; flex: 1; min-height: 480px; display: flex; flex-direction: column; padding: 14px 22px 12px; }
+  .page > .summary-strip, .page > .copyright { flex: none; }
+  .page > .layout { flex: 1; min-height: 320px; }
+  .page > .layout > .map-col { display: flex; flex-direction: column; min-height: 0; }
+  .page > .layout .map-col > .map-wrap { flex: 1; min-height: 0; position: relative; }
+  .page > .layout .map-col .map-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+}
 
 /* ── 요약 띠 ───────────────────────────────────────────── */
 .summary-strip {

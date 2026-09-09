@@ -444,9 +444,9 @@ export default function KoreaMap({
 
     function onWheel(e: WheelEvent) {
       e.preventDefault();
-      const rect = svg!.getBoundingClientRect();
-      const px = ((e.clientX - rect.left) / rect.width) * WIDTH;
-      const py = ((e.clientY - rect.top) / rect.height) * HEIGHT;
+      const point = screenPoint(svg!, e.clientX, e.clientY);
+      const px = point.x;
+      const py = point.y;
       setTf((prev) => {
         const k = clamp(prev.k * Math.exp(-e.deltaY * 0.0018), MIN_ZOOM, MAX_ZOOM);
         const ratio = k / prev.k;
@@ -492,9 +492,10 @@ export default function KoreaMap({
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const dx = ((e.clientX - d.px) / rect.width) * WIDTH;
-    const dy = ((e.clientY - d.py) / rect.height) * HEIGHT;
+    const point = screenPoint(e.currentTarget, e.clientX, e.clientY);
+    const previous = screenPoint(e.currentTarget, d.px, d.py);
+    const dx = point.x - previous.x;
+    const dy = point.y - previous.y;
     d.px = e.clientX;
     d.py = e.clientY;
     setTf((prev) => ({ ...prev, x: prev.x + dx, y: prev.y + dy }));
@@ -836,6 +837,12 @@ function pinLabel(name: string, brand: BrandCode | null): string {
  * `구도일주유소 뉴설악(SOIL)` 같은 이름은 폭이 과하게 잡혀 이름표가 지도를
  * 덮었다. 한글은 한 칸, 그 밖은 절반 남짓으로 센다.
  */
+/** 창 비율에 따라 생긴 SVG 여백까지 반영한 포인터 좌표. */
+function screenPoint(svg: SVGSVGElement, x: number, y: number) {
+  const matrix = svg.getScreenCTM();
+  return matrix ? new DOMPoint(x, y).matrixTransform(matrix.inverse()) : new DOMPoint(x, y);
+}
+
 function textWidth(text: string, font: number): number {
   let units = 0;
   for (const ch of text) {
