@@ -426,6 +426,7 @@ export default function App() {
         <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute" }}>
           <defs><filter id="logo-white-cutout" colorInterpolationFilters="sRGB">
             <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -20 -20 -20 0 59" />
+            <feComposite in2="SourceGraphic" operator="in" />
           </filter></defs>
         </svg>
         <button
