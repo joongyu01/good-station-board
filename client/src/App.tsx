@@ -3,7 +3,8 @@ import Admin from "./components/Admin.tsx";
 import KoreaMap from "./components/KoreaMap.tsx";
 import StationTable from "./components/StationTable.tsx";
 import PriceChart from "./components/PriceChart.tsx";
-import { compileQuery, QUERY_HINT } from "./lib/query.ts";
+import { compileQuery } from "./lib/query.ts";
+import StationSearch from "./components/StationSearch.tsx";
 import { SIGNAL_ORDER } from "@shared/lib/types.ts";
 import MobileSheet from "./components/MobileSheet.tsx";
 import RankWindow from "./components/RankWindow.tsx";
@@ -338,19 +339,7 @@ export default function App() {
    * 거르기는 `panel` 위에 얹히므로 지도 드릴다운·판정 거르기와 함께 걸린다.
    */
   const searchBox = (
-    <div className="panel-search">
-      <input
-        type="search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="검색"
-        title={`검색 가이드\n${QUERY_HINT}\n낱말을 띄어 쓰면 모든 조건을 만족하는 주유소만 표시합니다.`}
-        aria-label="주유소 검색"
-      />
-      {q && (
-        <button type="button" className="search-clear" onClick={() => setQ("")} aria-label="검색 지우기">✕</button>
-      )}
-    </div>
+    <StationSearch value={q} onChange={setQ} rows={rows} onSelect={setChartOf} />
   );
 
   if (hash.startsWith("#/admin")) {

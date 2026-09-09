@@ -105,6 +105,24 @@ button.stat .dot { width: 9px; height: 9px; }
 .panel-search input::placeholder { color: #7a897d; }
 .panel-search input:focus { background: #fff; outline-color: #8dc63f77; border-color: #9fbf87; }
 .search-clear { right: 30px; top: 9px; color: #6d7f70; }
+.panel-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.search-preview {
+  position: absolute; z-index: 30; top: calc(100% - 12px); left: 22px; right: 22px;
+  max-height: min(440px, 50dvh); overflow-y: auto; overscroll-behavior: contain;
+  background: #fff; border: 1px solid #d9e2d5; border-radius: 14px;
+  box-shadow: 0 12px 30px #23372526;
+}
+.search-preview-count { padding: 10px 14px; color: #68766b; font-size: 12px; }
+.search-preview-option {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px;
+  text-align: left; border: 0; border-top: 1px solid #f0f3ed; background: #fff; cursor: pointer;
+}
+.search-preview-option:hover, .search-preview-option[aria-selected="true"],
+.search-preview-option:focus-visible { background: #eff6e7; }
+.search-preview-dot { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; }
+.search-preview-info { min-width: 0; display: grid; gap: 4px; overflow-wrap: anywhere; }
+.search-preview-info strong { font-size: 13px; color: #26352a; }
+.search-preview-info small { font-size: 12px; color: #68766b; }
 .panel-body { scrollbar-color: #cad5cc transparent; scrollbar-width: thin; }
 .station-table { color: #344139; font-size: 13px; }
 .station-table thead th { background: #f4f7f5; color: #728078; border-color: #e8ede9; }
