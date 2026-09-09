@@ -66,7 +66,7 @@ const PIN_NAME_MAX = 12;
  * 지역에 맞춰지므로 더 키우면 가장자리 군이 화면 밖으로 밀려난다.
  */
 const DEFAULT_ZOOM: Record<Level, number> = {
-  sido: 1.1,
+  sido: 1.5,
   sigungu: 1,
   district: 1,
   detail: 1,
@@ -294,8 +294,9 @@ export default function KoreaMap({
   const labels = useMemo(() => {
     if (isDetail) return [];
     const k = tf.k;
-    const nameFont = ((view.level === "sido" ? 12.5 : 11) * LABEL_SCALE) / k;
-    const countsFont = (10 * LABEL_SCALE) / k;
+    const fontBoost = view.level === "sido" ? 2 * 96 / 72 : 0;
+    const nameFont = ((view.level === "sido" ? 12.5 : 11) * LABEL_SCALE + fontBoost) / k;
+    const countsFont = (10 * LABEL_SCALE + fontBoost) / k;
 
     const entries = view.features.map((f) => {
       const s = summaryFor(f);
@@ -362,9 +363,10 @@ export default function KoreaMap({
 
     // 전국은 육지 밖 양쪽 여백에 고정 배치한다. 기존 anchor가 연결선의 출발점이다.
     if (view.level === "sido") {
-      const west = new Set(["서울", "인천", "경기", "충남", "세종", "대전", "전북", "전남광주", "제주"]);
+      const rightOrder = ["강원", "충북", "경북", "대구", "울산", "부산", "경남", "제주"];
       for (const left of [true, false]) {
-        const side = entries.filter(e => west.has(e.name) === left).sort((a,b) => a.chip.anchor.y-b.chip.anchor.y);
+        const side = entries.filter(e => !rightOrder.includes(e.name) === left)
+          .sort((a,b) => left ? a.chip.anchor.y-b.chip.anchor.y : rightOrder.indexOf(a.name)-rightOrder.indexOf(b.name));
         side.forEach((e,i) => {
           e.chip.x = left ? viewBounds.x0 + (e.chip.w/2) + 8/k : viewBounds.x1 - e.chip.w/2 - 8/k;
           const top = viewBounds.y0 + (left ? 80 : 175)/k;
