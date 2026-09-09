@@ -583,7 +583,7 @@ function main() {
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
   console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
-  console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 시·도 평균을 한 번이라도 넘김)`);
+  console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 휘발유 또는 경유가 단위지역 유종별 평균을 한 번이라도 넘김)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 전남광주 10위(7/1부터) / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
 }
