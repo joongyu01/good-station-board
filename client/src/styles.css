@@ -240,7 +240,8 @@ button.stat + button.stat { margin-left: 4px; }
 }
 
 /* 신호등 개수 배지. 지역 색 위에 얹히므로 흰 바탕을 깐다. */
-.region-label { pointer-events: none; }
+.region-label { pointer-events: auto; cursor: pointer; }
+.region-label:hover .rl-chip, .region-label:focus-visible .rl-chip { stroke: var(--green-deep); stroke-width: 2px; }
 .rl-chip {
   fill: rgba(255, 255, 255, .94);
   stroke: rgba(46, 48, 51, .16); stroke-width: 1;

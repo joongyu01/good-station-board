@@ -251,7 +251,7 @@ export default function KoreaMap({
   function tooltipFor(f: GeoFeature): string {
     const s = summaryFor(f);
     if (!s) return nameOf(f);
-    return `${nameOf(f)} · ${s.total}곳 (🟢${s.green} 🟡${s.yellow} 🔴${s.red}${s.unknown ? ` ⚪${s.unknown}` : ""})`;
+    return `${nameOf(f)} · ${s.total}곳 (🟢${s.green} 🟡${s.yellow} 🔴${s.red} ⚫선정 취소 대상 ${s.cancel}${s.unknown ? ` ⚪${s.unknown}` : ""})`;
   }
 
   /** 상세 단계에서 찍을 주유소 — 좌표가 있는 것만 */
@@ -336,13 +336,13 @@ export default function KoreaMap({
       const gap = 2.5 / k;
       const h = padY * 2 + nameH + gap + countsH + gap + barH;
 
-      const countsText = s ? `●${s.red} ●${s.yellow} ●${s.green}` : "";
+      const countsText = s ? `●${s.red} ●${s.yellow} ●${s.green} ●${s.cancel}` : "";
       const w = Math.max(textWidth(name, nameFont), textWidth(countsText, countsFont)) + 14 / k;
 
       const chip: Chip = {
         id: keyOf(f),
         anchor: { x: pole.x, y: pole.y },
-        x: pole.x, y: pole.y,
+        x: pole.x, y: pole.y - (view.level === "sido" && name === "서울" ? 55 / k : 0),
         w, h,
       };
 
@@ -357,7 +357,7 @@ export default function KoreaMap({
         countsFont,
       };
 
-      return { chip, name, summary: s, rows };
+      return { chip, name, summary: s, rows, feature: f };
     });
 
     // 넉넉히 밀어낸다. 시·도 라벨은 3단이라 조금만 겹쳐도 글자가 읽히지 않는다.
@@ -601,8 +601,16 @@ export default function KoreaMap({
             );
           })}
 
-          {labels.map(({ chip, name, summary, rows }) => (
-            <g key={`lb-${chip.id}`} className="region-label">
+          {labels.map(({ chip, name, summary, rows, feature }) => (
+            <g key={`lb-${chip.id}`} className="region-label" role="button" tabIndex={0}
+              aria-label={`${tooltipFor(feature)} · 지역 보기`}
+              onClick={() => handleClick(feature)}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault(); suppressClick.current = false; handleClick(feature);
+                }
+              }}>
+              <title>{tooltipFor(feature)}</title>
               <rect className="rl-chip"
                 x={chip.x - chip.w / 2} y={chip.y - chip.h / 2}
                 width={chip.w} height={chip.h} rx={5 / k} />
@@ -616,7 +624,9 @@ export default function KoreaMap({
                   <tspan fill={SIGNAL_COLORS.yellow}>●</tspan>
                   <tspan className="rl-num">{summary.yellow} </tspan>
                   <tspan fill={SIGNAL_COLORS.green}>●</tspan>
-                  <tspan className="rl-num">{summary.green}</tspan>
+                  <tspan className="rl-num">{summary.green} </tspan>
+                  <tspan fill={SIGNAL_COLORS.cancel}>●</tspan>
+                  <tspan className="rl-num">{summary.cancel}</tspan>
                 </text>
               )}
               {/* 신호등 비율 바 — 왼쪽부터 빨강·노랑·초록이 개수 비율만큼 차지한다. */}
