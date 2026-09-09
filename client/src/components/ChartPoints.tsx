@@ -52,7 +52,7 @@ export default function ChartPoints({ dates, x, y, plots, width, bottom }: {
       {plots.map(plot => plot.values[active] != null && <circle key={plot.label}
         cx={x(active)} cy={y(plot.values[active]!)} r={3.2} fill={plot.color} stroke="white" />)}
       <g className="ch-value-tooltip" role="status" transform={`translate(${tipX}, 2)`}>
-        <rect width={tipWidth} height={24+plots.length*17} rx={6} fill="#18251f" opacity={0.95} />
+        <rect width={tipWidth} height={24+plots.length*17} rx={6} fill="#18251f" />
         <text x={10} y={16} fill="white" fontSize={11}>
           {dates[active].slice(0,4)}년 {Number(dates[active].slice(4,6))}월 {Number(dates[active].slice(6,8))}일
         </text>

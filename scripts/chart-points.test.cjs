@@ -27,6 +27,7 @@ const assert=require('node:assert/strict');
    assert.match(await page.locator('.ch-value-tooltip').textContent(),/미신고/);
    await page.keyboard.press('ArrowRight');
    assert.ok(await page.locator('.ch-value-tooltip').count());
+   assert.equal(await page.locator('.ch-value-tooltip > rect').evaluate(el=>getComputedStyle(el).opacity),'1');
  }
  assert.equal(await page.locator('.ch-mean').first().evaluate(el=>getComputedStyle(el).strokeDasharray),'6px, 4px');
  const point=page.locator('[data-series="계수"] .ch-daily-point').last();
