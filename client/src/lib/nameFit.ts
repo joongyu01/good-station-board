@@ -11,7 +11,7 @@ function schedule() {
     let remaining = [...pending].slice(0, 12);
     remaining.forEach(el => pending.delete(el));
     remaining = remaining.filter(el => el.isConnected);
-    for (const [size, spacing] of [[13, -.02], [12, -.04], [11, -.06]]) {
+    for (const [size, spacing] of [[15, -.02], [14, -.04], [13, -.06]]) {
       for (const el of remaining) {
         el.style.whiteSpace = 'nowrap';
         el.style.fontSize = `${size}px`;

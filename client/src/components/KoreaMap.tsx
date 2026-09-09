@@ -369,7 +369,7 @@ export default function KoreaMap({
           .sort((a,b) => left ? a.chip.anchor.y-b.chip.anchor.y : rightOrder.indexOf(a.name)-rightOrder.indexOf(b.name));
         side.forEach((e,i) => {
           e.chip.x = left ? viewBounds.x0 + (e.chip.w/2) + 8/k : viewBounds.x1 - e.chip.w/2 - 8/k;
-          const top = viewBounds.y0 + (left ? 80 : 175)/k;
+          const top = viewBounds.y0 + 175/k;
           const bottom = viewBounds.y1 - 45/k;
           e.chip.y = top + (bottom-top)*(i+.5)/side.length;
         });

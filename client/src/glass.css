@@ -33,7 +33,7 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 .topbar-logo { background: transparent; padding: 0; height: 34px; border-radius: 8px; }
 /* Blend the raster logo's white matte into the light toolbar without changing
    the source CI asset. Limit compositing to the small logo, not the toolbar. */
-.topbar-logo img { mix-blend-mode: multiply; }
+.topbar-logo img { filter: url(#logo-white-cutout); }
 .brand h1 { color: var(--ink); font-weight: 700; font-size: 19px; letter-spacing: -.045em; }
 .meta { color: #66756b; font-size: 11px; letter-spacing: -.015em; }
 .meta .sep { margin: 0 5px; }
@@ -208,6 +208,32 @@ button.stat .dot { width: 9px; height: 9px; }
 }
 @media (prefers-reduced-transparency: reduce) {
   .topbar { backdrop-filter: none; -webkit-backdrop-filter: none; background: #f9fcf8; }
+}
+/* Readable everyday UI sizing, including the mobile overrides above. */
+body { font-size: 15px; }
+.brand h1 { font-size: 21px; }
+.meta, .summary-strip .stat-note { font-size: 12px; }
+.mode-tabs button, .admin-link, .crumb { font-size: 14px; }
+button.stat .stat-label { font-size: 14px; }
+.panel-head h2 { font-size: 20px; }
+.btn-csv, .btn-rank { font-size: 13px; }
+.panel-search input { font-size: 15px; }
+.station-table { font-size: 15px; }
+.station-table .th-sort { font-size: 13px; }
+.station-table .fuel-rank, .station-badges .badge, .station-badges .rounds b { font-size: 12px; }
+.station-badges .rounds b { min-width: 18px; height: 19px; }
+.station-badges .badge { line-height: 19px; }
+.search-preview-count, .search-preview-info small { font-size: 13px; }
+.search-preview-info strong { font-size: 15px; }
+.log-table, .rank-table, .mean-table { font-size: 14px; }
+.log-diff-fuels { font-size: 11px; }
+.chart-panel-title, .chart-legend, .chart-sub { font-size: 14px; }
+.copyright { font-size: 12px; }
+.copyright .cr-sub { font-size: 11px; }
+@media (max-width: 720px) {
+  .brand h1 { font-size: 17px; }
+  .panel-head h2 { font-size: 18px; }
+  .btn-csv, .btn-rank { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
