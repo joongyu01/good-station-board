@@ -2,6 +2,7 @@
 import type { StationSignal } from "../lib/board.ts";
 import { useLayoutEffect, useRef } from "react";
 import { observeNameFit } from "../lib/nameFit.ts";
+import { useVirtualStations } from "../lib/useVirtualStations.ts";
 import { SIGNAL_LABELS, formatPrice } from "../lib/board.ts";
 import { nextSort, type SortDir, type SortKey, type SortState } from "../lib/table.ts";
 import { LOYAL_LABEL, LOYAL_ROUNDS, VIEW_MODE_LABELS, type ViewMode } from "@shared/lib/types.ts";
@@ -75,6 +76,7 @@ function headers(mode: ViewMode): HeaderDef[] {
 export default function StationTable({
   stations, showRegion, emptyText, onSelect, sort, onSort, mode, compact,
 }: Props) {
+  const virtual = useVirtualStations(stations);
   if (stations.length === 0) {
     return <p className="empty">{emptyText ?? "표시할 주유소가 없습니다."}</p>;
   }
@@ -110,7 +112,9 @@ export default function StationTable({
         </label>
       </div>
 
-    <table className="station-table">
+    <table ref={virtual.table} className={`station-table${virtual.enabled ? " is-virtual" : ""}`}
+      aria-rowcount={stations.length + 1}>
+      {virtual.enabled && <colgroup>{cols.map(h => <col key={h.key} className={`vcol-${h.key}`} />)}</colgroup>}
       <thead>
         <tr>
           {cols.map((h) => {
@@ -140,8 +144,9 @@ export default function StationTable({
         </tr>
       </thead>
       <tbody>
-        {stations.map((s) => (
-          <tr key={s.seq} className={`row-${s.signal}`}>
+        {virtual.before > 0 && <tr className="virtual-spacer" aria-hidden="true"><td colSpan={cols.length} style={{ height: virtual.before }} /></tr>}
+        {stations.slice(virtual.start, virtual.end).map((s, i) => (
+          <tr key={s.seq} data-row-index={virtual.start + i} aria-rowindex={virtual.start + i + 2} className={`row-${s.signal}`}>
             <td className="col-sig">
               <span className={`dot dot-${s.signal}`} title={SIGNAL_LABELS[s.signal]} />
             </td>
@@ -197,6 +202,7 @@ export default function StationTable({
             </td>
           </tr>
         ))}
+        {virtual.after > 0 && <tr className="virtual-spacer" aria-hidden="true"><td colSpan={cols.length} style={{ height: virtual.after }} /></tr>}
       </tbody>
     </table>
     </>

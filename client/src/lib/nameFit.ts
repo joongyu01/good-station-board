@@ -7,8 +7,10 @@ function schedule() {
   frame = requestAnimationFrame(() => {
     frame = 0;
     if (paused) return;
-    let remaining = [...pending].filter(el => el.isConnected);
-    pending.clear();
+    // 한 프레임에 최대 12개만 처리해 입력과 화면 갱신에 실행 시간을 돌려준다.
+    let remaining = [...pending].slice(0, 12);
+    remaining.forEach(el => pending.delete(el));
+    remaining = remaining.filter(el => el.isConnected);
     for (const [size, spacing] of [[13, -.02], [12, -.04], [11, -.06]]) {
       for (const el of remaining) {
         el.style.whiteSpace = 'nowrap';
@@ -18,6 +20,7 @@ function schedule() {
       remaining = remaining.filter(el => el.scrollWidth > el.clientWidth + 1);
     }
     for (const el of remaining) el.style.whiteSpace = 'normal';
+    schedule();
   });
 }
 export function pauseNameFit() { paused = true; }

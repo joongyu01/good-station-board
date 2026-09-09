@@ -346,6 +346,17 @@ button.stat + button.stat { margin-left: 4px; }
 
 /* ── 주유소 표 ────────────────────────────────────────── */
 .station-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+/* 가상 행이 교체돼도 열 너비가 흔들리지 않게 고정한다. */
+.station-table.is-virtual { table-layout: fixed; min-width: 900px; }
+.is-virtual .vcol-signal { width: 26px; }
+.is-virtual .vcol-name { width: 29%; }
+.is-virtual .vcol-region { width: 9%; }
+.is-virtual .vcol-gasoline, .is-virtual .vcol-diesel { width: 12%; }
+.is-virtual .vcol-coefficient { width: 8%; }
+.is-virtual .vcol-rank { width: 9%; }
+.is-virtual .vcol-compliance { width: 10%; }
+.is-virtual .vcol-cancelDays { width: 8%; }
+.station-table .virtual-spacer td { padding: 0; border: 0; }
 .station-table thead th {
   position: sticky; top: 0; z-index: 1;
   background: var(--paper); border-bottom: 1px solid var(--line);
