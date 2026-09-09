@@ -113,6 +113,9 @@ export default function PriceChart({ station, windows, onClose }: Props) {
    */
   const [from, setFrom] = useState<string>("");
   const [reportOpen, setReportOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState(0);
+  useEffect(() => { setZoom(1); setPan(0); }, [from, station.stationId]);
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -177,6 +180,11 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       idx.push(i);
     }
     if (idx.length === 0) return null;
+    // Zoom only the date window; keep chart/text height unchanged and share it across all panels.
+    const count = Math.max(1, Math.ceil(idx.length / zoom));
+    const start = Math.round(pan * Math.max(0, idx.length - count));
+    idx.splice(start + count);
+    idx.splice(0, start);
 
     const prices = idx.flatMap((i) => [series.g[i], series.d[i]]).filter((v): v is number => v != null);
     const coefs = idx.map((i) => series.c[i]).filter((v): v is number => v != null);
@@ -342,7 +350,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
         .filter((r) => r.date >= from)
         .reverse(),
     };
-  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows, over]);
+  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows, over, zoom, pan]);
 
   /** 고른 구간의 적합·근접·초과 일수. */
   const days = useMemo(
@@ -479,6 +487,25 @@ export default function PriceChart({ station, windows, onClose }: Props) {
           {chart && (
             <div className="chart-split">
               <div className="chart-graphs">
+                <div className="chart-navigation">
+                  <div className="chart-zoom-controls" role="group" aria-label="시계열 확대 및 축소">
+                    <button type="button" aria-label="시계열 축소" disabled={zoom === 1}
+                      onClick={() => { setZoom(z => Math.max(1, z / 2)); setPan(0); }}>−</button>
+                    <strong>{zoom}배</strong>
+                    <button type="button" aria-label="시계열 확대" disabled={zoom === 8}
+                      onClick={() => { setZoom(z => Math.min(8, z * 2)); setPan(0); }}>＋</button>
+                    <span>{fmtDate(chart.from)} ~ {fmtDate(chart.to)} · 세 그래프 동시 이동</span>
+                  </div>
+                  <div key={`${from}-${zoom}`} className="chart-time-scroll" tabIndex={0}
+                    aria-label="시계열 날짜 가로 스크롤"
+                    onScroll={e => {
+                      const el = e.currentTarget;
+                      setPan(el.scrollWidth > el.clientWidth ? el.scrollLeft / (el.scrollWidth - el.clientWidth) : 0);
+                    }}>
+                    <div style={{ width: `${zoom * 100}%`, height: 1 }} />
+                  </div>
+                  <small>{zoom === 1 ? "＋로 확대한 뒤 가로 스크롤바를 움직여 날짜를 탐색하세요." : "스크롤바를 좌우로 움직이면 과거·최근 날짜를 볼 수 있습니다."}</small>
+                </div>
                 {/* ── 판매가 ─────────────────────────────────── */}
                 <section className="chart-panel">
                   <h4 className="chart-panel-title">판매가 <span>원/L</span></h4>
