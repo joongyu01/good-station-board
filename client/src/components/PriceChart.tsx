@@ -70,7 +70,6 @@ const COLOR_COEF = "#C6402E";
  * 평균선은 판정의 잣대라 눈에 또렷해야 한다. 옅은 회색 점선으로 뒀더니 배경의
  * 선정 구간 띠에 묻혔다.
  */
-const COLOR_SUM = "#2F6FB5";
 const COLOR_MEAN = "#1F2328";
 
 /** 여러 창에서 같은 파일을 다시 받지 않도록 모듈 수준에 한 번만 담아 둔다. */
@@ -113,8 +112,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
    */
   const [from, setFrom] = useState<string>("");
   const [reportOpen, setReportOpen] = useState(false);
-  const [views, setViews] = useState(() => Array.from({ length: 3 }, () => ({ zoom: 1, pan: 0 })));
-  useEffect(() => { setViews(Array.from({ length: 3 }, () => ({ zoom: 1, pan: 0 }))); }, [from, station.stationId]);
+  const [views, setViews] = useState(() => Array.from({ length: 4 }, () => ({ zoom: 1, pan: 0 })));
+  useEffect(() => { setViews(Array.from({ length: 4 }, () => ({ zoom: 1, pan: 0 }))); }, [from, station.stationId]);
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -168,7 +167,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
   }, [history, station.stationId, station.rounds, station.sido, station.sigungu]);
 
   const charts = useMemo(() => {
-    function buildChart(zoom: number, pan: number) {
+    function buildChart(zoom: number, pan: number, fuel: "g" | "d" = "g") {
     if (!history || !series) return null;
     // 아래 헬퍼들이 중첩 함수라 history 의 null 좁히기가 풀린다. 한 번 묶어 둔다.
     const dates = history.dates;
@@ -180,7 +179,7 @@ export default function PriceChart({ station, windows, onClose }: Props) {
       idx.push(i);
     }
     if (idx.length === 0) return null;
-    // Zoom only the date window; keep chart/text height unchanged and share it across all panels.
+    // 각 그래프의 날짜 범위만 확대한다. 글씨와 그래프 높이는 유지한다.
     const count = Math.max(1, Math.ceil(idx.length / zoom));
     const start = Math.round(pan * Math.max(0, idx.length - count));
     idx.splice(start + count);
@@ -203,12 +202,10 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     const c0 = cMin - cPad;
     const c1 = cMax + cPad;
 
-    /** 합계 판매가와 그 시·도 평균. 날짜축과 길이가 같아야 line() 이 받는다. */
-    const sumSeries: (number | null)[] = dates.map((_, i) => {
-      const g = series.g[i], d = series.d[i];
-      return g != null && d != null ? g + d : null;
-    });
-    const meanSeries: (number | null)[] = dates.map((_, i) => over.mean[i] ?? null);
+    // 유종별 판매가와 해당 날짜의 단위지역 유종별 평균을 같은 축으로 비교한다.
+    const sumSeries = dates.map((_, i) => series[fuel][i] ?? null);
+    const meanSeries = dates.map((date, i) =>
+      history.regionFuelMean?.[fuel]?.[basisSido(station.sido, station.sigungu, date)]?.[i] ?? null);
 
     const innerW = W - PAD.left - PAD.right;
     const priceH = H_PRICE - PAD.top - PAD.bottom;
@@ -351,8 +348,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
         .reverse(),
     };
   }
-    return [buildChart(1, 0), ...views.map(v => buildChart(v.zoom, v.pan))];
-  }, [history, series, from, W, H_PRICE, H_COEF, H_AVG, station.rounds, windows, over, views]);
+    return [buildChart(1, 0), ...views.map((v, i) => buildChart(v.zoom, v.pan, i === 3 ? "d" : "g"))];
+  }, [history, series, from, W, H_PRICE, H_COEF, H_AVG, station.rounds, station.sido, station.sigungu, windows, over, views]);
   const chart = charts[0];
 
   /** 고른 구간의 적합·근접·초과 일수. */
@@ -617,28 +614,31 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                 </section>
 
                 {/* ── 평균가 견주기 ──────────────────────────── */}
-                <section className="chart-panel">
+                {(["휘발유", "경유"] as const).map((fuelLabel, fuelIndex) => {
+                  const comparison = charts[3 + fuelIndex]!;
+                  const fuelColor = fuelIndex === 0 ? COLOR_GASOLINE : COLOR_DIESEL;
+                  return <section className="chart-panel" key={fuelLabel}>
                   <h4 className="chart-panel-title">
-                    단위지역 평균값 비교 <span>휘발유+경유 합계 · {station.sido === "전남광주" ? "6/30까지 광주·전남 각각, 7/1부터 통합 평균" : `${station.sido} 평균`}</span>
+                    {fuelLabel} 단위지역 평균가격 비교 <span>원/L · {station.sido === "전남광주" ? "6/30까지 광주·전남 각각, 7/1부터 통합 평균" : `${station.sido} 평균`}</span>
                   </h4>
                   <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_AVG}`} className="chart-svg" role="img"
-                    aria-label={`${station.name} 합계 판매가와 ${station.sido} 평균 비교`}>
-                    {charts[3]!.marks.map((m) => (
+                    aria-label={`${station.name} ${fuelLabel} 판매가와 ${station.sido} ${fuelLabel} 평균 비교`}>
+                    {comparison.marks.map((m) => (
                       <g key={`ma${m.round}`}>
                         <rect className="ch-round" x={m.x1} y={PAD.top}
-                          width={Math.max(1.5, m.x2 - m.x1)} height={charts[3]!.avgH}>
+                          width={Math.max(1.5, m.x2 - m.x1)} height={comparison.avgH}>
                           <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
                         </rect>
                         <line className="ch-round-edge" x1={m.x2} x2={m.x2}
-                          y1={PAD.top} y2={PAD.top + charts[3]!.avgH} />
+                          y1={PAD.top} y2={PAD.top + comparison.avgH} />
                       </g>
                     ))}
-                    {charts[3]!.avgTicks.map((v) => (
+                    {comparison.avgTicks.map((v) => (
                       <g key={`a${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
-                          y1={charts[3]!.yA(v)} y2={charts[3]!.yA(v)} />
-                        <text className="ch-axis" x={PAD.left - 8} y={charts[3]!.yA(v)}
+                          y1={comparison.yA(v)} y2={comparison.yA(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={comparison.yA(v)}
                           textAnchor="end" dominantBaseline="middle">
                           {Math.round(v).toLocaleString("ko-KR")}
                         </text>
@@ -646,42 +646,43 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     ))}
 
                     {/* 평균을 웃돈 구간 — 선보다 먼저 깔아야 값을 가리지 않는다 */}
-                    {charts[3]!.overBands.map((d, i) => (
+                    {comparison.overBands.map((d, i) => (
                       <path key={`ob${i}`} d={d} className="ch-over-band" />
                     ))}
 
-                    {charts[3]!.meanLine.map((d, i) => (
+                    {comparison.meanLine.map((d, i) => (
                       <path key={`ml${i}`} d={d} className="ch-line ch-mean" stroke={COLOR_MEAN} style={{ strokeDasharray: "6 4" }} />
                     ))}
-                    {charts[3]!.sumLine.map((d, i) => (
-                      <path key={`sl${i}`} d={d} className="ch-line" stroke={COLOR_SUM} />
+                    {comparison.sumLine.map((d, i) => (
+                      <path key={`sl${i}`} d={d} className="ch-line" stroke={fuelColor} />
                     ))}
-                    <ChartPoints key={charts[3]!.from} dates={charts[3]!.dates} x={charts[3]!.x} y={charts[3]!.yA}
-                      width={W} bottom={PAD.top + charts[3]!.avgH} plots={[
-                        { label: "판매가 합계(휘발유+경유)", color: COLOR_SUM, values: charts[3]!.dailySum, format: exactPrice },
-                        { label: "단위지역 평균", color: COLOR_MEAN, values: charts[3]!.dailyMean, format: exactPrice },
+                    <ChartPoints key={comparison.from} dates={comparison.dates} x={comparison.x} y={comparison.yA}
+                      width={W} bottom={PAD.top + comparison.avgH} plots={[
+                        { label: `${fuelLabel} 판매가`, color: fuelColor, values: comparison.dailySum, format: exactPrice },
+                        { label: `단위지역 ${fuelLabel} 평균`, color: COLOR_MEAN, values: comparison.dailyMean, format: exactPrice },
                       ]} />
 
-                    {/* 날짜 라벨은 맨 아래 칸에만. 세 그래프의 x 는 정확히 포개진다. */}
-                    {charts[3]!.ticks.map(({ k, date }) => (
-                      <text key={date} className="ch-axis" x={charts[3]!.x(k)}
+                    {/* 각 유종 비교 그래프에 날짜축을 표시한다. */}
+                    {comparison.ticks.map(({ k, date }) => (
+                      <text key={date} className="ch-axis" x={comparison.x(k)}
                         y={H_AVG - PAD_BOTTOM_AXIS + 18} textAnchor="middle">{fmtTick(date)}</text>
                     ))}
                   </svg>
                   <p className="chart-legend">
-                    <span><i style={{ background: COLOR_SUM }} />
-                      이 주유소 {formatPrice(charts[3]!.latestAvg.sum)}</span>
+                    <span><i style={{ background: fuelColor }} />
+                      이 주유소 {formatPrice(comparison.latestAvg.sum)}</span>
                     <span><i style={{ background: "none", borderTop: `2px dashed ${COLOR_MEAN}` }} />
-                      {station.sido} 평균 {formatPrice(charts[3]!.latestAvg.mean)}</span>
-                    {charts[3]!.latestAvg.diff != null && (
-                      <span className={charts[3]!.latestAvg.diff > 0 ? "over" : "under"}>
-                        {charts[3]!.latestAvg.diff > 0 ? "+" : ""}
-                        {Math.round(charts[3]!.latestAvg.diff).toLocaleString("ko-KR")}원
+                      {station.sido} 평균 {formatPrice(comparison.latestAvg.mean)}</span>
+                    {comparison.latestAvg.diff != null && (
+                      <span className={comparison.latestAvg.diff > 0 ? "over" : "under"}>
+                        {comparison.latestAvg.diff > 0 ? "+" : ""}
+                        {Math.round(comparison.latestAvg.diff).toLocaleString("ko-KR")}원
                       </span>
                     )}
                   </p>
-                {chartNavigation(2)}
-                </section>
+                {chartNavigation(2 + fuelIndex)}
+                </section>;
+                })}
               </div>
 
               {/* ── 날짜별 기록 ──────────────────────────────── */}

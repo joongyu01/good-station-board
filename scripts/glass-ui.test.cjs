@@ -101,7 +101,7 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await page.getByRole('button',{name:'한국석유관리원 — 처음 화면으로'}).click();
   await page.locator('.name-link').first().click();
   await page.waitForSelector('.chart-svg');
-  assert.equal(await page.locator('.chart-svg').count(),3);
+  assert.equal(await page.locator('.chart-svg').count(),4);
   await page.screenshot({path:'.tmp/preview/station-detail.png'});
   const report=page.locator('.days-list').getByRole('button');
   if(await report.count()) {

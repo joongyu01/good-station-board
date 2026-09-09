@@ -17,11 +17,13 @@ const assert=require('node:assert/strict');
  await search.fill(station.name);
  await page.getByRole('listbox').getByRole('option').first().click();
  await page.locator('.ch-daily-layer').first().waitFor();
- assert.equal(await page.locator('.ch-daily-layer').count(),3);
+ assert.equal(await page.locator('.ch-daily-layer').count(),4);
+ assert.match(await page.locator('.chart-panel').nth(2).innerText(),/휘발유 단위지역 평균가격 비교/);
+ assert.match(await page.locator('.chart-panel').nth(3).innerText(),/경유 단위지역 평균가격 비교/);
  assert.ok(await page.locator('.ch-daily-point').count()>100);
  assert.ok(await page.locator('.ch-missing-point').count()>=4);
  const sliders=page.getByRole('slider',{name:'일별 그래프 값 조회'});
- for(let i=0;i<3;i++){
+ for(let i=0;i<4;i++){
    await sliders.nth(i).focus();
    for(let k=0;k<5;k++) await page.keyboard.press('ArrowRight');
    assert.match(await page.locator('.ch-value-tooltip').textContent(),/미신고/);
@@ -44,8 +46,8 @@ const assert=require('node:assert/strict');
  await page.locator('.chart-time-scroll').first().evaluate(el=>{el.scrollLeft=el.scrollWidth;});
  const lastDate=history.dates.at(-1);
  await page.waitForFunction(label=>document.querySelector('.chart-zoom-controls').textContent.includes(label),`${Number(lastDate.slice(4,6))}월 ${Number(lastDate.slice(6,8))}일`);
- for(let i=1;i<3;i++) assert.equal(Number(await sliders.nth(i).getAttribute('aria-valuemax')),initial,'other charts stay unchanged');
- for(let i=0;i<3;i++) {
+ for(let i=1;i<4;i++) assert.equal(Number(await sliders.nth(i).getAttribute('aria-valuemax')),initial,'other charts stay unchanged');
+ for(let i=0;i<4;i++) {
    const panel=page.locator('.chart-panel').nth(i);
    const svg=await panel.locator('.chart-svg').boundingBox();
    const controls=await panel.locator('.chart-navigation').boundingBox();
@@ -53,8 +55,10 @@ const assert=require('node:assert/strict');
  }
  await page.locator('.chart-panel').first().getByRole('button',{name:'시계열 축소',exact:true}).click();
  assert.equal(Number(await sliders.first().getAttribute('aria-valuemax')),initial);
+ await page.locator('.chart-panel').nth(2).screenshot({path:'.tmp/gasoline-comparison.png'});
+ await page.locator('.chart-panel').nth(3).screenshot({path:'.tmp/diesel-comparison.png'});
  await page.setViewportSize({width:390,height:844});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await browser.close();
- console.log('PASS: three daily plots, missing markers, keyboard/hover values, dashed mean, mobile width');
+ console.log('PASS: four daily plots, fuel comparisons, missing markers, keyboard/hover values, dashed mean, mobile width');
 })().catch(e=>{console.error(e);process.exit(1)});
