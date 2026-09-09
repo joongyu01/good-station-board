@@ -25,6 +25,7 @@ interface Props {
 interface HeaderDef {
   key: SortKey;
   label: string;
+  compactLabel?: [string, string];
   num?: boolean;
   /** 지역 열은 한 지역만 볼 때 감춘다 */
   regionOnly?: boolean;
@@ -41,10 +42,12 @@ function headers(mode: ViewMode): HeaderDef[] {
     { key: "region", label: "지역", regionOnly: true },
     {
       key: "gasoline", label: "휘발유(지역순위)", num: true,
+      compactLabel: ["휘발유", "(단위지역 순위)"],
       title: "괄호 안은 그 시·도에서 휘발유 가격만 놓고 본 순위",
     },
     {
       key: "diesel", label: "경유(지역순위)", num: true,
+      compactLabel: ["경유", "(단위지역 순위)"],
       title: "괄호 안은 그 시·도에서 경유 가격만 놓고 본 순위",
     },
     {
@@ -53,13 +56,16 @@ function headers(mode: ViewMode): HeaderDef[] {
     },
     {
       key: "rank", label: "시·도 순위", num: true,
+      compactLabel: ["시·도", "순위"],
       title: `그 시·도에서 ${of} 기준 순위`,
     },
     {
       key: "compliance", label: "기준 충족(일)", num: true, first: "desc",
+      compactLabel: ["기준 충족", "(일)"],
       title: "8월 1일부터 오늘까지 적합 / 근접 / 초과였던 날 수",
     },
     { key: "cancelDays", label: "선정 취소 대상일", num: true, first: "desc",
+      compactLabel: ["선정 취소", "대상일"],
       title: "최초 선정 발표 다음 날부터 휘발유+경유 합계가 단위지역 평균을 초과한 일수" },
   ];
 }
@@ -117,10 +123,11 @@ export default function StationTable({
                 <button
                   type="button"
                   className={`th-sort${active ? " is-active" : ""}`}
+                  aria-label={h.label || "신호등"}
                   title={h.title ? `${h.title} · 눌러서 정렬` : "눌러서 정렬"}
                   onClick={() => onSort(nextSort(sort, h.key, h.first ?? "asc"))}
                 >
-                  <span className="th-label">{h.label}</span>
+                  <span className="th-label">{h.compactLabel ? <>{h.compactLabel[0]}<small>{h.compactLabel[1]}</small></> : h.label}</span>
                   <span className="th-arrow" aria-hidden="true">
                     {dir === "asc" ? "▲" : dir === "desc" ? "▼" : "↕"}
                   </span>

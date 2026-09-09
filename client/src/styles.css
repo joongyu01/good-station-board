@@ -768,6 +768,13 @@ button.stat + button.stat { margin-left: 4px; }
 .th-arrow { font-size: 9px; opacity: .35; }
 .th-sort:hover .th-arrow { opacity: .7; }
 .th-sort.is-active .th-arrow { opacity: 1; }
+.station-table .th-label { line-height: 1.35; letter-spacing: -.035em; }
+.station-table .th-label small { display: block; font-size: 10px; font-weight: 400; }
+@media (min-width: 721px) {
+  .station-table td { padding-left: 6px; padding-right: 6px; }
+  .station-table .th-sort { padding: 9px 6px; gap: 3px; min-height: 46px; }
+  .station-table .col-name { min-width: 180px; }
+}
 
 /* ── CSV 내려받기 ───────────────────────────────────────── */
 .panel-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; }
