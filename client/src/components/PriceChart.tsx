@@ -113,9 +113,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
    */
   const [from, setFrom] = useState<string>("");
   const [reportOpen, setReportOpen] = useState(false);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState(0);
-  useEffect(() => { setZoom(1); setPan(0); }, [from, station.stationId]);
+  const [views, setViews] = useState(() => Array.from({ length: 3 }, () => ({ zoom: 1, pan: 0 })));
+  useEffect(() => { setViews(Array.from({ length: 3 }, () => ({ zoom: 1, pan: 0 }))); }, [from, station.stationId]);
   const W = narrow ? W_MOBILE : W_DESKTOP;
   const H_PRICE = narrow ? H_PRICE_MOBILE : H_PRICE_DESKTOP;
   const H_COEF = narrow ? H_COEF_MOBILE : H_COEF_DESKTOP;
@@ -168,7 +167,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
     };
   }, [history, station.stationId, station.rounds, station.sido, station.sigungu]);
 
-  const chart = useMemo(() => {
+  const charts = useMemo(() => {
+    function buildChart(zoom: number, pan: number) {
     if (!history || !series) return null;
     // 아래 헬퍼들이 중첩 함수라 history 의 null 좁히기가 풀린다. 한 번 묶어 둔다.
     const dates = history.dates;
@@ -350,7 +350,10 @@ export default function PriceChart({ station, windows, onClose }: Props) {
         .filter((r) => r.date >= from)
         .reverse(),
     };
-  }, [history, series, from, W, H_PRICE, H_COEF, station.rounds, windows, over, zoom, pan]);
+  }
+    return [buildChart(1, 0), ...views.map(v => buildChart(v.zoom, v.pan))];
+  }, [history, series, from, W, H_PRICE, H_COEF, H_AVG, station.rounds, windows, over, views]);
+  const chart = charts[0];
 
   /** 고른 구간의 적합·근접·초과 일수. */
   const days = useMemo(
@@ -383,6 +386,32 @@ export default function PriceChart({ station, windows, onClose }: Props) {
   const ranges: Array<[string, string]> = [];
   if (earliest < COMPLIANCE_FROM) ranges.push(["", `${Number(earliest.slice(4, 6))}월부터 전체`]);
   ranges.push([COMPLIANCE_FROM, "8월 1일부터"]);
+
+  function chartNavigation(index: number) {
+    const chart = charts[index + 1];
+    if (!chart) return null;
+    const { zoom } = views[index];
+    const update = (next: { zoom: number; pan: number }) => setViews(old => old.map((v, i) => i === index ? next : v));
+    return (<div className="chart-navigation">
+                  <div className="chart-zoom-controls" role="group" aria-label="시계열 확대 및 축소">
+                    <button type="button" aria-label="시계열 축소" disabled={zoom === 1}
+                      onClick={() => { update({ zoom: Math.max(1, zoom / 2), pan: 0 }); }}>−</button>
+                    <strong>{zoom}배</strong>
+                    <button type="button" aria-label="시계열 확대" disabled={zoom === 8}
+                      onClick={() => { update({ zoom: Math.min(8, zoom * 2), pan: 0 }); }}>＋</button>
+                    <span>{fmtDate(chart.from)} ~ {fmtDate(chart.to)} · 이 그래프만 이동</span>
+                  </div>
+                  <div key={`${from}-${zoom}`} className="chart-time-scroll" tabIndex={0}
+                    aria-label="시계열 날짜 가로 스크롤"
+                    onScroll={e => {
+                      const el = e.currentTarget;
+                      update({ zoom, pan: el.scrollWidth > el.clientWidth ? el.scrollLeft / (el.scrollWidth - el.clientWidth) : 0 });
+                    }}>
+                    <div style={{ width: `${zoom * 100}%`, height: 1 }} />
+                  </div>
+                  <small>{zoom === 1 ? "＋로 확대한 뒤 가로 스크롤바를 움직여 날짜를 탐색하세요." : "스크롤바를 좌우로 움직이면 과거·최근 날짜를 볼 수 있습니다."}</small>
+                </div>);
+  }
 
   return (
     <div className="chart-backdrop" onClick={onClose} role="presentation">
@@ -487,25 +516,6 @@ export default function PriceChart({ station, windows, onClose }: Props) {
           {chart && (
             <div className="chart-split">
               <div className="chart-graphs">
-                <div className="chart-navigation">
-                  <div className="chart-zoom-controls" role="group" aria-label="시계열 확대 및 축소">
-                    <button type="button" aria-label="시계열 축소" disabled={zoom === 1}
-                      onClick={() => { setZoom(z => Math.max(1, z / 2)); setPan(0); }}>−</button>
-                    <strong>{zoom}배</strong>
-                    <button type="button" aria-label="시계열 확대" disabled={zoom === 8}
-                      onClick={() => { setZoom(z => Math.min(8, z * 2)); setPan(0); }}>＋</button>
-                    <span>{fmtDate(chart.from)} ~ {fmtDate(chart.to)} · 세 그래프 동시 이동</span>
-                  </div>
-                  <div key={`${from}-${zoom}`} className="chart-time-scroll" tabIndex={0}
-                    aria-label="시계열 날짜 가로 스크롤"
-                    onScroll={e => {
-                      const el = e.currentTarget;
-                      setPan(el.scrollWidth > el.clientWidth ? el.scrollLeft / (el.scrollWidth - el.clientWidth) : 0);
-                    }}>
-                    <div style={{ width: `${zoom * 100}%`, height: 1 }} />
-                  </div>
-                  <small>{zoom === 1 ? "＋로 확대한 뒤 가로 스크롤바를 움직여 날짜를 탐색하세요." : "스크롤바를 좌우로 움직이면 과거·최근 날짜를 볼 수 있습니다."}</small>
-                </div>
                 {/* ── 판매가 ─────────────────────────────────── */}
                 <section className="chart-panel">
                   <h4 className="chart-panel-title">판매가 <span>원/L</span></h4>
@@ -513,45 +523,46 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <svg viewBox={`0 0 ${W} ${H_PRICE}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 휘발유·경유 판매가 추이`}>
                     {/* 선정 시점 — 선 뒤에 깔아야 값을 가리지 않는다 */}
-                    {chart.marks.map((m) => (
+                    {charts[1]!.marks.map((m) => (
                       <g key={`mp${m.round}`}>
                         <rect className="ch-round" x={m.x1} y={PAD.top}
-                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.priceH}>
+                          width={Math.max(1.5, m.x2 - m.x1)} height={charts[1]!.priceH}>
                           <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
                         </rect>
                         <line className="ch-round-edge" x1={m.x2} x2={m.x2}
-                          y1={PAD.top} y2={PAD.top + chart.priceH} />
+                          y1={PAD.top} y2={PAD.top + charts[1]!.priceH} />
                         <text className="ch-round-label" x={(m.x1 + m.x2) / 2} y={PAD.top - 5}
                           textAnchor="middle">{m.round}</text>
                       </g>
                     ))}
-                    {chart.priceTicks.map((v) => (
+                    {charts[1]!.priceTicks.map((v) => (
                       <g key={`p${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
-                          y1={chart.yP(v)} y2={chart.yP(v)} />
-                        <text className="ch-axis" x={PAD.left - 8} y={chart.yP(v)}
+                          y1={charts[1]!.yP(v)} y2={charts[1]!.yP(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={charts[1]!.yP(v)}
                           textAnchor="end" dominantBaseline="middle">
                           {Math.round(v).toLocaleString("ko-KR")}
                         </text>
                       </g>
                     ))}
 
-                    {chart.gasoline.map((d, i) => (
+                    {charts[1]!.gasoline.map((d, i) => (
                       <path key={`g${i}`} d={d} className="ch-line" stroke={COLOR_GASOLINE} />
                     ))}
-                    {chart.diesel.map((d, i) => (
+                    {charts[1]!.diesel.map((d, i) => (
                       <path key={`d${i}`} d={d} className="ch-line" stroke={COLOR_DIESEL} />
                     ))}
-                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yP}
-                      width={W} bottom={PAD.top + chart.priceH} plots={[
-                        { label: "휘발유", color: COLOR_GASOLINE, values: chart.dailyG, format: exactPrice },
-                        { label: "경유", color: COLOR_DIESEL, values: chart.dailyD, format: exactPrice },
+                    <ChartPoints key={charts[1]!.from} dates={charts[1]!.dates} x={charts[1]!.x} y={charts[1]!.yP}
+                      width={W} bottom={PAD.top + charts[1]!.priceH} plots={[
+                        { label: "휘발유", color: COLOR_GASOLINE, values: charts[1]!.dailyG, format: exactPrice },
+                        { label: "경유", color: COLOR_DIESEL, values: charts[1]!.dailyD, format: exactPrice },
                       ]} />
                   </svg>
                   <p className="chart-legend">
-                    <span><i style={{ background: COLOR_GASOLINE }} />휘발유 {formatPrice(chart.latest.g)}</span>
-                    <span><i style={{ background: COLOR_DIESEL }} />경유 {formatPrice(chart.latest.d)}</span>
+                    <span><i style={{ background: COLOR_GASOLINE }} />휘발유 {formatPrice(charts[1]!.latest.g)}</span>
+                    <span><i style={{ background: COLOR_DIESEL }} />경유 {formatPrice(charts[1]!.latest.d)}</span>
                   </p>
+                {chartNavigation(0)}
                 </section>
 
                 {/* ── 계수 ───────────────────────────────────── */}
@@ -562,46 +573,47 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_COEF}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합산 계수 추이`}>
-                    {chart.marks.map((m) => (
+                    {charts[2]!.marks.map((m) => (
                       <g key={`mc${m.round}`}>
                         <rect className="ch-round" x={m.x1} y={PAD.top}
-                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.coefH}>
+                          width={Math.max(1.5, m.x2 - m.x1)} height={charts[2]!.coefH}>
                           <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
                         </rect>
                         <line className="ch-round-edge" x1={m.x2} x2={m.x2}
-                          y1={PAD.top} y2={PAD.top + chart.coefH} />
+                          y1={PAD.top} y2={PAD.top + charts[2]!.coefH} />
                       </g>
                     ))}
-                    {chart.coefTicks.map((v) => (
+                    {charts[2]!.coefTicks.map((v) => (
                       <g key={`c${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
-                          y1={chart.yC(v)} y2={chart.yC(v)} />
-                        <text className="ch-axis" x={PAD.left - 8} y={chart.yC(v)}
+                          y1={charts[2]!.yC(v)} y2={charts[2]!.yC(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={charts[2]!.yC(v)}
                           textAnchor="end" dominantBaseline="middle">{v.toFixed(COEF_DIGITS)}</text>
                       </g>
                     ))}
 
-                    {chart.cutoffY != null && (
+                    {charts[2]!.cutoffY != null && (
                       <>
                         <line className="ch-cutoff" x1={PAD.left} x2={W - PAD.right}
-                          y1={chart.cutoffY} y2={chart.cutoffY} />
+                          y1={charts[2]!.cutoffY} y2={charts[2]!.cutoffY} />
                         <text className="ch-cutoff-label" x={W - PAD.right - 4}
-                          y={chart.cutoffY - 5} textAnchor="end">상위권 기준</text>
+                          y={charts[2]!.cutoffY - 5} textAnchor="end">상위권 기준</text>
                       </>
                     )}
 
-                    {chart.coef.map((d, i) => (
+                    {charts[2]!.coef.map((d, i) => (
                       <path key={`cl${i}`} d={d} className="ch-line" stroke={COLOR_COEF} />
                     ))}
-                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yC}
-                      width={W} bottom={PAD.top + chart.coefH} plots={[
-                        { label: "계수", color: COLOR_COEF, values: chart.dailyC, format: v => v.toFixed(COEF_DIGITS) },
+                    <ChartPoints key={charts[2]!.from} dates={charts[2]!.dates} x={charts[2]!.x} y={charts[2]!.yC}
+                      width={W} bottom={PAD.top + charts[2]!.coefH} plots={[
+                        { label: "계수", color: COLOR_COEF, values: charts[2]!.dailyC, format: v => v.toFixed(COEF_DIGITS) },
                       ]} />
                   </svg>
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_COEF }} />
-                      계수 {chart.latest.c?.toFixed(COEF_DIGITS) ?? "—"}</span>
+                      계수 {charts[2]!.latest.c?.toFixed(COEF_DIGITS) ?? "—"}</span>
                   </p>
+                {chartNavigation(1)}
                 </section>
 
                 {/* ── 평균가 견주기 ──────────────────────────── */}
@@ -612,21 +624,21 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                   <div className="chart-readout" />
                   <svg viewBox={`0 0 ${W} ${H_AVG}`} className="chart-svg" role="img"
                     aria-label={`${station.name} 합계 판매가와 ${station.sido} 평균 비교`}>
-                    {chart.marks.map((m) => (
+                    {charts[3]!.marks.map((m) => (
                       <g key={`ma${m.round}`}>
                         <rect className="ch-round" x={m.x1} y={PAD.top}
-                          width={Math.max(1.5, m.x2 - m.x1)} height={chart.avgH}>
+                          width={Math.max(1.5, m.x2 - m.x1)} height={charts[3]!.avgH}>
                           <title>{`${m.round} 선정 기준기간 ${m.label}`}</title>
                         </rect>
                         <line className="ch-round-edge" x1={m.x2} x2={m.x2}
-                          y1={PAD.top} y2={PAD.top + chart.avgH} />
+                          y1={PAD.top} y2={PAD.top + charts[3]!.avgH} />
                       </g>
                     ))}
-                    {chart.avgTicks.map((v) => (
+                    {charts[3]!.avgTicks.map((v) => (
                       <g key={`a${v}`}>
                         <line className="ch-grid" x1={PAD.left} x2={W - PAD.right}
-                          y1={chart.yA(v)} y2={chart.yA(v)} />
-                        <text className="ch-axis" x={PAD.left - 8} y={chart.yA(v)}
+                          y1={charts[3]!.yA(v)} y2={charts[3]!.yA(v)} />
+                        <text className="ch-axis" x={PAD.left - 8} y={charts[3]!.yA(v)}
                           textAnchor="end" dominantBaseline="middle">
                           {Math.round(v).toLocaleString("ko-KR")}
                         </text>
@@ -634,40 +646,41 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                     ))}
 
                     {/* 평균을 웃돈 구간 — 선보다 먼저 깔아야 값을 가리지 않는다 */}
-                    {chart.overBands.map((d, i) => (
+                    {charts[3]!.overBands.map((d, i) => (
                       <path key={`ob${i}`} d={d} className="ch-over-band" />
                     ))}
 
-                    {chart.meanLine.map((d, i) => (
+                    {charts[3]!.meanLine.map((d, i) => (
                       <path key={`ml${i}`} d={d} className="ch-line ch-mean" stroke={COLOR_MEAN} style={{ strokeDasharray: "6 4" }} />
                     ))}
-                    {chart.sumLine.map((d, i) => (
+                    {charts[3]!.sumLine.map((d, i) => (
                       <path key={`sl${i}`} d={d} className="ch-line" stroke={COLOR_SUM} />
                     ))}
-                    <ChartPoints key={chart.from} dates={chart.dates} x={chart.x} y={chart.yA}
-                      width={W} bottom={PAD.top + chart.avgH} plots={[
-                        { label: "판매가 합계(휘발유+경유)", color: COLOR_SUM, values: chart.dailySum, format: exactPrice },
-                        { label: "단위지역 평균", color: COLOR_MEAN, values: chart.dailyMean, format: exactPrice },
+                    <ChartPoints key={charts[3]!.from} dates={charts[3]!.dates} x={charts[3]!.x} y={charts[3]!.yA}
+                      width={W} bottom={PAD.top + charts[3]!.avgH} plots={[
+                        { label: "판매가 합계(휘발유+경유)", color: COLOR_SUM, values: charts[3]!.dailySum, format: exactPrice },
+                        { label: "단위지역 평균", color: COLOR_MEAN, values: charts[3]!.dailyMean, format: exactPrice },
                       ]} />
 
                     {/* 날짜 라벨은 맨 아래 칸에만. 세 그래프의 x 는 정확히 포개진다. */}
-                    {chart.ticks.map(({ k, date }) => (
-                      <text key={date} className="ch-axis" x={chart.x(k)}
+                    {charts[3]!.ticks.map(({ k, date }) => (
+                      <text key={date} className="ch-axis" x={charts[3]!.x(k)}
                         y={H_AVG - PAD_BOTTOM_AXIS + 18} textAnchor="middle">{fmtTick(date)}</text>
                     ))}
                   </svg>
                   <p className="chart-legend">
                     <span><i style={{ background: COLOR_SUM }} />
-                      이 주유소 {formatPrice(chart.latestAvg.sum)}</span>
+                      이 주유소 {formatPrice(charts[3]!.latestAvg.sum)}</span>
                     <span><i style={{ background: "none", borderTop: `2px dashed ${COLOR_MEAN}` }} />
-                      {station.sido} 평균 {formatPrice(chart.latestAvg.mean)}</span>
-                    {chart.latestAvg.diff != null && (
-                      <span className={chart.latestAvg.diff > 0 ? "over" : "under"}>
-                        {chart.latestAvg.diff > 0 ? "+" : ""}
-                        {Math.round(chart.latestAvg.diff).toLocaleString("ko-KR")}원
+                      {station.sido} 평균 {formatPrice(charts[3]!.latestAvg.mean)}</span>
+                    {charts[3]!.latestAvg.diff != null && (
+                      <span className={charts[3]!.latestAvg.diff > 0 ? "over" : "under"}>
+                        {charts[3]!.latestAvg.diff > 0 ? "+" : ""}
+                        {Math.round(charts[3]!.latestAvg.diff).toLocaleString("ko-KR")}원
                       </span>
                     )}
                   </p>
+                {chartNavigation(2)}
                 </section>
               </div>
 

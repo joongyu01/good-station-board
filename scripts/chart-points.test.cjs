@@ -39,13 +39,19 @@ const assert=require('node:assert/strict');
  await page.screenshot({path:'.tmp/chart-points.png'});
  const initial=Number(await sliders.first().getAttribute('aria-valuemax'));
  assert.equal(initial,history.dates.length,'default keeps full date range');
- await page.getByRole('button',{name:'시계열 확대',exact:true}).click();
+ await page.locator('.chart-panel').first().getByRole('button',{name:'시계열 확대',exact:true}).click();
  assert.equal(Number(await sliders.first().getAttribute('aria-valuemax')),Math.ceil(initial/2));
- await page.locator('.chart-time-scroll').evaluate(el=>{el.scrollLeft=el.scrollWidth;});
+ await page.locator('.chart-time-scroll').first().evaluate(el=>{el.scrollLeft=el.scrollWidth;});
  const lastDate=history.dates.at(-1);
  await page.waitForFunction(label=>document.querySelector('.chart-zoom-controls').textContent.includes(label),`${Number(lastDate.slice(4,6))}월 ${Number(lastDate.slice(6,8))}일`);
- for(let i=0;i<3;i++) assert.equal(Number(await sliders.nth(i).getAttribute('aria-valuemax')),Math.ceil(initial/2));
- await page.getByRole('button',{name:'시계열 축소',exact:true}).click();
+ for(let i=1;i<3;i++) assert.equal(Number(await sliders.nth(i).getAttribute('aria-valuemax')),initial,'other charts stay unchanged');
+ for(let i=0;i<3;i++) {
+   const panel=page.locator('.chart-panel').nth(i);
+   const svg=await panel.locator('.chart-svg').boundingBox();
+   const controls=await panel.locator('.chart-navigation').boundingBox();
+   assert.ok(controls.y>=svg.y+svg.height,'controls below each plot');
+ }
+ await page.locator('.chart-panel').first().getByRole('button',{name:'시계열 축소',exact:true}).click();
  assert.equal(Number(await sliders.first().getAttribute('aria-valuemax')),initial);
  await page.setViewportSize({width:390,height:844});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
