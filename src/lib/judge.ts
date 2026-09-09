@@ -65,14 +65,14 @@ export function baseAt(cut: number[] | undefined, rank: number, complete = false
   return complete || cut.length < CUTOFF_K ? cut[cut.length - 1] : null;
 }
 
-/** 보정 기준선 유무와 무관하게 선정 취소 조건을 우선한다. */
+/** 현재 보정 판정. 취소 이력은 별도로 중복 집계한다. */
 export function adjustedSignalOf(st: StationSignal): SignalColor {
-  return st.overRegion?.cancel ? "cancel" : st.adjusted?.signal ?? "unknown";
+  return st.adjusted?.signal ?? "unknown";
 }
 
 function tally(stations: StationSignal[], pick: (s: StationSignal) => SignalColor) {
   const out = emptyCounts();
-  for (const s of stations) out[pick(s)]++;
+  for (const s of stations) { out[pick(s)]++; if (s.overRegion?.cancel) out.cancel++; }
   return out;
 }
 
@@ -140,19 +140,10 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
       if (adjusted) adjusted = { ...adjusted, signal: mark };
     }
 
-    // 선정 취소 대상은 다른 무엇보다 앞선다. 오늘 순위가 어떻든 선정 자체를
-    // 다시 볼 일이기 때문이다. 집계도 같은 차례로 덮는다 — aggregate.ts 참고.
-    //
-    // 이 표시는 임계값과 무관하다. 관리 화면에서 기준 순위를 바꿔도 '선정
-    // 이후 지역 평균을 넘긴 날' 은 그대로라, 집계가 정해 둔 값을 그대로 쓴다.
-    if (st.overRegion?.cancel) {
-      for (const mode of VIEW_MODES) if (metrics[mode]) metrics[mode].signal = "cancel";
-      if (adjusted) adjusted = { ...adjusted, signal: "cancel" };
-    }
+    // 과거 취소 이력은 현재 판정을 덮어쓰지 않는다.
 
     const m = metrics.sum ?? st.metrics?.sum;
-    const shown = st.overRegion?.cancel ? "cancel"
-      : j.judgeMode === "adjusted" ? (adjusted?.signal ?? "unknown") : m.signal;
+    const shown = j.judgeMode === "adjusted" ? (adjusted?.signal ?? "unknown") : m.signal;
 
     return {
       ...st,

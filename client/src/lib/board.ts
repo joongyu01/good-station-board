@@ -126,13 +126,13 @@ export function summarize(stations: StationSignal[], label: string, sido: string
   const gaps: number[] = [];
   for (const st of stations) {
     s[st.signal]++;
+    if (st.overRegion?.cancel && st.signal !== "cancel") s.cancel++;
     if (st.gapFromMin != null) gaps.push(st.gapFromMin);
   }
   if (gaps.length) s.meanGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
 
-  // 취소 대상도 판정이 끝난 곳이다. 색을 정하는 분모에 넣지 않으면 그 지역이
-  // 실제보다 후하게 칠해진다 — 취소 대상만 남은 지역이 '미상' 이 되어 버린다.
-  const judged = s.green + s.yellow + s.red + s.cancel;
+  // 검정은 과거 이력의 중복 집계이므로 현재 가격 비율의 분모에서 제외한다.
+  const judged = s.green + s.yellow + s.red;
   if (judged > 0) {
     const share = s.green / judged;
     s.signal = share >= GREEN_SHARE ? "green" : s.green > 0 ? "yellow" : "red";
@@ -226,7 +226,7 @@ export function applyJudgeMode(board: BoardData): BoardData {
   if (board.judgeMode !== "adjusted") return board;
 
   const counts = emptyCounts();
-  for (const s of board.stations) counts[adjustedSignalOf(s)]++;
+  for (const s of board.stations) { counts[adjustedSignalOf(s)]++; if (s.overRegion?.cancel) counts.cancel++; }
 
   return {
     ...board,

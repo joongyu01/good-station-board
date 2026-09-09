@@ -38,7 +38,7 @@ import { adjustedSignalOf, cutoffsOf } from "../src/lib/judge.ts";
 import { hasRaw, listRawDates, readRaw } from "../src/lib/raw.ts";
 import {
   COMPLIANCE_FROM, complianceOf, emptyHistory, mergeDay, mergeRegionMean, overDaysOf,
-  overRegionOf, pruneTo, regionMeanOf, sampleDay,
+  overRegionOf, pruneTo, regionMeanOf, sampleDay, mergeRegionFuelMean,
   type History,
 } from "../src/lib/history.ts";
 import type { EnrichedRow } from "./collect.ts";
@@ -384,6 +384,7 @@ function main() {
     sampleDay(raw.rows, ids, (sido) => greenRankWith(sido, th), th.rankYellowFactor, date));
   // 날짜축을 맞춘 뒤라야 자리를 찾는다.
   mergeRegionMean(history, date, regionMeanOf(raw.rows, date));
+  mergeRegionFuelMean(history, date, raw.rows);
   const droppedSeries = pruneTo(history, ids);
   history.generatedAt = new Date().toISOString();
 
@@ -463,18 +464,14 @@ function main() {
     sig.overRegion = overRegionOf(overDaysOf(history, sig.stationId, sig.sido, since, sig.sigungu), since);
     if (!sig.overRegion?.cancel) continue;
 
-    // 취소 대상은 다른 무엇보다 앞선다. 오늘 순위가 어떻든 선정 자체를 다시
-    // 볼 일이기 때문이다.
+    // 취소는 현재 가격 판정과 독립된 과거 이력이다.
     cancelCount++;
-    sig.signal = "cancel";
-    for (const mode of VIEW_MODES) sig.metrics[mode].signal = "cancel";
-    if (sig.adjusted) sig.adjusted.signal = "cancel";
   }
 
   // ── 요약 ────────────────────────────────────────────────────────────
   const tally = (pick: (s: StationSignal) => SignalColor) => {
     const out = emptyCounts();
-    for (const s of signals) out[pick(s)]++;
+    for (const s of signals) { out[pick(s)]++; if (s.overRegion?.cancel) out.cancel++; }
     return out;
   };
 

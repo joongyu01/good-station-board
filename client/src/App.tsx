@@ -291,7 +291,7 @@ export default function App() {
   const view = useMemo(() => {
     const term = q.trim();
     const searched = term ? panel.stations.filter((s) => match(s, mode)) : panel.stations;
-    const list = filter ? searched.filter((s) => s.signal === filter) : searched;
+    const list = filter ? searched.filter((s) => filter === "cancel" ? s.overRegion?.cancel : s.signal === filter) : searched;
     if (!term && !filter) return panel;
 
     const notes = [
@@ -477,7 +477,7 @@ export default function App() {
             type="button"
             className={`stat stat-${k}${filter === k ? " is-on" : ""}`}
             aria-pressed={filter === k}
-            title={filter === k ? "눌러서 전체 보기" : `${SIGNAL_LABELS[k]} 만 보기`}
+            title={k === "cancel" ? "과거 이력 기준 · 현재 신호등과 중복 집계 (눌러서 필터)" : filter === k ? "눌러서 전체 보기" : `${SIGNAL_LABELS[k]} 만 보기`}
             onClick={() => setFilter(filter === k ? null : k)}
           >
             <span className="dot" style={{ background: SIGNAL_COLORS[k] }} />

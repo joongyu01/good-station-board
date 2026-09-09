@@ -336,6 +336,8 @@ export default function PriceChart({ station, windows, onClose }: Props) {
           date, g: series.g[i], d: series.d[i],
           // 선정 이후만 채운다. 선정 전 값은 견줄 잣대가 아니다.
           over: over.at.get(date) ?? null,
+          gDiff: fuelDiff(history, station, date, i, series.g[i], "g", over.at.has(date)),
+          dDiff: fuelDiff(history, station, date, i, series.d[i], "d", over.at.has(date)),
         }))
         .filter((r) => r.date >= from)
         .reverse(),
@@ -668,8 +670,10 @@ export default function PriceChart({ station, windows, onClose }: Props) {
                             <td className="num">{r.g == null ? "—" : r.g.toLocaleString("ko-KR")}</td>
                             <td className="num">{r.d == null ? "—" : r.d.toLocaleString("ko-KR")}</td>
                             <td className={`num ${r.over == null ? "" : r.over > 0 ? "over" : "under"}`}>
-                              {r.over == null ? "—"
-                                : `${r.over > 0 ? "+" : ""}${Math.round(r.over).toLocaleString("ko-KR")}`}
+                              <div className="log-diff-total" title="휘발유+경유 합산 평균차 (원/L)">{signedDiff(r.over)}</div>
+                              <small className="log-diff-fuels" title="동일 모집단의 유종별 평균차. 반올림으로 합산값과 1원 차이가 날 수 있습니다.">
+                                (휘:{signedDiff(r.gDiff)}, 경:{signedDiff(r.dDiff)})
+                              </small>
                             </td>
                           </>
                         )}
@@ -718,4 +722,16 @@ function fmtTick(d: string): string {
 /** Keep the recorded precision (including decimal regional means), without integer rounding. */
 function exactPrice(value: number): string {
   return `${value.toLocaleString("ko-KR", { maximumFractionDigits: 10 })}원/L`;
+}
+
+function signedDiff(value: number | null): string {
+  if (value == null) return "—";
+  const rounded = Math.round(value);
+  return `${rounded > 0 ? "+" : ""}${Object.is(rounded, -0) ? 0 : rounded.toLocaleString("ko-KR")}`;
+}
+
+function fuelDiff(history: History, station: StationSignal, date: string, index: number,
+  price: number | null, fuel: "g" | "d", afterSelection: boolean): number | null {
+  const mean = history.regionFuelMean?.[fuel]?.[basisSido(station.sido, station.sigungu, date)]?.[index];
+  return afterSelection && price != null && mean != null ? price - mean : null;
 }

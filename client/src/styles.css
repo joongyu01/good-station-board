@@ -683,7 +683,9 @@ button.stat + button.stat { margin-left: 4px; }
 }
 
 /* 그래프 칸 | 기록표. 기록표는 내용에 맞춘 고정 폭이다. */
-.chart-split { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 16px; }
+.chart-split { display: grid; grid-template-columns: minmax(0, 1fr) 285px; gap: 16px; }
+.log-diff-total { line-height: 1.25; }
+.log-diff-fuels { display: block; white-space: nowrap; font-size: 10px; font-weight: 400; letter-spacing: -.35px; line-height: 1.3; color: var(--muted); }
 @media (max-width: 900px) { .chart-split { grid-template-columns: 1fr; } }
 
 .chart-graphs { display: flex; flex-direction: column; gap: 12px; min-width: 0; }

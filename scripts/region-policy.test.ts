@@ -7,6 +7,21 @@ import { readRaw, listRawDates } from '../src/lib/raw.ts';
 import { readFileSync } from 'node:fs';
 import type { History } from '../src/lib/history.ts';
 
+test('fuel means use same population and add up to combined means for every stored day', () => {
+  const h: History = JSON.parse(readFileSync('client/public/data/history.json', 'utf8'));
+  for (const date of h.dates) {
+    const i=h.dates.indexOf(date);
+    const raw=readRaw<{rows: Parameters<typeof regionMeanOf>[0]}>('data/raw',date)!;
+    for (const [fuel, key] of [['gasoline','g'],['diesel','d']] as const) {
+      for(const [region, mean] of regionMeanOf(raw.rows,date,fuel)) {
+        assert.equal(h.regionFuelMean?.[key]?.[region]?.[i],Math.round(mean*100)/100);
+        const g=h.regionFuelMean!.g[region][i]!, d=h.regionFuelMean!.d[region][i]!;
+        assert.ok(Math.abs(g+d-h.regionMean![region][i]!)<.011);
+      }
+    }
+  }
+});
+
 test('merger boundary selects one pool and fixed ten-rank cutoff', () => {
   for (const [gu, old] of [['광산구', '광주'], ['목포시', '전남']]) {
     assert.equal(basisSido('전남광주', gu, '20260630'), old);

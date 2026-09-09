@@ -54,12 +54,12 @@ test("cancellation without an adjusted baseline survives every judging method", 
   s.adjusted = null;
   b.stations = [s];
   const offline = applyJudgeMode({ ...b, judgeMode: "adjusted" });
-  assert.equal(offline.stations[0].signal, "cancel");
+  assert.equal(offline.stations[0].signal, "unknown");
   assert.equal(offline.summary.counts.cancel, 1);
   for (const judgeMode of ["rank", "adjusted"] as const) {
     for (const adjustedCombine of ["rank", "drift", "both"] as const) {
       const result = applyJudging(b, { ...judging, judgeMode, adjustedCombine });
-      assert.equal(result.stations[0].signal, "cancel");
+      assert.notEqual(result.stations[0].signal, "cancel");
       assert.equal(result.summary.counts.cancel, 1);
       assert.equal(result.summary.adjustedCounts?.cancel, 1);
     }

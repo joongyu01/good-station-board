@@ -66,7 +66,7 @@ const PIN_NAME_MAX = 12;
  * 지역에 맞춰지므로 더 키우면 가장자리 군이 화면 밖으로 밀려난다.
  */
 const DEFAULT_ZOOM: Record<Level, number> = {
-  sido: 1.5,
+  sido: 1.1,
   sigungu: 1,
   district: 1,
   detail: 1,
@@ -217,7 +217,7 @@ export default function KoreaMap({
       // 상세 단계는 여백을 조금 더 둬서 핀 라벨이 잘리지 않게 한다.
       const pad = isDetail ? 54 : 26;
       p.fitExtent(
-        [[pad, pad], [WIDTH - pad, HEIGHT - pad]],
+        [[view.level === "sido" ? 145 : pad, pad], [WIDTH - (view.level === "sido" ? 145 : pad), HEIGHT - pad]],
         { type: "FeatureCollection", features: fitTarget } as unknown as GeoPermissibleObjects,
       );
     }
@@ -360,7 +360,21 @@ export default function KoreaMap({
       return { chip, name, summary: s, rows, feature: f };
     });
 
-    // 넉넉히 밀어낸다. 시·도 라벨은 3단이라 조금만 겹쳐도 글자가 읽히지 않는다.
+    // 전국은 육지 밖 양쪽 여백에 고정 배치한다. 기존 anchor가 연결선의 출발점이다.
+    if (view.level === "sido") {
+      const west = new Set(["서울", "인천", "경기", "충남", "세종", "대전", "전북", "전남광주", "제주"]);
+      for (const left of [true, false]) {
+        const side = entries.filter(e => west.has(e.name) === left).sort((a,b) => a.chip.anchor.y-b.chip.anchor.y);
+        side.forEach((e,i) => {
+          e.chip.x = left ? viewBounds.x0 + (e.chip.w/2) + 8/k : viewBounds.x1 - e.chip.w/2 - 8/k;
+          const top = viewBounds.y0 + (left ? 80 : 175)/k;
+          const bottom = viewBounds.y1 - 45/k;
+          e.chip.y = top + (bottom-top)*(i+.5)/side.length;
+        });
+      }
+      return entries;
+    }
+    // 하위 행정구역은 기존 충돌 회피 배치를 유지한다.
     const byId = new Map(
       relaxChips(entries.map((e) => e.chip), viewBounds, 240, 5 / k).map((c) => [c.id, c]),
     );

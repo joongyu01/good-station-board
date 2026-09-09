@@ -77,7 +77,7 @@ function parseTerm(word: string): Term {
 
   // 신호등 낱말
   const sig = SIGNAL_WORDS[raw.replace(/\s/g, "")];
-  if (sig) return (s) => s.signal === sig;
+  if (sig) return (s) => sig === "cancel" ? !!s.overRegion?.cancel : s.signal === sig;
 
   if (raw === "셀프") return (s) => s.isSelf;
   if (raw === "최저" || raw === "시도최저") return (s) => s.isRegionLowest;

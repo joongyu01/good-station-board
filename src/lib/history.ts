@@ -52,6 +52,8 @@ export interface History {
    * 20KB 남짓이다.
    */
   regionMean?: Record<string, (number | null)[]>;
+  /** Same dual-fuel population as regionMean; never independently filtered by fuel. */
+  regionFuelMean?: { g: Record<string, (number | null)[]>; d: Record<string, (number | null)[]> };
   generatedAt: string;
 }
 
@@ -87,6 +89,7 @@ export function mergeRegionMean(h: History, date: string, means: Map<string, num
 export function regionMeanOf(
   rows: Array<{ sido: string; sigungu: string; gasoline: number | null; diesel: number | null }>,
   date: string,
+  fuel: "sum" | "gasoline" | "diesel" = "sum",
 ): Map<string, number> {
   const acc = new Map<string, { s: number; n: number }>();
   for (const r of rows) {
@@ -94,12 +97,18 @@ export function regionMeanOf(
     if (g == null || g <= 0 || d == null || d <= 0) continue;
     const basis = basisSido(r.sido, r.sigungu, date);
     const a = acc.get(basis) ?? acc.set(basis, { s: 0, n: 0 }).get(basis)!;
-    a.s += g + d;
+    a.s += fuel === "gasoline" ? g : fuel === "diesel" ? d : g + d;
     a.n++;
   }
   const out = new Map<string, number>();
   for (const [k, a] of acc) out.set(k, a.s / a.n);
   return out;
+}
+
+export function mergeRegionFuelMean(h: History, date: string, rows: Parameters<typeof regionMeanOf>[0]): void {
+  const all = h.regionFuelMean ??= { g: {}, d: {} };
+  mergeRegionMean({ ...h, regionMean: all.g }, date, regionMeanOf(rows, date, "gasoline"));
+  mergeRegionMean({ ...h, regionMean: all.d }, date, regionMeanOf(rows, date, "diesel"));
 }
 
 /** 하루치 관측값 — 한 날짜의 주유소코드별 값 */
@@ -124,6 +133,9 @@ export function mergeDay(h: History, date: string, samples: Map<string, DaySampl
     if (at < 0) at = h.dates.length;
     h.dates.splice(at, 0, date);
     for (const arr of Object.values(h.regionMean ?? {})) arr.splice(at, 0, null);
+    for (const map of Object.values(h.regionFuelMean ?? {})) {
+      for (const arr of Object.values(map)) arr.splice(at, 0, null);
+    }
     for (const s of Object.values(h.stations)) {
       s.g.splice(at, 0, null);
       s.d.splice(at, 0, null);
