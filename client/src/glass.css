@@ -236,6 +236,20 @@ button.stat:hover .signal-help, button.stat:focus-visible .signal-help { display
 .region-price-stats { margin-top: 20px; min-width: 0; }
 .region-price-scroll { overflow-x: auto; max-width: 100%; }
 .good-price-scroll { overflow-x: auto; max-width: 100%; }
+.region-savings-chart { margin: 24px 0; padding: 18px 0; border-block: 1px solid #dce6dc; }
+.region-price-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.region-trend-modal { width: min(1200px,calc(100vw - 24px)); }
+.trend-tabs { display: flex; gap: 6px; margin-block: 12px; }
+.trend-tabs button { border: 1px solid #dce6dc; border-radius: 9px; padding: 9px 22px; background: #f4f7f3; color: #34452e; font: inherit; }
+.trend-tabs button[aria-selected="true"] { background: #80b440; color: #17250f; font-weight: 700; }
+.trend-unit { font-size: 12px; color: #647267; }
+.savings-plot-scroll { max-width: 100%; overflow-x: auto; }
+.savings-svg { display: block; width: 100%; min-width: 640px; }
+.savings-legend { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 6px; }
+.savings-legend button { display: flex; align-items: center; gap: 7px; border: 1px solid #dce6dc; border-radius: 8px; background: #f9fbf8; padding: 8px; color: #27382b; font-size: 13px; }
+.savings-legend button[aria-pressed="false"] { opacity: .45; }
+.savings-legend i { width: 12px; height: 3px; flex-shrink: 0; }
+.savings-legend span { margin-left: auto; font-variant-numeric: tabular-nums; }
 .good-price-scroll table { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 14px; }
 .price-saving { color: #397424; font-weight: 600; }
 .price-premium { color: #ba3d2d; font-weight: 600; }

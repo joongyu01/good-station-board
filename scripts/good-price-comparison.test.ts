@@ -10,7 +10,7 @@ test('same-date comparison excludes pre-selection, missing and duplicate station
     {stationId:'A',sido:'서울',sigungu:'중구',rounds:['1차']},
     {stationId:'B',sido:'서울',sigungu:'중구',rounds:['9차']},
     {stationId:'C',sido:'서울',sigungu:'중구',rounds:['1차']}] as StationSignal[];
-  const history={dates:['20260331','20260401'],stations:{A:{g:[100,100],d:[200,200]},B:{g:[50,50],d:[50,50]},C:{g:[100,100],d:[null,null]}}} as History;
+  const history:History={generatedAt:'',dates:['20260331','20260401'],stations:{A:{g:[100,100],d:[200,200],c:[null,null],s:[null,null]},B:{g:[50,50],d:[50,50],c:[null,null],s:[null,null]},C:{g:[100,100],d:[null,null],c:[null,null],s:[null,null]}}};
   const regions=buildRegionPrices([{sido:'서울',sigungu:'중구',gasoline:200,diesel:300}],'20260401');
   assert.deepEqual(compareGoodPrices(stations,history,'20260331',regions),{});
   const result=compareGoodPrices(stations,history,'20260401',regions)['서울'];

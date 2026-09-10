@@ -5,11 +5,13 @@ import type { History } from '@shared/lib/history.ts';
 import type { StationSignal } from '@shared/lib/types.ts';
 import { compareGoodPrices } from '@shared/lib/good-price-comparison.ts';
 import { fetchData, formatDate } from '../lib/board.ts';
+import RegionSavingsChart from './RegionSavingsChart.tsx';
 
 const number=(v:number)=>v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2});
 export default function RegionPriceStats({date,stations}:{date:string;stations:StationSignal[]}){
   const [data,setData]=useState<RegionPriceHistory|null>(null);
   const [history,setHistory]=useState<History|null>(null);
+  const [trendOpen,setTrendOpen]=useState(false);
   const [error,setError]=useState(false),[day,setDay]=useState(date);
   const [fuel,setFuel]=useState<'gasoline'|'diesel'|'sum'|'all'>('all');
   useEffect(()=>{
@@ -25,12 +27,13 @@ export default function RegionPriceStats({date,stations}:{date:string;stations:S
   const names={gasoline:'휘발유',diesel:'경유',sum:'합계 (휘발유+경유)'};
   const comparisons=useMemo(()=>history&&data?compareGoodPrices(stations,history,day,data.days[day]??{}):{},[stations,history,data,day]);
   return <section className="stats-panel region-price-stats">
-    <h2>단위지역별 가격 현황</h2>
+    <div className="region-price-heading"><h2>단위지역별 가격 현황</h2><button type="button" className="btn-rank" disabled={!data||!history} onClick={()=>setTrendOpen(true)}>시계열 그래프</button></div>
     <p>착한주유소만이 아닌, 두 유종 가격이 모두 유효한 전체 주유소 모집단입니다. 가격·표준편차는 원/L이며 합계는 비교용 휘발유+경유 값입니다.</p>
     <div className="rank-bar"><label>가격 기준일 <select aria-label="가격 기준일" value={day} disabled={!dates.length} onChange={e=>setDay(e.target.value)}>{dates.map(d=><option key={d} value={d}>{formatDate(d)}</option>)}</select></label>
       <label>유종 <select aria-label="유종" value={fuel} onChange={e=>setFuel(e.target.value as typeof fuel)}><option value="all">휘발유·경유 모두</option><option value="gasoline">휘발유</option><option value="diesel">경유</option><option value="sum">합계 (휘발유+경유)</option></select></label></div>
     {error?<p role="alert">가격 통계를 불러오지 못했습니다. 새로고침해 주세요.</p>:!data?<p role="status">가격 통계 불러오는 중…</p>:<>
     <p>전국 비교 대상 {regions.reduce((n,[,r])=>n+r.gasoline.n,0).toLocaleString()}곳 · {regions.length}개 단위지역 · 6/30까지 광주·전남 별도, 7/1부터 통합</p>
+    {trendOpen&&history&&<RegionSavingsChart data={data} history={history} stations={stations} onClose={()=>setTrendOpen(false)} />}
     <h3>착한주유소는 단위지역 전체보다 얼마나 저렴한가?</h3>
     <p>현재 명단 중 선택 날짜가 최초 선정 공시일 다음 날 이후이며, 두 유종 가격을 모두 비교할 수 있는 주유소만 계산합니다. 선정 전·미신고 자료는 제외합니다. 과거 전체 선정 명단을 복원한 통계는 아닙니다.</p>
     <div className="good-price-scroll" tabIndex={0} aria-label="착한주유소 가격 비교 표, 좌우 스크롤 가능"><table>
