@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { History } from "@shared/lib/history.ts";
+import { compareRegionOrder } from '@shared/lib/region-prices.ts';
 import { fetchData, sidoLabel } from "../lib/board.ts";
 
 const dateLabel = (d: string) => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
@@ -29,7 +30,7 @@ export default function RegionMeanWindow({ date, sido, onClose }: { date: string
   }, [date]);
   const dates = [...(history?.dates ?? [])].sort().reverse();
   const index = history?.dates.indexOf(day) ?? -1;
-  const regions = Object.keys(history?.regionMean ?? {}).filter(r => history?.regionMean?.[r]?.[index] != null).sort((a, b) => a.localeCompare(b, "ko-KR"));
+  const regions = Object.keys(history?.regionMean ?? {}).filter(r => history?.regionMean?.[r]?.[index] != null).sort(compareRegionOrder);
   const mapped = region === "전남광주" && day < "20260701" ? "광주"
     : (region === "광주" || region === "전남") && day >= "20260701" ? "전남광주" : region;
   const price = (value:number|null|undefined) => value == null ? '—' : value.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2})+'원';

@@ -235,6 +235,10 @@ button.stat:hover .signal-help, button.stat:focus-visible .signal-help { display
 .stats-panel h2 { font-size: 19px; }
 .region-price-stats { margin-top: 20px; min-width: 0; }
 .region-price-scroll { overflow-x: auto; max-width: 100%; }
+.good-price-scroll { overflow-x: auto; max-width: 100%; }
+.good-price-scroll table { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 14px; }
+.price-saving { color: #397424; font-weight: 600; }
+.price-premium { color: #ba3d2d; font-weight: 600; }
 .region-price-scroll table { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .region-price-scroll th { font-size: 13px; }
 .region-price-scroll td { font-size: 14px; }
