@@ -15,6 +15,7 @@
  */
 import { readFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { writeJsonIfChanged } from "../src/lib/stable-write.ts";
+import { writeRegionPrices } from './region-prices.ts';
 import {
   CONFIRMED_ROUNDS, DRIFT_GREEN, DRIFT_YELLOW, driftSignalOf, median, ROUND_ANNOUNCED, worseOf,
   type AdjustedMetric, type Baseline,
@@ -79,6 +80,7 @@ function main() {
   }
 
   const raw = readRaw<{ date: string; rows: EnrichedRow[] }>(RAW_DIR, date)!;
+  writeRegionPrices(RAW_DIR, OUT_DIR, date);
   const good: GoodStation[] = JSON.parse(readFileSync(path.join(DATA, "good-stations.json"), "utf8"));
 
   const mappingPath = path.join(DATA, "station-mapping.json");

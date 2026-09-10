@@ -233,6 +233,16 @@ button.stat:hover .signal-help, button.stat:focus-visible .signal-help { display
 .stats-kpis > div, .stats-panel { background: #fff; border-radius: 16px; padding: 20px; }
 .stats-kpis strong { display: block; font-size: 26px; margin-top: 8px; }
 .stats-panel h2 { font-size: 19px; }
+.region-price-stats { margin-top: 20px; min-width: 0; }
+.region-price-scroll { overflow-x: auto; max-width: 100%; }
+.region-price-scroll table { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.region-price-scroll th { font-size: 13px; }
+.region-price-scroll td { font-size: 14px; }
+.mean-table { font-variant-numeric: tabular-nums; }
+.mean-table td, .mean-table th { text-align: right; padding: 10px 8px; }
+.mean-table th:first-child { text-align: left; }
+.mean-table .mean-selected { background: #edf5e5; }
+.mean-table small { display: block; font-size: 11px; font-weight: normal; }
 .stats-panel table { width: 100%; border-collapse: collapse; }
 .stats-panel th, .stats-panel td { padding: 9px 5px; border-bottom: 1px solid #e5ece6; text-align: right; }
 .stats-panel th:first-child { text-align: left; }

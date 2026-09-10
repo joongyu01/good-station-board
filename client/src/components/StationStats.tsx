@@ -2,6 +2,7 @@ import { BRAND_LABELS } from "@shared/lib/brand.ts";
 import { LOYAL_ROUNDS } from "@shared/lib/types.ts";
 import { basisSido } from "@shared/lib/region.ts";
 import { formatDate, SIGNAL_LABELS, type BoardData } from "../lib/board.ts";
+import RegionPriceStats from './RegionPriceStats.tsx';
 
 function groups(values: string[]) {
   const counts = new Map<string, number>();
@@ -34,6 +35,7 @@ export default function StationStats({ board }: { board: BoardData }) {
         ['착하디착한',stations.filter(s=>new Set(s.rounds).size>=LOYAL_ROUNDS).length],['선정 취소 검토 대상',cancel]]
         .map(([label,n])=><div key={label}><span>{label}</span><strong>{n}곳</strong></div>)}
     </div>
+    <RegionPriceStats date={board.date} />
     <div className="stats-grid">
       {table('차수별 선정 현황',rounds,'현재 명단에 남아 있는 주유소의 선정 이력입니다. 여러 차수에 선정된 곳은 차수마다 집계되므로 합계가 전체보다 큽니다. 과거 차수의 공식 전체 선정 수와는 다를 수 있습니다.')}
       {table('단위지역별 현황',regions,'가격 기준일의 행정구역 정책을 적용합니다. 7/1 이후 전남·광주는 통합 집계합니다.')}
