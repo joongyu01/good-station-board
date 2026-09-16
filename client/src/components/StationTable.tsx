@@ -161,7 +161,7 @@ export default function StationTable({
               {s.dataGapDays > 0 && (
                 <span
                   className="badge badge-gap"
-                  title={`최근 기록 중 ${s.dataGapDays}일치 가격이 비었거나 0원입니다. 값을 믿기 어려워 판정에서 뺐습니다.`}
+                  title={`최근 기록 중 ${s.dataGapDays}일치 가격이 비었거나 0원입니다. 과거 기록이며 현재 가격 판정에는 영향을 주지 않습니다.`}
                 >
                   미신고 {s.dataGapDays}일
                 </span>

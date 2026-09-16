@@ -129,15 +129,14 @@ export function applyJudging(board: BoardData, j: Judging): BoardData {
       };
     }
 
-    // ── 가격을 믿기 어려운 곳은 설정과 무관하다 ──────────────────────
-    //
-    // 오늘 값이 없어 못 잰 것과 과거에 거른 이력이 있는 것은 어느 임계값을
-    // 골라도 그대로다. 집계가 세어 둔 결측 일수로 다시 판단한다.
-    if (st.dataGapDays > 0) {
-      const hasToday = st.prices?.gasoline != null && st.prices?.diesel != null;
-      const mark: SignalColor = hasToday ? "stale" : "unknown";
-      for (const mode of VIEW_MODES) if (metrics[mode]) metrics[mode].signal = mark;
-      if (adjusted) adjusted = { ...adjusted, signal: mark };
+    // ── 현재 가격 유효성만 확인한다 ─────────────────────────────────
+    // 과거 결측 이력은 현재 판정을 제한하지 않는다.
+    // 각 유종은 해당 유종의 현재 값으로, 통합·보정은 두 유종으로 판정한다.
+    for (const mode of VIEW_MODES) {
+      if (metrics[mode] && !(metrics[mode].price != null && metrics[mode].price! > 0)) metrics[mode].signal = "unknown";
+    }
+    if (adjusted && !(st.prices?.gasoline != null && st.prices.gasoline > 0 && st.prices?.diesel != null && st.prices.diesel > 0)) {
+      adjusted = { ...adjusted, signal: "unknown" };
     }
 
     // 과거 취소 이력은 현재 판정을 덮어쓰지 않는다.

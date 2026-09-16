@@ -47,6 +47,19 @@ const judging: Judging = {
 };
 const board: BoardData = JSON.parse(readFileSync("client/public/data/latest.json", "utf8"));
 
+test("past missing prices never override current signals in any judging mode", () => {
+  for (const judgeMode of ["rank", "adjusted"] as const) {
+    for (const adjustedCombine of ["rank", "drift", "both"] as const) {
+      const settings = {...judging, judgeMode, adjustedCombine};
+      const withGaps = applyJudging(board, settings);
+      const withoutGaps = applyJudging({...board, stations:board.stations.map(s => ({...s, dataGapDays:0}))}, settings);
+      assert.deepEqual(withGaps.stations, withoutGaps.stations.map((s,i) => ({...s,dataGapDays:board.stations[i].dataGapDays})));
+      assert.equal(withGaps.summary.counts.stale, 0);
+      assert.equal(withGaps.summary.counts.green + withGaps.summary.counts.yellow + withGaps.summary.counts.red + withGaps.summary.counts.unknown, board.stations.length);
+    }
+  }
+});
+
 test("cancellation without an adjusted baseline survives every judging method", () => {
   const b = structuredClone(board);
   const s = b.stations.find(s => s.overRegion?.cancel)!;

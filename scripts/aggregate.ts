@@ -395,29 +395,14 @@ function main() {
   if (writeJsonIfChanged(historyPath, history, TIMESTAMP)) rewritten++;
   if (writeJsonIfChanged(path.join(OUT_DIR, "history.json"), history, TIMESTAMP)) rewritten++;
 
-  // ── 가격을 믿기 어려운 곳 ───────────────────────────────────────────
-  //
-  // 둘로 나눈다. 성격이 달라 한 칸에 묶으면 무엇을 확인해야 하는지 흐려진다.
-  //
-  //   unknown  오늘 가격이 없어 아예 판정을 못 한 곳 → 지금 확인할 일
-  //   stale    오늘은 가격이 있으나 과거에 거른 이력이 있는 곳 → 신고 이력을 볼 일
-  //
-  // 하루치만 보고 판정하면 "어제는 1위, 오늘은 미상" 처럼 오락가락한다. 신고를
-  // 거른 이력이 있으면 그 값을 믿고 순위를 매기기 어렵다는 뜻이라, 판정에서
-  // 빼되 오늘 값이 아예 없는 곳과는 구분해 둔다.
+  // ── 과거 결측 기록 보존 (현재 판정과 독립) ─────────────────────────
   let gapCount = 0;
   let staleCount = 0;
   for (const sig of signals) {
     /**
      * 신고를 거른 날 수 — **기본 구간(8월 1일~) 안에서만** 센다.
      *
-     * 시계열이 3월까지 늘어나면서 전 구간을 훑었더니 과거 미신고가 20곳에서
-     * 54곳으로 늘었다. 다섯 달 전 하루를 걸렀다는 이유로 오늘 판정을 못 하는
-     * 것은 뜻이 없다 — 이 표시는 '지금 이 가격을 믿고 순위를 매겨도 되는가' 를
-     * 묻는 것이라 최근 이력이라야 답이 된다.
-     *
-     * 그래프는 이것과 무관하게 3월치부터 다 그린다. 판정을 접는 범위와 보여줄
-     * 범위는 다른 이야기다.
+     * 결측 일수는 이력 표시용으로만 보존하며 현재 가격 판정에서 제외하지 않는다.
      */
     const series = sig.stationId ? history.stations[sig.stationId] : undefined;
     let gaps = 0;
@@ -435,17 +420,9 @@ function main() {
 
     sig.dataGapDays = gaps;
     if (sig.stationId) sig.compliance = complianceOf(history, sig.stationId, COMPLIANCE_FROM);
-    if (gaps === 0) continue;
-
-    // 오늘 값이 있으면 stale, 없으면 unknown.
-    const hasToday = sig.prices.gasoline != null && sig.prices.diesel != null;
-    const mark: "stale" | "unknown" = hasToday ? "stale" : "unknown";
-    if (hasToday) staleCount++; else gapCount++;
-
-    sig.signal = mark;
-    for (const mode of VIEW_MODES) sig.metrics[mode].signal = mark;
-    // 값이 없어서 못 재는 것은 판정 방식과 무관하다. 보정 쪽도 같이 덮는다.
-    if (sig.adjusted) sig.adjusted.signal = mark;
+    // 결측 일수는 기록만 보존한다. 과거 결측 때문에 현재 판정을 덮지 않는다.
+    if (gaps > 0) staleCount++;
+    if (sig.signal === "unknown") gapCount++;
   }
 
   // ── 선정 이후 지역 평균 초과 ────────────────────────────────────────
@@ -584,7 +561,7 @@ function main() {
   console.log(`  매칭된 착한주유소: ${matchedCount}/${good.length}`);
   console.log(`  신호등: 상위권 ${counts.green} / 근접 ${counts.yellow} / 미달 ${counts.red} / 미상 ${counts.unknown}`);
   console.log(`  합산 계수 산출: ${withIndex}곳 (1.000 = 초록불 커트라인)`);
-  console.log(`  가격정보 없음: ${gapCount}곳 (오늘 가격 없음) / 과거 미신고: ${staleCount}곳`);
+  console.log(`  가격정보 없음: ${gapCount}곳 / 과거 결측 기록: ${staleCount}곳 (현재 판정에 영향 없음)`);
   console.log(`  선정 취소 대상: ${cancelCount}곳 (선정 이후 휘발유 또는 경유가 단위지역 유종별 평균을 한 번이라도 넘김)`);
   console.log(`  적용 기준: 서울·경기 ${th.rankGreenMetro}위 / 전남광주 10위(7/1부터) / 그 외 ${th.rankGreenDefault}위 이내 상위권, 근접은 ${th.rankYellowFactor}배까지`);
   console.log(`\n  client/public/data/latest.json`);
