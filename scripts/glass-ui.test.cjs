@@ -24,7 +24,7 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await page.waitForSelector('.station-table .name-link');
   await page.waitForTimeout(400);
   assert.ok(await page.locator('.name-link').count() < 60, 'virtual list preserved');
-  assert.equal(await page.locator('button.stat').count(), 5);
+  assert.equal(await page.locator('button.stat').count(), 6);
   assert.equal(await page.locator('.topbar .brand .station-total-link').count(), 1);
   assert.equal(await page.locator('.page > .station-total-link').count(), 0);
   await page.locator('.stat-green').hover();
@@ -70,7 +70,7 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   await stats.keyboard.press('Escape');
   await stats.screenshot({path:'.tmp/preview/station-stats.png',fullPage:true});
   await stats.close();
-  for (let i=0;i<5;i++) {
+  for (let i=0;i<6;i++) {
     const filter=page.locator('button.stat').nth(i);
     await filter.click();
     assert.equal(await filter.getAttribute('aria-pressed'), 'true');
@@ -126,14 +126,14 @@ const url = process.env.GLASS_TEST_URL || 'http://127.0.0.1:5174';
   assert.ok((await page.locator('.breadcrumb').first().innerText()).includes('서울'));
   const data=JSON.parse(fs.readFileSync('client/public/data/latest.json','utf8'));
   const seoul=data.stations.filter(s=>s.sido==='서울');
-  for(const signal of ['green','yellow','red','unknown','cancel']) {
+  for(const signal of ['green','yellow','red','stale','unknown','cancel']) {
     const expected=seoul.filter(s=>signal==='cancel' ? s.overRegion?.cancel : s.signal===signal).length;
-    assert.equal(Number(await page.locator('.stat-'+signal+' .stat-value').innerText()),expected,'scoped '+signal);
+    assert.equal(parseInt(await page.locator('.stat-'+signal+' .stat-value').innerText(),10),expected,'scoped '+signal);
   }
   await page.locator('.region-label').filter({hasText:'노원구'}).first().click();
   const nowon=seoul.filter(s=>s.sigungu==='노원구');
-  assert.equal(Number(await page.locator('.stat-red .stat-value').innerText()),nowon.filter(s=>s.signal==='red').length);
-  assert.equal(Number(await page.locator('.stat-cancel .stat-value').innerText()),nowon.filter(s=>s.overRegion?.cancel).length);
+  assert.equal(parseInt(await page.locator('.stat-red .stat-value').innerText(),10),nowon.filter(s=>s.signal==='red').length);
+  assert.equal(parseInt(await page.locator('.stat-cancel .stat-value').innerText(),10),nowon.filter(s=>s.overRegion?.cancel).length);
   await page.getByRole('button',{name:'확대',exact:true}).click();
   await page.getByRole('button',{name:'축소',exact:true}).click();
   await page.getByRole('button',{name:'한국석유관리원 — 처음 화면으로'}).click();
