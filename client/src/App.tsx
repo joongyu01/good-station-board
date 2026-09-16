@@ -289,10 +289,10 @@ export default function App() {
    * 누르면 경북의 초과 건만 남는다.
    */
   const match = useMemo(() => compileQuery(q), [q]);
-  const searched = useMemo(() => q.trim() ? panel.stations.filter((s) => match(s, mode)) : panel.stations, [panel, q, match, mode]);
 
   const view = useMemo(() => {
     const term = q.trim();
+    const searched = term ? panel.stations.filter((s) => match(s, mode)) : panel.stations;
     const list = filter ? searched.filter((s) => filter === "cancel" ? s.overRegion?.cancel : s.signal === filter) : searched;
     if (!term && !filter) return panel;
 
@@ -310,10 +310,10 @@ export default function App() {
         ? `“${term}” 에 맞는 착한주유소가 없습니다.`
         : `${SIGNAL_LABELS[filter!]}인 착한주유소가 없습니다.`,
     };
-  }, [panel, filter, q, searched]);
+  }, [panel, filter, q, match, mode]);
 
-  // Geography and search define the denominator; card selection only filters the list.
-  const totals = useMemo(() => summarize(searched, panel.title, activeSido ?? ""), [searched, panel.title, activeSido]);
+  // Scope totals to the geographic selection, not to the search/status filter.
+  const totals = useMemo(() => summarize(panel.stations, panel.title, activeSido ?? ""), [panel, activeSido]);
 
   /** 기관 로고를 누르면 처음 화면으로 — 드릴다운·확대·정렬을 모두 되돌린다. */
   function resetAll() {
@@ -485,10 +485,7 @@ export default function App() {
 
       <div className="page">
       <div className="summary-strip">
-        <div className="summary-scope">{panel.title}{q.trim() ? ` · “${q.trim()}” 검색` : ""} · 집계 대상 <strong>{totals.total.toLocaleString()}곳</strong></div>
-        {[...SIGNAL_ORDER.filter((k) => k !== "unknown" && k !== "cancel"), "unknown", "cancel"].map((key) => {
-          const k = key as SignalColor;
-          return (
+        {SIGNAL_ORDER.filter((k) => k !== "stale").map((k) => (
           <button
             key={k}
             type="button"
@@ -499,13 +496,12 @@ export default function App() {
           >
             <span className="dot" style={{ background: SIGNAL_COLORS[k] }} />
             <span className="stat-label">{SIGNAL_LABELS[k]}</span>
-            <span className="stat-numbers"><strong className="stat-value">{totals[k].toLocaleString()}곳</strong><span className="stat-percent"> · {totals.total > 0 ? (totals[k] / totals.total * 100).toFixed(2) : "0.00"}%</span></span>
-            {k === "cancel" && <span className="stat-overlap">중복 지표 · 5개 유형 합계에서 제외</span>}
+            <strong className="stat-value">{totals[k]}</strong>
             <span className="signal-help" role="tooltip" id={`signal-help-${k}`}>
               {signalHelp(k, board, judging, mode)} 클릭하면 해당 목록을 봅니다.
             </span>
           </button>
-        );})}
+        ))}
         <div className="stat stat-note">
           <strong>{mode === "sum" ? "휘발유+경유 합산" : `${VIEW_MODE_LABELS[mode]} 단독`}</strong>
           {/*

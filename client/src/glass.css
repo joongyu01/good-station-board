@@ -307,27 +307,3 @@ button.stat .stat-label { font-size: 14px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
-
-/* Five exclusive states, followed by the independent historical indicator. */
-.summary-strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.summary-scope, .summary-strip .stat-note { grid-column: 1 / -1; }
-.summary-scope { color: #536159; font-size: 14px; }
-.summary-strip button.stat { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 7px 9px; text-align: left; min-width: 0; }
-.summary-strip .stat-label { white-space: normal; }
-.summary-strip .stat-numbers { grid-column: 2; white-space: nowrap; }
-.summary-strip button.stat .stat-value { font-size: 22px; margin: 0; }
-.summary-strip .stat-percent { font-size: 14px; color: #536159; }
-.summary-strip .stat-cancel { grid-column: 1 / -1; justify-self: start; width: min(100%, 350px); }
-.summary-strip .stat-overlap { grid-column: 2; font-size: 12px; color: #536159; }
-@media (max-width: 1100px) {
-  .summary-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-@media (max-width: 720px) {
-  .summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .summary-strip button.stat { padding: 10px; }
-  .summary-strip button.stat .stat-value { font-size: 19px; }
-  .summary-strip .stat-percent { font-size: 12px; }
-}
-@media (max-width: 360px) {
-  .summary-strip { grid-template-columns: 1fr; }
-}
